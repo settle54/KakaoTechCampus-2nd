@@ -2,7 +2,6 @@ package com.example.everymoment.presentation.adapter
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,14 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
 import com.example.everymoment.data.model.network.dto.response.Diary
+import com.example.everymoment.databinding.SearchItemBinding
 import com.example.everymoment.databinding.TimelineItemBinding
 import com.example.everymoment.extensions.CustomDialog
 import com.example.everymoment.extensions.EmotionPopup
 import com.example.everymoment.extensions.ToPxConverter
 import com.example.everymoment.presentation.view.sub.diary.DiaryReadFragment
+import com.example.everymoment.presentation.viewModel.SearchViewModel
 import com.example.everymoment.presentation.viewModel.TimelineViewModel
 
-class TimelineAdapter(private val activity: FragmentActivity, private val viewModel: TimelineViewModel) : ListAdapter<Diary, TimelineAdapter.TimelineViewHolder>(
+class SearchAdapter(private val activity: FragmentActivity, private val viewModel: SearchViewModel) : ListAdapter<Diary, SearchAdapter.SearchViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
         override fun areItemsTheSame(oldItem: Diary, newItem: Diary): Boolean {
             return oldItem.id == newItem.id
@@ -36,21 +37,8 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
         }
     }
 ) {
-    inner class TimelineViewHolder(private val binding: TimelineItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class SearchViewHolder(private val binding: SearchItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Diary) {
-            binding.root.setOnClickListener {
-                val diaryReadFragment = DiaryReadFragment()
-                val bundle = Bundle().apply {
-                    putInt("diary_id", item.id)
-                }
-                diaryReadFragment.arguments = bundle
-
-                val fragmentManager = (binding.root.context as AppCompatActivity).supportFragmentManager
-                fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, diaryReadFragment)
-                    .addToBackStack(null)
-                    .commit()
-            }
 
             binding.timeText.text = item.createAt.substring(11, 16)
             binding.locationNameText.text = item.locationName
@@ -62,37 +50,19 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 binding.emotion.visibility = View.VISIBLE
             }
 
-            binding.addEmotion.setOnClickListener {
+/*            binding.addEmotion.setOnClickListener {
                 emotionPopupManager.showEmotionsPopup(it, ToPxConverter().dpToPx(10))
             }
 
             binding.emotion.setOnClickListener {
                 emotionPopupManager.showEmotionsPopup(it, ToPxConverter().dpToPx(10))
-            }
+            }*/
 
             var isBookmarked = item.bookmark
             updateBookmarkIcon(isBookmarked)
 
-            binding.bookmarkIcon.setOnClickListener {
-                isBookmarked = !isBookmarked
-                updateBookmarkIcon(isBookmarked)
-                viewModel.updateBookmarkStatus(item.id)
-                binding.root.context.showToast(
-                    if (isBookmarked) R.string.add_bookmark else R.string.remove_bookmark
-                )
-            }
-
             var isShared = item.public
             updateShareIcon(isShared)
-
-            binding.shareIcon.setOnClickListener {
-                isShared = !isShared
-                updateShareIcon(isShared)
-                viewModel.updateShareStatus(item.id)
-                binding.root.context.showToast(
-                    if (isShared) R.string.is_public else R.string.is_private
-                )
-            }
 
             if (item.thumbnailResponse == null) {
                 binding.detailedDiaryContainer.isGone = true
@@ -110,23 +80,6 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             } else {
                 binding.diaryTextContent.isVisible = true
                 binding.diaryTextContent.text = item.content
-            }
-
-            binding.deleteIcon.setOnClickListener {
-                CustomDialog("이 일기를 삭제하시겠습니까?", "취소", "삭제", onPositiveClick = {
-                    removeItem(adapterPosition)
-                    viewModel.deleteDiary(item.id)
-                }).show(activity.supportFragmentManager, "delAutoDiary")
-            }
-
-            binding.editIcon.setOnClickListener {
-                val popupMenu = PopupMenu(it.context, it, Gravity.CENTER, 0, R.style.CustomPopupMenu)
-                popupMenu.menuInflater.inflate(R.menu.location_candidate_menu, popupMenu.menu)
-                popupMenu.setOnMenuItemClickListener { menuItem ->
-                    binding.locationNameText.text = menuItem.title
-                    true
-                }
-                popupMenu.show()
             }
         }
 
@@ -149,12 +102,12 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimelineViewHolder {
-        val binding = TimelineItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TimelineViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+        val binding = SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SearchViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TimelineViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 

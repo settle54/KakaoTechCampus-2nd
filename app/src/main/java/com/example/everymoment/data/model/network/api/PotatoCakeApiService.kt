@@ -11,6 +11,7 @@ import com.example.everymoment.data.model.network.dto.response.FriendRequestList
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
+import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -116,10 +117,45 @@ interface PotatoCakeApiService {
         @Path("requestId") requestId: Int
     ): Call<ServerResponse>
 
-    @GET("api/members")
+    @GET("api/members?size=30")
     fun getMembers(
         @Header("Authorization") token: String,
     ): Call<MemberResponse>
+
+    @GET("/api/friends/{friendId}/diaries")
+    fun getFriendDiaries(
+        @Header("Authorization") token: String,
+        @Query("friendId") friendId: Int,
+        @Query("date") date: String
+    ): Call<DiaryResponse>
+
+    @GET("/api/diaries/friend")
+    fun getTotalFriendDiaries(
+        @Header("Authorization") token: String,
+        @Query("date") date: String
+    ): Call<DiaryResponse>
+
+    @GET("/api/notifications")
+    fun getNotifications(
+        @Header("Authorization") token: String,
+    ): Call<NotificationResponse>
+
+    @GET("api/diaries/my")
+    fun getSearchedDiaries(
+        @Header("Authorization") token: String,
+        @Query("keyword") keyword: String?,
+        @Query("emoji") emoji: List<String>?,
+        @Query("category") category: List<String>?,
+        @Query("from") from: String?,
+        @Query("until") until: String?,
+        @Query("bookmark") bookmark: Boolean?
+    ): Call<DiaryResponse>
+
+    @PATCH("api/diaries/{diaryId}")
+    fun updateEmojiStatus(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<ServerResponse>
 
     @PATCH("/api/diaries/{diaryId}")
     fun patchEditedDiary(
