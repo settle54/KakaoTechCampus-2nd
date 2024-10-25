@@ -51,8 +51,6 @@ class SearchFragment : Fragment() {
         binding.filterDesc.setOnClickListener {
             showFilterSheet()
         }
-
-
     }
 
     private fun setupRecyclerView() {
@@ -83,13 +81,14 @@ class SearchFragment : Fragment() {
 
     private fun performSearch(query: String) {
         if (query.isNotEmpty()) {
+            val currentFilter = searchViewModel.filterState.value
             searchViewModel.fetchSearchedDiaries(
                 keyword = query,
-                emoji = null,
-                category = null,
-                from = null,
-                until = null,
-                bookmark = null
+                emoji = currentFilter?.selectedEmotions?.map { it.getEmotionUnicode() },
+                category = currentFilter?.selectedCategories,
+                from = currentFilter?.startDate,
+                until = currentFilter?.endDate,
+                bookmark = currentFilter?.isBookmarked
             )
         }
     }

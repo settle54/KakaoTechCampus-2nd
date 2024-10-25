@@ -12,11 +12,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.dto.vo.FilterState
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.FragmentSearchFilterDialogBinding
 import com.example.everymoment.presentation.adapter.CategoryAdapter
@@ -39,6 +39,9 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         DiaryViewModelFactory(
             DiaryRepository()
         )
+    }
+    private val searchViewModel: SearchViewModel by activityViewModels {
+        SearchViewModelFactory(DiaryRepository())
     }
 
     override fun onCreateView(
@@ -113,14 +116,41 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
                 if (!checkValidTerm()) {
                     makeToast(resources.getString(R.string.invalid_term))
                 } else {
+                    applyFilter()
                     dismiss()
                 }
             } else {
+                applyFilter()
                 dismiss()
             }
         }
     }
 
+    private fun applyFilter() {
+        val filterState = FilterState(
+            selectedEmotions = getSelectedEmotions(),
+            isBookmarked = checkedBookmark,
+            startDate = binding.startDate.text.toString().takeIf { it.isNotEmpty() },
+            endDate = binding.endDate.text.toString().takeIf { it.isNotEmpty() },
+            selectedCategories = categoryAdapter.getSelectedCategories()
+        )
+
+        searchViewModel.updateFilter(filterState)
+    }
+
+    private fun getSelectedEmotions(): List<Emotions> {
+        val selectedEmotions = mutableListOf<Emotions>()
+
+        with(binding) {
+            if (happy.isChecked) selectedEmotions.add(Emotions.HAPPY)
+            if (sad.isChecked) selectedEmotions.add(Emotions.SAD)
+            if (insensitive.isChecked) selectedEmotions.add(Emotions.INSENSITIVE)
+            if (angry.isChecked) selectedEmotions.add(Emotions.ANGRY)
+            if (confounded.isChecked) selectedEmotions.add(Emotions.CONFOUNDED)
+        }
+
+        return selectedEmotions
+    }
     private fun makeToast(string: String) {
         Toast.makeText(
             context,
