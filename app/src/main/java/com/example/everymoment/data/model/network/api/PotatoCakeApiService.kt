@@ -5,12 +5,13 @@ import com.example.everymoment.data.model.network.dto.response.GetCategoriesResp
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
 import com.example.everymoment.data.model.network.dto.request.PostFilesRequest
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PostEditDiaryRequest
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
-import com.example.everymoment.data.repository.NotificationResponse
+import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -81,7 +82,6 @@ interface PotatoCakeApiService {
         @Path("diaryId") diaryId: Int,
         @Body files: PostFilesRequest
     ): Call<ServerResponse>
-
 
     @POST("api/members/{memberId}/friend-requests")
     fun sendFriendRequest(
@@ -156,4 +156,12 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int
     ): Call<ServerResponse>
+
+    @PATCH("/api/diaries/{diaryId}")
+    fun patchEditedDiary(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: PostEditDiaryRequest
+    ): Call<ServerResponse>
+
 }

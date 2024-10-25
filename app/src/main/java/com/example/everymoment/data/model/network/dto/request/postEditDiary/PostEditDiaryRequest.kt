@@ -1,23 +1,17 @@
-package com.example.everymoment.data.model.network.dto.vo
+package com.example.everymoment.data.model.network.dto.request.postEditDiary
 
 
 import com.google.gson.annotations.SerializedName
 
-data class DetailDiary(
+data class PostEditDiaryRequest(
     @SerializedName("address")
     val address: String,
-    @SerializedName("bookmark")
-    val bookmark: Boolean,
     @SerializedName("categories")
     val categories: List<Category>,
     @SerializedName("content")
     val content: String,
-    @SerializedName("createAt")
-    val createAt: String,
     @SerializedName("emoji")
     val emoji: String?,
-    @SerializedName("id")
-    val id: Int,
     @SerializedName("locationName")
     val locationName: String
 )

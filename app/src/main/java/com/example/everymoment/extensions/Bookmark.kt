@@ -19,6 +19,10 @@ class Bookmark(private val context: Context, private val bookmarkId: ImageView) 
         }
     }
 
+    fun checkBookmarked(): Boolean {
+        return isBookmarked
+    }
+
     fun toggleBookmark() {
         Log.d("bookmark", "bookmark clicked")
         if (!isBookmarked) {
