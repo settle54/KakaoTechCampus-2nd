@@ -9,6 +9,7 @@ import com.example.everymoment.data.model.network.dto.request.PostCategoryReques
 import com.example.everymoment.data.model.network.dto.request.PostFilesRequest
 import com.example.everymoment.data.model.network.api.NetworkModule
 import com.example.everymoment.data.model.network.api.PotatoCakeApiService
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PostEditDiaryRequest
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import retrofit2.Call
@@ -111,24 +112,25 @@ class DiaryRepository {
         diaryId: Int,
         callback: (Boolean, GetDetailDiaryResponse?) -> Unit
     ) {
-        apiService.getDiaryInDetail(token, diaryId).enqueue(object : Callback<GetDetailDiaryResponse> {
-            override fun onResponse(
-                p0: Call<GetDetailDiaryResponse>,
-                p1: Response<GetDetailDiaryResponse>
-            ) {
-                if (p1.isSuccessful) {
-                    Log.d("settle54", "${p1.body()}")
-                    callback(true, p1.body())
-                } else {
+        apiService.getDiaryInDetail(token, diaryId)
+            .enqueue(object : Callback<GetDetailDiaryResponse> {
+                override fun onResponse(
+                    p0: Call<GetDetailDiaryResponse>,
+                    p1: Response<GetDetailDiaryResponse>
+                ) {
+                    if (p1.isSuccessful) {
+                        Log.d("settle54", "${p1.body()}")
+                        callback(true, p1.body())
+                    } else {
+                        callback(false, null)
+                    }
+                }
+
+                override fun onFailure(p0: Call<GetDetailDiaryResponse>, p1: Throwable) {
+                    Log.d("settle54", "Failed to get diaryInDetail: ${p1.message}")
                     callback(false, null)
                 }
-            }
-
-            override fun onFailure(p0: Call<GetDetailDiaryResponse>, p1: Throwable) {
-                Log.d("settle54", "Failed to get diaryInDetail: ${p1.message}")
-                callback(false, null)
-            }
-        })
+            })
     }
 
     fun postCategory(
@@ -152,7 +154,7 @@ class DiaryRepository {
         })
     }
 
-    fun delCategory(categoryId: Int,callback: (Boolean, String?) -> Unit) {
+    fun delCategory(categoryId: Int, callback: (Boolean, String?) -> Unit) {
         apiService.delCategory(token, categoryId).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(
                 p0: Call<ServerResponse>,
@@ -213,6 +215,21 @@ class DiaryRepository {
         })
     }
 
+//    apiService.sendImage(body).enqueue(object: Callback<String> {
+//        override fun onResponse(call: Call<String>, response: Response<String>) {
+//            if(response.isSuccessful){
+//                Log.d("sendImage", "이미지 전송 성공")
+//            }else{
+//                Log.d("sendImage", "이미지 전송 실패")
+//            }
+//        }
+//
+//        override fun onFailure(call: Call<String>, t: Throwable) {
+//            Log.d("testt", t.message.toString())
+//        }
+//
+//    })
+
     fun postFiles(diaryId: Int, files: PostFilesRequest, callback: (Boolean, String?) -> Unit) {
         apiService.postFiles(token, diaryId, files).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(
@@ -232,6 +249,29 @@ class DiaryRepository {
                 callback(false, null)
             }
         })
+    }
+
+    fun patchEditedDiary(
+        diaryId: Int,
+        request: PostEditDiaryRequest,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        apiService.patchEditedDiary(token, diaryId, request)
+            .enqueue(object : Callback<ServerResponse> {
+                override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
+                    if (p1.isSuccessful) {
+                        Log.d("settle54", "${p1.body()}")
+                        callback(true, p1.message())
+                    } else {
+                        callback(false, null)
+                    }
+                }
+
+                override fun onFailure(p0: Call<ServerResponse>, p1: Throwable) {
+                    Log.d("settle54", "Failed to patch editedDairy: ${p1.message}")
+                    callback(false, null)
+                }
+            })
     }
 
 }

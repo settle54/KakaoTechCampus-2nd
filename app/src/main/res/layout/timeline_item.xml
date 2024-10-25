@@ -99,7 +99,6 @@
             android:id="@+id/addressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="강원도 춘천시 충열로"
             android:textSize="12sp" />
 
         <LinearLayout

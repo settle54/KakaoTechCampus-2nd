@@ -57,13 +57,13 @@
         <!--                android:textColor="@color/primary_color" />-->
         <!--        </LinearLayout>-->
 
-<!--        <View-->
-<!--            android:id="@+id/verticalLine"-->
-<!--            android:layout_width="2dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:background="@color/line_color"-->
-<!--            app:layout_constraintStart_toEndOf="@id/friendListIcon" />-->
+        <!--        <View-->
+        <!--            android:id="@+id/verticalLine"-->
+        <!--            android:layout_width="2dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_marginStart="10dp"-->
+        <!--            android:background="@color/line_color"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/friendListIcon" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendList"
@@ -130,8 +130,10 @@
         android:id="@+id/timeLineRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:visibility="visible" />
 </LinearLayout>

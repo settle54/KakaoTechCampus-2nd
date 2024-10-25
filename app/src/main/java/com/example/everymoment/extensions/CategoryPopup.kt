@@ -29,7 +29,7 @@ class CategoryPopup(
     private val maxRows: Int = 4
     private val itemsPerRow: Int = 3
 
-    private var listener: ((String?) -> Unit)? = null
+    private var listener: ((String?, Int?) -> Unit)? = null
     private lateinit var addCategoryDialog: CustomEditDialog
     private lateinit var delCategoryDialog: CustomDialog
     private lateinit var delSelectedCategory: TextView
@@ -39,7 +39,7 @@ class CategoryPopup(
         anchorView: View,
         xOffset: Int = 0,
         yOffset: Int = 0,
-        onCategorySelected: ((String?) -> Unit)
+        onCategorySelected: ((String?, Int?) -> Unit)
     ) {
         this.listener = onCategorySelected
 
@@ -164,7 +164,7 @@ class CategoryPopup(
             text = resources.getString(R.string.category_text, userInput)
 
             setOnClickListener {
-                listener?.invoke(this.text.toString())
+                listener?.invoke(this.text.toString(), viewModel.getCategoryId(this.text.toString()))
             }
 
             setOnLongClickListener {
