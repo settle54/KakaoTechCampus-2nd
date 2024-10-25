@@ -150,4 +150,10 @@ interface PotatoCakeApiService {
         @Query("until") until: String?,
         @Query("bookmark") bookmark: Boolean?
     ): Call<DiaryResponse>
+
+    @PATCH("api/diaries/{diaryId}")
+    fun updateEmojiStatus(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<ServerResponse>
 }
