@@ -16,11 +16,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.dto.vo.FilterState
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.FragmentSearchFilterDialogBinding
 import com.example.everymoment.presentation.adapter.CategoryAdapter
 import com.example.everymoment.presentation.viewModel.DiaryViewModel
+import com.example.everymoment.presentation.viewModel.SearchViewModel
 import com.example.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
+import com.example.everymoment.presentation.viewModel.factory.SearchViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
@@ -32,9 +35,14 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentSearchFilterDialogBinding
     private lateinit var categoryAdapter: CategoryAdapter
     private var checkedBookmark: Boolean = false
-    private val viewModel: DiaryViewModel by activityViewModels { DiaryViewModelFactory(
-        DiaryRepository()
-    ) }
+    private val diaryViewModel: DiaryViewModel by activityViewModels {
+        DiaryViewModelFactory(
+            DiaryRepository()
+        )
+    }
+    private val searchViewModel: SearchViewModel by activityViewModels {
+        SearchViewModelFactory(DiaryRepository())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +50,10 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
     ): View? {
         binding = FragmentSearchFilterDialogBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -104,14 +116,41 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
                 if (!checkValidTerm()) {
                     makeToast(resources.getString(R.string.invalid_term))
                 } else {
+                    applyFilter()
                     dismiss()
                 }
             } else {
+                applyFilter()
                 dismiss()
             }
         }
     }
 
+    private fun applyFilter() {
+        val filterState = FilterState(
+            selectedEmotions = getSelectedEmotions(),
+            isBookmarked = checkedBookmark,
+            startDate = binding.startDate.text.toString().takeIf { it.isNotEmpty() },
+            endDate = binding.endDate.text.toString().takeIf { it.isNotEmpty() },
+            selectedCategories = categoryAdapter.getSelectedCategories()
+        )
+
+        searchViewModel.updateFilter(filterState)
+    }
+
+    private fun getSelectedEmotions(): List<Emotions> {
+        val selectedEmotions = mutableListOf<Emotions>()
+
+        with(binding) {
+            if (happy.isChecked) selectedEmotions.add(Emotions.HAPPY)
+            if (sad.isChecked) selectedEmotions.add(Emotions.SAD)
+            if (insensitive.isChecked) selectedEmotions.add(Emotions.INSENSITIVE)
+            if (angry.isChecked) selectedEmotions.add(Emotions.ANGRY)
+            if (confounded.isChecked) selectedEmotions.add(Emotions.CONFOUNDED)
+        }
+
+        return selectedEmotions
+    }
     private fun makeToast(string: String) {
         Toast.makeText(
             context,
@@ -124,10 +163,10 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         lifecycleScope.launch {
             val gridLayoutManager = GridLayoutManager(requireContext(), 3)
             binding.categoryRcv.layoutManager = gridLayoutManager
-            categoryAdapter = CategoryAdapter(requireContext(), viewModel.categories.value)
+            categoryAdapter = CategoryAdapter(requireContext(), diaryViewModel.categories.value)
             binding.categoryRcv.adapter = categoryAdapter
 
-            viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            diaryViewModel.categories.observe(viewLifecycleOwner) { categories ->
                 categoryAdapter = CategoryAdapter(requireContext(), categories)
                 binding.categoryRcv.adapter = categoryAdapter
 
