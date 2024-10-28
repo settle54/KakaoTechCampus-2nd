@@ -1,5 +1,6 @@
 package com.example.everymoment.data.model.network.api
 
+import com.example.everymoment.data.model.network.dto.request.EmojiRequest
 import com.example.everymoment.data.model.network.dto.response.GetDetailDiaryResponse
 import com.example.everymoment.data.model.network.dto.response.GetCategoriesResponse
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
@@ -154,7 +155,8 @@ interface PotatoCakeApiService {
     @PATCH("api/diaries/{diaryId}")
     fun updateEmojiStatus(
         @Header("Authorization") token: String,
-        @Path("diaryId") diaryId: Int
+        @Path("diaryId") diaryId: Int,
+        @Body emojiRequest: EmojiRequest
     ): Call<ServerResponse>
 
     @PATCH("/api/diaries/{diaryId}")

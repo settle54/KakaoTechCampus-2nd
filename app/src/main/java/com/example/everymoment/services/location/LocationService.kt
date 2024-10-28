@@ -221,6 +221,7 @@ class LocationService : Service() {
         )
 
         val remoteViews = RemoteViews(packageName, R.layout.custom_notification)
+        //remoteViews.setTextViewText(R.id.locationText, "${initialPlaceName}에서의 기분은 어떤가요?")
         remoteViews.setTextViewText(R.id.happyEmojiTextView, Emotions.HAPPY.getEmotionUnicode())
         remoteViews.setTextViewText(R.id.sadEmojiTextView, Emotions.SAD.getEmotionUnicode())
         remoteViews.setTextViewText(R.id.insensitiveEmojiTextView, Emotions.INSENSITIVE.getEmotionUnicode())
@@ -261,7 +262,7 @@ class LocationService : Service() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        notificationManager.notify(Emoji_NOTIFICATION_ID, builder.build())
+        notificationManager.notify(EMOJI_NOTIFICATION_ID, builder.build())
     }
 
     private fun createEmojiNotificationChannel() {
@@ -278,9 +279,9 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private const val LOCATION_UPDATE_INTERVAL = 3 * 60 * 1000L
+        private const val LOCATION_UPDATE_INTERVAL = 1 * 20 * 1000L
 
-        private const val Emoji_NOTIFICATION_ID = 222222
+        private const val EMOJI_NOTIFICATION_ID = 222222
         private const val CHANNEL_ID = "main_default_channel"
         private const val CHANNEL_NAME = "main channelName"
     }
