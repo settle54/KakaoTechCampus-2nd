@@ -145,8 +145,8 @@ interface PotatoCakeApiService {
     fun getSearchedDiaries(
         @Header("Authorization") token: String,
         @Query("keyword") keyword: String?,
-        @Query("emoji") emoji: List<String>?,
-        @Query("category") category: List<String>?,
+        @Query("emoji") emoji: String?,
+        @Query("category") category: String?,
         @Query("from") from: String?,
         @Query("until") until: String?,
         @Query("bookmark") bookmark: Boolean?

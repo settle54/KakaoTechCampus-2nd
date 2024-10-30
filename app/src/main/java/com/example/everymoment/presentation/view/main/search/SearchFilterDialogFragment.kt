@@ -118,6 +118,7 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
                 } else {
                     applyFilter()
                     dismiss()
+
                 }
             } else {
                 applyFilter()
@@ -130,27 +131,28 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         val filterState = FilterState(
             selectedEmotions = getSelectedEmotions(),
             isBookmarked = checkedBookmark,
-            startDate = binding.startDate.text.toString().takeIf { it.isNotEmpty() },
-            endDate = binding.endDate.text.toString().takeIf { it.isNotEmpty() },
-            selectedCategories = categoryAdapter.getSelectedCategories()
+            startDate = binding.startDate.text.toString().takeIf { it.isNotEmpty() }
+                ?.replace(".", "-"),
+            endDate = binding.endDate.text.toString().takeIf { it.isNotEmpty() }?.replace(".", "-"),
+            selectedCategories = categoryAdapter.getSelectedCategories().joinToString(",")
         )
-
         searchViewModel.updateFilter(filterState)
     }
 
-    private fun getSelectedEmotions(): List<Emotions> {
-        val selectedEmotions = mutableListOf<Emotions>()
+    private fun getSelectedEmotions(): String {
+        val selectedEmotions = mutableListOf<String>()
 
         with(binding) {
-            if (happy.isChecked) selectedEmotions.add(Emotions.HAPPY)
-            if (sad.isChecked) selectedEmotions.add(Emotions.SAD)
-            if (insensitive.isChecked) selectedEmotions.add(Emotions.INSENSITIVE)
-            if (angry.isChecked) selectedEmotions.add(Emotions.ANGRY)
-            if (confounded.isChecked) selectedEmotions.add(Emotions.CONFOUNDED)
+            if (happy.isChecked) selectedEmotions.add("happy")
+            if (sad.isChecked) selectedEmotions.add("sad")
+            if (insensitive.isChecked) selectedEmotions.add("insensitive")
+            if (angry.isChecked) selectedEmotions.add("angry")
+            if (confounded.isChecked) selectedEmotions.add("confounded")
         }
 
-        return selectedEmotions
+        return selectedEmotions.joinToString(",")
     }
+
     private fun makeToast(string: String) {
         Toast.makeText(
             context,

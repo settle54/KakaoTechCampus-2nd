@@ -13,7 +13,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/account_circle_24px" />
+        android:src="@drawable/account_circle_24px" />
 
     <TextView
         android:id="@+id/userNickname"

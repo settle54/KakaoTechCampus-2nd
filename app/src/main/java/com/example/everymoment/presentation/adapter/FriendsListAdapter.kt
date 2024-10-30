@@ -2,6 +2,7 @@ package com.example.everymoment.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.setPadding
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -37,14 +38,22 @@ class FriendsListAdapter(
         fun bind(friends: Friends) {
             binding.userNickname.text = friends.nickname
 
-            if (friends.profileImageUrl == null) {
+/*            if (friends.profileImageUrl == null) {
                 binding.profile.setImageResource(R.drawable.account_circle_24px)
             } else {
                 Glide.with(itemView.context)
                     .load(friends.profileImageUrl)
                     .circleCrop()
                     .into(binding.profile)
-            }
+            }*/
+
+            Glide.with(itemView.context)
+                .load(friends.profileImageUrl)
+                .fallback(R.drawable.account_circle_24px)
+                .error(R.drawable.account_circle_24px)
+                .placeholder(R.drawable.account_circle_24px)
+                .circleCrop()
+                .into(binding.profile)
 
             itemView.setOnLongClickListener {
                 showDeleteConfirmationDialog(friends)
