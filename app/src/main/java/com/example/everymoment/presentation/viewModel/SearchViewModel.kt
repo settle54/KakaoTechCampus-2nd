@@ -36,4 +36,15 @@ class SearchViewModel(private val diaryRepository: DiaryRepository) : ViewModel(
             }
         }
     }
+
+    fun resetFilter() {
+        _filterState.value = FilterState(
+            selectedEmotions = "",
+            isBookmarked = false,
+            startDate = null,
+            endDate = null,
+            selectedCategories = ""
+        )
+    }
+
 }

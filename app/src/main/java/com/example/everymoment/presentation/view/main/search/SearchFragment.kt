@@ -6,7 +6,6 @@ import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -56,6 +55,11 @@ class SearchFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchViewModel.resetFilter()
+    }
+
     private fun setupRecyclerView() {
         adapter = SearchAdapter(requireActivity(), searchViewModel)
         binding.searchedDiaryRecyclerView.apply {
@@ -78,7 +82,6 @@ class SearchFragment : Fragment() {
                     false
                 }
             }
-
         }
     }
 
@@ -113,8 +116,13 @@ class SearchFragment : Fragment() {
     private fun observeViewModel() {
         searchViewModel.searchDiaries.observe(viewLifecycleOwner) { diaries ->
             adapter.submitList(diaries)
-            binding.searchedDiaryRecyclerView.visibility =
-                if (diaries.isNotEmpty()) VISIBLE else View.GONE
+            if (diaries.isNotEmpty()) {
+                binding.searchedDiaryRecyclerView.visibility = View.VISIBLE
+                binding.nothingSearched.visibility = View.GONE
+            } else {
+                binding.searchedDiaryRecyclerView.visibility = View.GONE
+                binding.nothingSearched.visibility = View.VISIBLE
+            }
         }
     }
 

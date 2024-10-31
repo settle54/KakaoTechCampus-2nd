@@ -62,6 +62,10 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         setEmoji()
         setCategories()
 
+        searchViewModel.filterState.observe(viewLifecycleOwner) { state ->
+            restoreFilterState(state)
+        }
+
         binding.bookmark.setOnClickListener {
             if (!checkedBookmark) {
                 binding.bookmarkIcon.setImageResource(R.drawable.search_selected_bookmark)
@@ -114,7 +118,6 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
                 } else {
                     applyFilter()
                     dismiss()
-
                 }
             } else {
                 applyFilter()
@@ -253,6 +256,41 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         binding.confounded.text = Emotions.CONFOUNDED.getEmotionUnicode()
         binding.confounded.textOn = Emotions.CONFOUNDED.getEmotionUnicode()
         binding.confounded.textOff = Emotions.CONFOUNDED.getEmotionUnicode()
+    }
+
+    private fun restoreFilterState(state: FilterState) {
+        checkedBookmark = state.isBookmarked
+        if (checkedBookmark) {
+            binding.bookmarkIcon.setImageResource(R.drawable.search_selected_bookmark)
+            binding.bookmarkDesc.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.primary_color2
+                )
+            )
+        }
+
+        state.selectedEmotions?.split(",")?.forEach { emotion ->
+            when (emotion) {
+                "happy" -> binding.happy.isChecked = true
+                "sad" -> binding.sad.isChecked = true
+                "insensitive" -> binding.insensitive.isChecked = true
+                "angry" -> binding.angry.isChecked = true
+                "confounded" -> binding.confounded.isChecked = true
+            }
+        }
+
+        state.startDate?.let {
+            binding.startDate.text = it.replace("-", ".")
+            binding.startDate.setBackgroundResource(R.drawable.search_filter_date_background)
+        }
+        state.endDate?.let {
+            binding.endDate.text = it.replace("-", ".")
+            binding.endDate.setBackgroundResource(R.drawable.search_filter_date_background)
+        }
+        state.selectedCategories?.split(",")?.let { categories ->
+            categoryAdapter.restoreSelected(categories.filter { it.isNotEmpty() })
+        }
     }
 
     companion object {
