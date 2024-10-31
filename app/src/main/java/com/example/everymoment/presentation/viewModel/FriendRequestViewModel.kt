@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.everymoment.data.model.network.dto.response.FriendRequests
 import com.example.everymoment.data.model.network.dto.response.Member
 import com.example.everymoment.data.repository.FriendRepository
 import kotlinx.coroutines.launch
