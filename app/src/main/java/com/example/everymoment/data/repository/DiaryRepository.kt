@@ -9,6 +9,7 @@ import com.example.everymoment.data.model.network.dto.request.PostCategoryReques
 import com.example.everymoment.data.model.network.api.NetworkModule
 import com.example.everymoment.data.model.network.api.PotatoCakeApiService
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
+import com.example.everymoment.data.model.network.dto.response.CoordinatesResponse
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -292,6 +293,23 @@ class DiaryRepository {
                     callback(false, null)
                 }
             })
+    }
+
+    fun getDiaryLocation(diaryId: Int, callback: (Boolean, CoordinatesResponse?) -> Unit) {
+        apiService.getDiaryLocation(token, diaryId).enqueue(object : Callback<CoordinatesResponse> {
+            override fun onResponse(call: Call<CoordinatesResponse>, response: Response<CoordinatesResponse>) {
+                if (response.isSuccessful) {
+                    callback(true, response.body())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(call: Call<CoordinatesResponse>, t: Throwable) {
+                Log.d("arieum", "Failed to fetch location: ${t.message}")
+                callback(false, null)
+            }
+        })
     }
 
 }

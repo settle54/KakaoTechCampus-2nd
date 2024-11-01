@@ -7,6 +7,7 @@ import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
 import com.example.everymoment.data.model.network.dto.request.PatchFilesRequest
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
+import com.example.everymoment.data.model.network.dto.response.CoordinatesResponse
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
@@ -177,4 +178,9 @@ interface PotatoCakeApiService {
         @Body request: PatchEditedDiaryRequest
     ): Call<ServerResponse>
 
+    @GET("/api/diaries/{diaryId}/location")
+    fun getDiaryLocation(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<CoordinatesResponse>
 }

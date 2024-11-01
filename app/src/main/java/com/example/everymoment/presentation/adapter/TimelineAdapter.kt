@@ -2,6 +2,7 @@ package com.example.everymoment.presentation.adapter
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -122,13 +123,36 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             }
 
             binding.editIcon.setOnClickListener {
-                val popupMenu = PopupMenu(it.context, it, Gravity.CENTER, 0, R.style.CustomPopupMenu)
-                popupMenu.menuInflater.inflate(R.menu.location_candidate_menu, popupMenu.menu)
-                popupMenu.setOnMenuItemClickListener { menuItem ->
-                    binding.locationNameText.text = menuItem.title
-                    true
+                viewModel.getPlaceNamesForDiary(item.id) { placeNames ->
+                    (binding.root.context as? FragmentActivity)?.runOnUiThread {
+                        if (placeNames.isNotEmpty()) {
+                            val popupMenu = PopupMenu(binding.root.context, binding.editIcon)
+                            placeNames.forEach { placeName ->
+                                popupMenu.menu.add(placeName)
+                            }
+                            popupMenu.setOnMenuItemClickListener { menuItem ->
+                                binding.locationNameText.text = menuItem.title
+
+                                // Optional: If you want to update the location in the backend
+                                // viewModel.updateDiaryLocation(item.id, menuItem.title.toString())
+
+                                true
+                            }
+
+                            try {
+                                popupMenu.show()
+                            } catch (e: Exception) {
+                                Log.e("arieum", "Error showing popup menu", e)
+                            }
+                        } else {
+                            Toast.makeText(
+                                binding.root.context,
+                                "해당위치에 대한 장소명을 찾을 수 없습니다",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
-                popupMenu.show()
             }
         }
 
