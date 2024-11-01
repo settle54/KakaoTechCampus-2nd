@@ -141,6 +141,12 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
     ): Call<NotificationResponse>
 
+    @PATCH("/api/notifications/{notificationId}")
+    fun readNotification(
+        @Header("Authorization") token: String,
+        @Path("notificationId") notificationId: Int
+    ): Call<ServerResponse>
+
     @GET("api/diaries/my")
     fun getSearchedDiaries(
         @Header("Authorization") token: String,
