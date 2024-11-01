@@ -78,8 +78,7 @@ class FriendRequestFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = FriendRequestAdapter (requireActivity()) { user ->
-        }
+        adapter = FriendRequestAdapter(requireActivity(), viewModel)
         binding.friendRequestRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.friendRequestRecyclerView.adapter = adapter
         updateAdapterList()
