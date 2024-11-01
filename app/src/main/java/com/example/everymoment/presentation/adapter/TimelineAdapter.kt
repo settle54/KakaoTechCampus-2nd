@@ -98,17 +98,19 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 binding.detailedDiaryContainer.isGone = true
             } else {
                 binding.detailedDiaryContainer.isVisible = true
+                binding.diaryImageContent.isVisible = true
 
                 Glide.with(itemView.context)
                     .load(item.thumbnailResponse.imageUrl)
-                    .circleCrop()
                     .into(binding.diaryImageContent)
             }
 
             if (item.content == null) {
                 binding.diaryTextContent.isGone = true
             } else {
+                binding.detailedDiaryContainer.isVisible = true
                 binding.diaryTextContent.isVisible = true
+
                 binding.diaryTextContent.text = item.content
             }
 
