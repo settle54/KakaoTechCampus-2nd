@@ -49,7 +49,12 @@ class DiaryReadFragment : Fragment() {
         Log.d("diaryId", diaryId.toString())
         getDiaryinDetail()
         setClickListeners()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        getDiaryinDetail()
+        Log.d("settle54", "onResume")
     }
 
     private fun getDiaryinDetail() {

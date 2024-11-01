@@ -6,8 +6,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.everymoment.data.model.NotificationTypeConstants
-import com.example.everymoment.data.repository.MyNotification
+import com.example.everymoment.data.model.network.vo.NotificationTypeConstants
+import com.example.everymoment.data.model.network.dto.response.MyNotification
 import com.example.everymoment.databinding.NotificationItemBinding
 import com.example.everymoment.presentation.viewModel.NotificationViewModel
 

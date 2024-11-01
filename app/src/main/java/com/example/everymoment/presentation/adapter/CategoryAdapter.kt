@@ -13,7 +13,7 @@ class CategoryAdapter(private val context: Context, categoryList: List<Category>
     RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
 
     private var categoryList: List<Category>
-    private var selectedCategories = mutableSetOf<Int>()
+    private var selectedCategories = mutableSetOf<String>()
 
     init {
         if (categoryList.isNullOrEmpty())
@@ -22,10 +22,18 @@ class CategoryAdapter(private val context: Context, categoryList: List<Category>
             this.categoryList = categoryList
     }
 
+    fun restoreSelected(categories: List<String>) {
+        selectedCategories = categories.toMutableSet()
+        notifyDataSetChanged()
+    }
 
     fun resetSelected() {
-        selectedCategories = mutableSetOf<Int>()
+        selectedCategories = mutableSetOf()
         notifyDataSetChanged()
+    }
+
+    fun getSelectedCategories(): List<String> {
+        return selectedCategories.toList()
     }
 
     inner class ViewHolder(private val binding: CategoryLayoutBinding) :
@@ -65,16 +73,17 @@ class CategoryAdapter(private val context: Context, categoryList: List<Category>
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(categoryList[position], selectedCategories.contains(position))
+        val category = categoryList[position]
+        holder.bind(category, selectedCategories.contains(category.categoryName))
 
         holder.itemView.setOnClickListener {
-            if (selectedCategories.contains(holder.adapterPosition)) {
-                selectedCategories.remove(holder.adapterPosition)
+            val categoryName = categoryList[holder.adapterPosition].categoryName
+            if (selectedCategories.contains(categoryName)) {
+                selectedCategories.remove(categoryName)
             } else {
-                selectedCategories.add(holder.adapterPosition)
+                selectedCategories.add(categoryName)
             }
             notifyItemChanged(holder.adapterPosition)
         }
-
     }
 }

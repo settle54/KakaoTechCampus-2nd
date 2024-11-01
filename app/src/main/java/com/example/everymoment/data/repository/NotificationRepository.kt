@@ -5,6 +5,7 @@ import com.example.everymoment.services.location.GlobalApplication
 import com.example.everymoment.data.model.network.api.NetworkModule
 import com.example.everymoment.data.model.network.api.PotatoCakeApiService
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
+import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

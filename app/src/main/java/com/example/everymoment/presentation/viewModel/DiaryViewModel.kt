@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.everymoment.data.model.network.dto.vo.Category
 import com.example.everymoment.data.model.network.dto.vo.DetailDiary
 import com.example.everymoment.data.model.network.dto.vo.File
-import com.example.everymoment.data.model.network.dto.request.PostFilesRequest
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PostEditDiaryRequest
 import com.example.everymoment.data.repository.DiaryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +19,11 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
     private var diaryId: Int? = null
     private lateinit var diaryInfo: DetailDiary
     private var isbookmarked: Boolean = false
+
+    private lateinit var location: String
+    private lateinit var address: String
+    private lateinit var content: String
+
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>> get() = _categories
     private var imagesArray: List<File> = listOf()
@@ -126,10 +131,18 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
         }
     }
 
-    fun postFiles(diaryId: Int, imgArray: List<File>) {
+//    fun postFiles(diaryId: Int, imgArray: List<File>) {
+//        viewModelScope.launch {
+//            val files = PostFilesRequest(imgArray)
+//            diaryRepository.postFiles(diaryId, files) { _, _ ->
+//            }
+//        }
+//    }
+
+    fun patchEditedDiary(request: PostEditDiaryRequest) {
         viewModelScope.launch {
-            val files = PostFilesRequest(imgArray)
-            diaryRepository.postFiles(diaryId, files) { _, _ ->
+            Log.d("settle54", "success: $request")
+            diaryRepository.patchEditedDiary(diaryId!!, request) { _, _ ->
             }
         }
     }

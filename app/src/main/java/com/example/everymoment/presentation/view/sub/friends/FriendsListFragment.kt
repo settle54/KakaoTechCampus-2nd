@@ -58,6 +58,12 @@ class FriendsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.friendListBackButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ShareViewFragment())
+                .commit()
+        }
+
         binding.mainFab.setOnClickListener {
             if (isFabExpanded) {
                 shrinkFab()
@@ -88,13 +94,6 @@ class FriendsListFragment : Fragment() {
 
         viewModel.fetchFriendsList()
 
-        binding.friendsListBackButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.fragment_container, ShareViewFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
     }
 
     override fun onResume() {

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.everymoment.data.repository.FriendRepository
-import com.example.everymoment.data.repository.MyNotification
+import com.example.everymoment.data.model.network.dto.response.MyNotification
 import com.example.everymoment.data.repository.NotificationRepository
 import kotlinx.coroutines.launch
 

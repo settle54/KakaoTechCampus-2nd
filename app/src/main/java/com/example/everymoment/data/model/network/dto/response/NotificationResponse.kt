@@ -1,4 +1,4 @@
-package com.example.everymoment.data.repository
+package com.example.everymoment.data.model.network.dto.response
 
 data class NotificationResponse(
     val code: Int,

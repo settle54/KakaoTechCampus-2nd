@@ -16,11 +16,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.dto.vo.FilterState
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.FragmentSearchFilterDialogBinding
 import com.example.everymoment.presentation.adapter.CategoryAdapter
 import com.example.everymoment.presentation.viewModel.DiaryViewModel
+import com.example.everymoment.presentation.viewModel.SearchViewModel
 import com.example.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
+import com.example.everymoment.presentation.viewModel.factory.SearchViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
@@ -32,14 +35,19 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentSearchFilterDialogBinding
     private lateinit var categoryAdapter: CategoryAdapter
     private var checkedBookmark: Boolean = false
-    private val viewModel: DiaryViewModel by activityViewModels { DiaryViewModelFactory(
-        DiaryRepository()
-    ) }
+    private val diaryViewModel: DiaryViewModel by activityViewModels {
+        DiaryViewModelFactory(
+            DiaryRepository()
+        )
+    }
+    private val searchViewModel: SearchViewModel by activityViewModels {
+        SearchViewModelFactory(DiaryRepository())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSearchFilterDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,13 +62,17 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         setEmoji()
         setCategories()
 
+        searchViewModel.filterState.observe(viewLifecycleOwner) { state ->
+            restoreFilterState(state)
+        }
+
         binding.bookmark.setOnClickListener {
             if (!checkedBookmark) {
-                binding.bookmarkIcon.setImageResource(R.drawable.baseline_bookmark_24)
+                binding.bookmarkIcon.setImageResource(R.drawable.search_selected_bookmark)
                 binding.bookmarkDesc.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.primary_color
+                        R.color.primary_color2
                     )
                 )
             } else {
@@ -104,12 +116,40 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
                 if (!checkValidTerm()) {
                     makeToast(resources.getString(R.string.invalid_term))
                 } else {
+                    applyFilter()
                     dismiss()
                 }
             } else {
+                applyFilter()
                 dismiss()
             }
         }
+    }
+
+    private fun applyFilter() {
+        val filterState = FilterState(
+            selectedEmotions = getSelectedEmotions(),
+            isBookmarked = checkedBookmark,
+            startDate = binding.startDate.text.toString().takeIf { it.isNotEmpty() }
+                ?.replace(".", "-"),
+            endDate = binding.endDate.text.toString().takeIf { it.isNotEmpty() }?.replace(".", "-"),
+            selectedCategories = categoryAdapter.getSelectedCategories().joinToString(",")
+        )
+        searchViewModel.updateFilter(filterState)
+    }
+
+    private fun getSelectedEmotions(): String {
+        val selectedEmotions = mutableListOf<String>()
+
+        with(binding) {
+            if (happy.isChecked) selectedEmotions.add("happy")
+            if (sad.isChecked) selectedEmotions.add("sad")
+            if (insensitive.isChecked) selectedEmotions.add("insensitive")
+            if (angry.isChecked) selectedEmotions.add("angry")
+            if (confounded.isChecked) selectedEmotions.add("confounded")
+        }
+
+        return selectedEmotions.joinToString(",")
     }
 
     private fun makeToast(string: String) {
@@ -124,10 +164,10 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         lifecycleScope.launch {
             val gridLayoutManager = GridLayoutManager(requireContext(), 3)
             binding.categoryRcv.layoutManager = gridLayoutManager
-            categoryAdapter = CategoryAdapter(requireContext(), viewModel.categories.value)
+            categoryAdapter = CategoryAdapter(requireContext(), diaryViewModel.categories.value)
             binding.categoryRcv.adapter = categoryAdapter
 
-            viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            diaryViewModel.categories.observe(viewLifecycleOwner) { categories ->
                 categoryAdapter = CategoryAdapter(requireContext(), categories)
                 binding.categoryRcv.adapter = categoryAdapter
 
@@ -216,6 +256,41 @@ class SearchFilterDialogFragment : BottomSheetDialogFragment() {
         binding.confounded.text = Emotions.CONFOUNDED.getEmotionUnicode()
         binding.confounded.textOn = Emotions.CONFOUNDED.getEmotionUnicode()
         binding.confounded.textOff = Emotions.CONFOUNDED.getEmotionUnicode()
+    }
+
+    private fun restoreFilterState(state: FilterState) {
+        checkedBookmark = state.isBookmarked
+        if (checkedBookmark) {
+            binding.bookmarkIcon.setImageResource(R.drawable.search_selected_bookmark)
+            binding.bookmarkDesc.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.primary_color2
+                )
+            )
+        }
+
+        state.selectedEmotions?.split(",")?.forEach { emotion ->
+            when (emotion) {
+                "happy" -> binding.happy.isChecked = true
+                "sad" -> binding.sad.isChecked = true
+                "insensitive" -> binding.insensitive.isChecked = true
+                "angry" -> binding.angry.isChecked = true
+                "confounded" -> binding.confounded.isChecked = true
+            }
+        }
+
+        state.startDate?.let {
+            binding.startDate.text = it.replace("-", ".")
+            binding.startDate.setBackgroundResource(R.drawable.search_filter_date_background)
+        }
+        state.endDate?.let {
+            binding.endDate.text = it.replace("-", ".")
+            binding.endDate.setBackgroundResource(R.drawable.search_filter_date_background)
+        }
+        state.selectedCategories?.split(",")?.let { categories ->
+            categoryAdapter.restoreSelected(categories.filter { it.isNotEmpty() })
+        }
     }
 
     companion object {

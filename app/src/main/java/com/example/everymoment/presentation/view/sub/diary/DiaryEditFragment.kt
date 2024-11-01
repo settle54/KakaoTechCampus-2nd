@@ -10,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.Category
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PostEditDiaryRequest
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.FragmentDiaryEditBinding
 import com.example.everymoment.extensions.Bookmark
@@ -27,16 +29,19 @@ class DiaryEditFragment : Fragment() {
     private lateinit var binding: FragmentDiaryEditBinding
     private var imagesArray: BooleanArray = BooleanArray(2)
     private var categoriesArray: BooleanArray = BooleanArray(2)
+    private var categoriesIdArray: Array<Int?> = arrayOf(null, null)
     private var galleryUtil = GalleryUtil(this)
     private var toPxConverter = ToPxConverter()
     private lateinit var emotionPopupManager: EmotionPopup
     private lateinit var categoryManager: CategoryPopup
-    private lateinit var delCategoryDialog: CustomDialog
-    private lateinit var delImageDialog: CustomDialog
     private var delSelectedImgNum: Int = 0
     private var delSelectedCategoryNum: Int = 0
     private lateinit var bookmark: Bookmark
     private var diaryId: Int? = null
+
+    private lateinit var delEmotionDialog: CustomDialog
+    private lateinit var delCategoryDialog: CustomDialog
+    private lateinit var delImageDialog: CustomDialog
 
     private val viewModel: DiaryViewModel by activityViewModels {
         DiaryViewModelFactory(
@@ -79,9 +84,14 @@ class DiaryEditFragment : Fragment() {
     private fun setDiaryContent() {
         val diary = viewModel.getDiary()
         diary?.let { it ->
-            Emotions.fromString(it.emoji)?.getEmotionUnicode()?.let { emotion ->
-                binding.emotion.text = emotion
-                binding.emotion.visibility = View.VISIBLE
+            if (it.emoji != "null") {
+                Emotions.fromString(it.emoji)?.getEmotionUnicode()?.let { emotion ->
+                    binding.emotion.text = emotion
+                    binding.emotion.visibility = View.VISIBLE
+                }
+                binding.addEmotion.visibility = View.GONE
+            } else {
+                binding.addEmotion.visibility = View.VISIBLE
             }
             binding.location.setText(it.locationName)
             binding.address.setText(it.address)
@@ -103,11 +113,13 @@ class DiaryEditFragment : Fragment() {
                         resources.getString(R.string.category_text, it.categories[1].categoryName)
                     binding.addCategory.visibility = View.INVISIBLE
                     categoriesArray[1] = true
+                    categoriesIdArray[1] = it.categories[1].id
                 }
                 binding.category1.visibility = View.VISIBLE
                 binding.category1.text =
                     resources.getString(R.string.category_text, it.categories[0].categoryName)
                 categoriesArray[0] = true
+                categoriesIdArray[0] = it.categories[0].id
             }
         }
 
@@ -153,6 +165,7 @@ class DiaryEditFragment : Fragment() {
                 delSelectedImage()
             }
         )
+
         delCategoryDialog = CustomDialog(
             resources.getString(R.string.del_category_dialog),
             resources.getString(R.string.cancel),
@@ -161,23 +174,42 @@ class DiaryEditFragment : Fragment() {
                 delSelectedCategory()
             }
         )
+
+        delEmotionDialog = CustomDialog(
+            resources.getString(R.string.del_emotion_dialog),
+            resources.getString(R.string.cancel),
+            resources.getString(R.string.delete),
+            onPositiveClick = {
+                delEmotion()
+            }
+        )
+    }
+
+    private fun delEmotion() {
+        binding.emotion.text = null
+        binding.emotion.visibility = View.GONE
+        binding.addEmotion.visibility = View.VISIBLE
     }
 
     private fun delSelectedCategory() {
         if (delSelectedCategoryNum == 1) {
             if (categoriesArray[1]) {
                 binding.category1.text = binding.category2.text
+                categoriesIdArray[0] = categoriesIdArray[1]
+                categoriesIdArray[1] = null
                 binding.addCategory.visibility = View.VISIBLE
                 binding.category2.visibility = View.GONE
                 categoriesArray[1] = false
             } else {
                 binding.category1.visibility = View.GONE
                 categoriesArray[0] = false
+                categoriesIdArray[0] = null
             }
         } else if (delSelectedCategoryNum == 2) {
             binding.category2.visibility = View.GONE
             binding.addCategory.visibility = View.VISIBLE
             categoriesArray[1] = false
+            categoriesIdArray[1] = null
         }
     }
 
@@ -241,8 +273,13 @@ class DiaryEditFragment : Fragment() {
                 binding.address,
                 0,
                 categoryYOffset,
-                onCategorySelected = {
-                    addCategory(it)
+                onCategorySelected = { categoryName, categoryId ->
+                    addCategory(categoryName, categoryId)
+                    if (categoriesIdArray[0] == null) {
+                        categoriesIdArray[0] = categoryId
+                    } else {
+                        categoriesIdArray[1] = categoryId
+                    }
                 })
         }
 
@@ -251,8 +288,9 @@ class DiaryEditFragment : Fragment() {
                 binding.address,
                 0,
                 categoryYOffset,
-                onCategorySelected = {
-                    binding.category1.text = it
+                onCategorySelected = { categoryName, categoryId ->
+                    binding.category1.text = categoryName
+                    categoriesIdArray[0] = categoryId
                 })
         }
 
@@ -261,8 +299,9 @@ class DiaryEditFragment : Fragment() {
                 binding.address,
                 0,
                 categoryYOffset,
-                onCategorySelected = {
-                    binding.category2.text = it
+                onCategorySelected = { categoryName, categoryId ->
+                    binding.category2.text = categoryName
+                    categoriesIdArray[1] = categoryId
                 })
         }
 
@@ -292,21 +331,51 @@ class DiaryEditFragment : Fragment() {
             emotionPopupManager.showEmotionsPopup(binding.emotion, emotionXOffset)
         }
 
+        binding.emotion.setOnLongClickListener {
+            delEmotionDialog.show(
+                requireActivity().supportFragmentManager,
+                "delEmotionDialog"
+            )
+            true
+        }
+
         binding.diaryDoneButton.setOnClickListener {
+            postEditedDiary()
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
-    private fun addCategory(category: String?) {
+    private fun postEditedDiary() {
+        val emoji = binding.emotion.text.toString()
+//        val categoryList = categoriesIdArray.map {
+//            it?.let { id -> Category(id) } ?: Category(0)
+//        }
+        val categoryList = categoriesIdArray.mapNotNull {
+            it?.let { id -> Category(id) }
+        }
+        val request = PostEditDiaryRequest(
+            address = binding.address.text.toString().lowercase(),
+            categories = categoryList,
+            emoji = Emotions.fromUnicode(emoji).toString(),
+            content = binding.content.text.toString(),
+            locationName = binding.location.text.toString()
+        )
+        viewModel.patchEditedDiary(request)
+    }
+
+
+    private fun addCategory(category: String?, categoryId: Int?) {
         if (categoriesArray[0] == false) {
             binding.category1.visibility = View.VISIBLE
             binding.category1.text = category
             categoriesArray[0] = true
+            categoriesIdArray[0] = categoryId
         } else if (categoriesArray[1] == false) {
             binding.category2.visibility = View.VISIBLE
             binding.category2.text = category
             categoriesArray[1] = true
             binding.addCategory.visibility = View.GONE
+            categoriesIdArray[1] = categoryId
         }
     }
 }
