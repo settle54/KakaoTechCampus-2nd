@@ -1,5 +1,6 @@
 package com.example.everymoment.data.model.network.api
 
+import com.example.everymoment.data.model.network.dto.request.EmojiRequest
 import com.example.everymoment.data.model.network.dto.response.GetDetailDiaryResponse
 import com.example.everymoment.data.model.network.dto.response.GetCategoriesResponse
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
@@ -145,12 +146,18 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
     ): Call<NotificationResponse>
 
+    @PATCH("/api/notifications/{notificationId}")
+    fun readNotification(
+        @Header("Authorization") token: String,
+        @Path("notificationId") notificationId: Int
+    ): Call<ServerResponse>
+
     @GET("api/diaries/my")
     fun getSearchedDiaries(
         @Header("Authorization") token: String,
         @Query("keyword") keyword: String?,
-        @Query("emoji") emoji: List<String>?,
-        @Query("category") category: List<String>?,
+        @Query("emoji") emoji: String?,
+        @Query("category") category: String?,
         @Query("from") from: String?,
         @Query("until") until: String?,
         @Query("bookmark") bookmark: Boolean?
@@ -159,7 +166,8 @@ interface PotatoCakeApiService {
     @PATCH("api/diaries/{diaryId}")
     fun updateEmojiStatus(
         @Header("Authorization") token: String,
-        @Path("diaryId") diaryId: Int
+        @Path("diaryId") diaryId: Int,
+        @Body emojiRequest: EmojiRequest
     ): Call<ServerResponse>
 
     @PATCH("/api/diaries/{diaryId}")

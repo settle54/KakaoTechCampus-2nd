@@ -3,16 +3,10 @@ package com.example.everymoment.presentation.view.main
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.everymoment.R
-import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.ActivityMainBinding
 import com.example.everymoment.presentation.view.main.search.SearchFragment
-import com.example.everymoment.presentation.view.sub.PostFragment
-import com.example.everymoment.presentation.viewModel.DiaryViewModel
-import com.example.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
-import com.example.everymoment.services.location.GlobalApplication
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -25,9 +19,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val token = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6OCwiaWF0IjoxNzMwNDYxNDc3LCJleHAiOjE3MzA2MzQyNzd9.3B95Y6CFhyCSksl3ZDmVXmcvL75y6S-NG3a6RaftmUs"
-        GlobalApplication.prefs.setString("token", token)
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {

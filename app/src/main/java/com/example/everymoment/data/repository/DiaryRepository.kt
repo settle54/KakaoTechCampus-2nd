@@ -246,8 +246,8 @@ class DiaryRepository {
 
     fun getSearchedDiaries(
         keyword: String?,
-        emoji: List<String>?,
-        category: List<String>?,
+        emoji: String?,
+        category: String?,
         from: String?,
         until: String?,
         bookmark: Boolean?,
