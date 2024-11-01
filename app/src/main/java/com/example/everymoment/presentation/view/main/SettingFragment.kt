@@ -8,18 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
+import com.example.everymoment.data.repository.MyInfoRepository
 import com.example.everymoment.databinding.FragmentSettingBinding
 import com.example.everymoment.extensions.CustomDialog
 import com.example.everymoment.extensions.CustomEditDialog
 import com.example.everymoment.extensions.GalleryUtil
 import com.example.everymoment.presentation.viewModel.SettingViewModel
+import com.example.everymoment.presentation.viewModel.SettingViewModelFactory
 
 class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
-    private val viewModel by viewModels<SettingViewModel>()
+    private lateinit var viewModel: SettingViewModel
+    private val myInfoRepository = MyInfoRepository()
 
     private val galleryUtil = GalleryUtil(this)
 
@@ -38,6 +42,9 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel = ViewModelProvider(this, SettingViewModelFactory(myInfoRepository)).get(SettingViewModel::class.java)
+        viewModel.fetchMyInfo()
+        observeMyInfo()
         setDialogs()
 
         binding.accountImage.setOnClickListener {
@@ -108,6 +115,19 @@ class SettingFragment : Fragment() {
                 getString(R.string.time_interval_text, selectedTime),
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    private fun observeMyInfo() {
+        viewModel.myInfo.observe(viewLifecycleOwner) { myInformation ->
+            if (myInformation != null) {
+                binding.accountName.text = myInformation.nickname
+
+                Glide.with(this)
+                    .load(myInformation.profileImageUrl)
+                    .circleCrop()
+                    .into(binding.accountImage)
+            }
         }
     }
 
