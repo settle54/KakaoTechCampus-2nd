@@ -5,21 +5,25 @@ import com.example.everymoment.data.model.network.dto.response.GetDetailDiaryRes
 import com.example.everymoment.data.model.network.dto.response.GetCategoriesResponse
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
-import com.example.everymoment.data.model.network.dto.request.PostFilesRequest
-import com.example.everymoment.data.model.network.dto.request.postEditDiary.PostEditDiaryRequest
+import com.example.everymoment.data.model.network.dto.request.PatchFilesRequest
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import com.example.everymoment.data.model.network.dto.response.NotificationResponse
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -77,11 +81,12 @@ interface PotatoCakeApiService {
         @Path("diaryId") diaryId: Int
     ): Call<GetFilesResponse>
 
-    @POST("/api/diaries/{diaryId}/files")
-    fun postFiles(
+    @Multipart
+    @PUT("/api/diaries/{diaryId}/files")
+    fun patchFiles(
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int,
-        @Body files: PostFilesRequest
+        @Part files: List<MultipartBody.Part>
     ): Call<ServerResponse>
 
     @POST("api/members/{memberId}/friend-requests")
@@ -169,7 +174,7 @@ interface PotatoCakeApiService {
     fun patchEditedDiary(
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int,
-        @Body request: PostEditDiaryRequest
+        @Body request: PatchEditedDiaryRequest
     ): Call<ServerResponse>
 
 }
