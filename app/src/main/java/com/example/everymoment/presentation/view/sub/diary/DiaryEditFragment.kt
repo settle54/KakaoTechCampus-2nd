@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.addCallback
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
@@ -50,6 +51,7 @@ class DiaryEditFragment : Fragment() {
     private lateinit var delEmotionDialog: CustomDialog
     private lateinit var delCategoryDialog: CustomDialog
     private lateinit var delImageDialog: CustomDialog
+    private lateinit var backButtonDialog: CustomDialog
 
     private val viewModel: DiaryViewModel by activityViewModels {
         DiaryViewModelFactory(
@@ -181,6 +183,15 @@ class DiaryEditFragment : Fragment() {
             resources.getString(R.string.delete),
             onPositiveClick = {
                 delEmotion()
+            }
+        )
+
+        backButtonDialog = CustomDialog(
+            resources.getString(R.string.back_button_dialog),
+            resources.getString(R.string.cancel),
+            resources.getString(R.string.do_stop),
+            onPositiveClick = {
+                requireActivity().supportFragmentManager.popBackStack()
             }
         )
     }
@@ -354,6 +365,13 @@ class DiaryEditFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            backButtonDialog.show(
+                requireActivity().supportFragmentManager,
+                "delEmotionDialog"
+            )
         }
     }
 
