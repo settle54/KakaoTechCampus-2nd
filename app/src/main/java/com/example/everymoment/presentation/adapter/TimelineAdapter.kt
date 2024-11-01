@@ -132,10 +132,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                             }
                             popupMenu.setOnMenuItemClickListener { menuItem ->
                                 binding.locationNameText.text = menuItem.title
-
-                                // Optional: If you want to update the location in the backend
-                                // viewModel.updateDiaryLocation(item.id, menuItem.title.toString())
-
+                                viewModel.updateDiaryLocation(item.id, menuItem.title.toString())
                                 true
                             }
 

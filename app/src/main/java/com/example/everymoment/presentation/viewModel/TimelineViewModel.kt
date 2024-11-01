@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.everymoment.data.model.network.api.GooglePlaceApiUtil
+import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.data.model.network.dto.response.Diary
 import kotlinx.coroutines.launch
@@ -76,4 +77,28 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
         }
     }
 
+    fun updateDiaryLocation(diaryId: Int, locationName: String){
+        viewModelScope.launch {
+            val request = PatchEditedDiaryRequest(
+                address = "",
+                addressDelete = true,
+                categories = listOf(),
+                content = "",
+                contentDelete = true,
+                deleteAllCategories = true,
+                emoji = null,
+                emojiDelete = true,
+                locationName = locationName,
+                locationNameDelete = false
+            )
+
+            diaryRepository.patchEditedDiary(diaryId, request) { success, message ->
+                if (success) {
+                    Log.d("arieum", "Diary location updated successfully")
+                } else {
+                    Log.e("arieum", "Failed to update diary location")
+                }
+            }
+        }
+    }
 }
