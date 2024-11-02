@@ -31,6 +31,7 @@ class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapt
             } else {
                 Glide.with(itemView.context)
                     .load(item.profileImageUrl)
+                    .circleCrop()
                     .into(binding.friendImage)
             }
 
