@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.everymoment.data.model.network.vo.NotificationTypeConstants
 import com.example.everymoment.data.repository.FriendRepository
 import com.example.everymoment.data.model.network.dto.response.MyNotification
 import com.example.everymoment.data.repository.NotificationRepository
@@ -21,7 +22,7 @@ class NotificationViewModel(
             notificationRepository.getNotificationList { success, response ->
                 if (success && response != null) {
                     val filteredNotifications = response.info.filter { notification ->
-                        notification.type != "MOOD_CHECK" && !notification.read }
+                        notification.type != NotificationTypeConstants.MOOD_CHECK && !notification.read }
                     _notifications.postValue(filteredNotifications)
                 }
             }

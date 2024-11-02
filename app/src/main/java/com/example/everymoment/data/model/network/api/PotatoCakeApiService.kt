@@ -7,10 +7,12 @@ import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
 import com.example.everymoment.data.model.network.dto.request.PatchFilesRequest
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
+import com.example.everymoment.data.model.network.dto.response.CoordinatesResponse
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
+import com.example.everymoment.data.model.network.dto.response.MyInformationResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import okhttp3.MultipartBody
@@ -177,4 +179,14 @@ interface PotatoCakeApiService {
         @Body request: PatchEditedDiaryRequest
     ): Call<ServerResponse>
 
+    @GET("/api/diaries/{diaryId}/location")
+    fun getDiaryLocation(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<CoordinatesResponse>
+
+    @GET("/api/members/me")
+    fun getMyInfo(
+        @Header("Authorization") token: String
+    ): Call<MyInformationResponse>
 }

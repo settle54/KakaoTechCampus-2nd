@@ -21,6 +21,7 @@ import androidx.core.app.NotificationCompat
 import com.example.everymoment.BuildConfig
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.api.GooglePlaceApiUtil
 import com.example.everymoment.data.model.network.api.NetworkUtil
 import com.example.everymoment.data.model.network.dto.vo.DiaryEntry
 import com.example.everymoment.data.model.network.dto.response.GooglePlacesResponse
@@ -108,7 +109,7 @@ class LocationService : Service() {
         val latitude = location.latitude
         val longitude = location.longitude
 
-        getPlaceNamesFromCoordinates(latitude, longitude) { currentPlaceNames, currentAddresses ->
+        GooglePlaceApiUtil.getPlaceNamesFromCoordinates(latitude, longitude) { currentPlaceNames, currentAddresses ->
             if (currentPlaceNames.isNotEmpty()) {
                 Log.d("myplace", "$currentPlaceNames")
                 val currentPlace = currentPlaceNames.firstOrNull()
@@ -184,40 +185,6 @@ class LocationService : Service() {
         //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = createNotification("위치: $placeName (위도: $latitude, 경도: $longitude)")
         notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun getPlaceNamesFromCoordinates(
-        latitude: Double,
-        longitude: Double,
-        callback: (List<String>, List<String>) -> Unit
-    ) {
-        val apiKey = BuildConfig.API_KEY
-        val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-
-        val queryParams = mapOf(
-            "location" to "$latitude,$longitude",
-            "language" to "ko",
-            "rankby" to "distance",
-            "key" to apiKey
-        )
-
-        NetworkUtil.getData(
-            url,
-            queryParams = queryParams,
-            responseClass = GooglePlacesResponse::class.java
-        ) { success, response ->
-            if (success && response != null) {
-                try {
-                    val placeNames = response.results.map { it.name }
-                    val addresses = response.results.map { it.vicinity }
-                    callback(placeNames, addresses)
-                } catch (e: Exception) {
-                    callback(emptyList(), emptyList())
-                }
-            } else {
-                callback(emptyList(), emptyList())
-            }
-        }
     }
 
     private fun setEmojiNotification() {
@@ -296,7 +263,7 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private const val LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000L
+        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
 
         private const val EMOJI_NOTIFICATION_ID = 222222
         private const val CHANNEL_ID = "main_default_channel"
