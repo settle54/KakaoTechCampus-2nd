@@ -80,14 +80,6 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
     fun updateDiaryLocation(diaryId: Int, locationName: String){
         viewModelScope.launch {
             val request = PatchEditedDiaryRequest(
-                address = "",
-                addressDelete = true,
-                categories = listOf(),
-                content = "",
-                contentDelete = true,
-                deleteAllCategories = true,
-                emoji = null,
-                emojiDelete = true,
                 locationName = locationName,
                 locationNameDelete = false
             )
@@ -97,6 +89,23 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
                     Log.d("arieum", "Diary location updated successfully")
                 } else {
                     Log.e("arieum", "Failed to update diary location")
+                }
+            }
+        }
+    }
+
+    fun updateEmotions(diaryId: Int, selectedEmoji: String){
+        viewModelScope.launch {
+            val request = PatchEditedDiaryRequest(
+                emojiDelete = false,
+                emoji = selectedEmoji
+            )
+
+            diaryRepository.patchEditedDiary(diaryId, request) { success, message ->
+                if (success) {
+                    Log.d("arieum", "Diary emoji updated successfully")
+                } else {
+                    Log.e("arieum", "Failed to update diary emoji")
                 }
             }
         }

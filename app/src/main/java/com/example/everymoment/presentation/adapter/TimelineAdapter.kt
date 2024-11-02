@@ -13,11 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
+import com.example.everymoment.data.model.entity.Emotions
 import com.example.everymoment.data.model.network.dto.response.Diary
 import com.example.everymoment.databinding.TimelineItemBinding
 import com.example.everymoment.extensions.CustomDialog
@@ -25,6 +27,9 @@ import com.example.everymoment.extensions.EmotionPopup
 import com.example.everymoment.extensions.ToPxConverter
 import com.example.everymoment.presentation.view.sub.diary.DiaryReadFragment
 import com.example.everymoment.presentation.viewModel.TimelineViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TimelineAdapter(private val activity: FragmentActivity, private val viewModel: TimelineViewModel) : ListAdapter<Diary, TimelineAdapter.TimelineViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
@@ -57,10 +62,29 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             binding.locationNameText.text = item.locationName
             binding.addressText.text = item.address
 
-            val emotionPopupManager = EmotionPopup(binding.root.context) { selectedEmotion ->
-                binding.emotion.text = selectedEmotion.getEmotionUnicode()
+            if (item.emoji == null){
+                binding.addEmotion.visibility = View.VISIBLE
+                binding.emotion.visibility = View.GONE
+            } else {
                 binding.addEmotion.visibility = View.GONE
                 binding.emotion.visibility = View.VISIBLE
+                binding.emotion.text = Emotions.fromString(item.emoji)?.getEmotionUnicode()
+            }
+
+            val emotionPopupManager = EmotionPopup(binding.root.context) { selectedEmotion ->
+                val emotionName = selectedEmotion.toString().lowercase()
+                viewModel.viewModelScope.launch {
+                    try {
+                        viewModel.updateEmotions(item.id, emotionName)
+                        withContext(Dispatchers.Main) {
+                            binding.addEmotion.visibility = View.GONE
+                            binding.emotion.visibility = View.VISIBLE
+                            binding.emotion.text = selectedEmotion.getEmotionUnicode()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("arieum", "Error updating emotion", e)
+                    }
+                }
             }
 
             binding.addEmotion.setOnClickListener {
