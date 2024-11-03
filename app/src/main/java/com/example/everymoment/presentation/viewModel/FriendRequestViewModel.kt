@@ -20,8 +20,11 @@ class FriendRequestViewModel(private val friendRepository: FriendRepository) : V
     fun fetchMembers() {
         viewModelScope.launch {
             friendRepository.getMembers() { success, response ->
-                if (success && response != null) {
+                if (success && response != null && response.info != null) {
                     _members.postValue(response.info.members)
+                } else {
+                    Log.e("FriendRequestViewModel", "Failed to fetch member")
+                    _members.postValue(emptyList())
                 }
             }
         }
@@ -30,8 +33,10 @@ class FriendRequestViewModel(private val friendRepository: FriendRepository) : V
     fun sendFriendRequest(memberId: Int) {
         viewModelScope.launch {
             friendRepository.sendFriendRequest(memberId) { success, response ->
-                if (success && response != null) {
+                if (success && response != null && response.info != null) {
                     _members.postValue(response.info.members)
+                } else {
+                    Log.e("FriendRequestViewModel", "Failed to send friend request")
                 }
             }
         }
