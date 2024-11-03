@@ -16,10 +16,9 @@ class FriendDiaryRepository {
 
     fun getFriendDiaries(
         friendId: Int,
-        date: String,
         callback: (Boolean, DiaryResponse?) -> Unit
     ) {
-        apiService.getFriendDiaries(token, friendId, date).enqueue(object : Callback<DiaryResponse> {
+        apiService.getFriendDiaries(token, friendId).enqueue(object : Callback<DiaryResponse> {
             override fun onResponse(p0: Call<DiaryResponse>, p1: Response<DiaryResponse>) {
                 if (p1.isSuccessful) {
                     Log.d("arieum", "${p1.body()}")

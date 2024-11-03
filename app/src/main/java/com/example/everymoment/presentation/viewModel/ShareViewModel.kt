@@ -30,9 +30,9 @@ class ShareViewModel(
         }
     }
 
-    fun fetchFriendDiaryList(friendId: Int, date: String) {
+    fun fetchFriendDiaryList(friendId: Int) {
         viewModelScope.launch {
-            friendDiaryRepository.getFriendDiaries(friendId, date) { success, response ->
+            friendDiaryRepository.getFriendDiaries(friendId) { success, response ->
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
                 }
