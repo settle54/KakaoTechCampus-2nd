@@ -91,41 +91,6 @@
         android:hint="친구를 클릭해보세요!"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:visibility="visible">
-
-        <ImageView
-            android:id="@+id/prevDate"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="30dp"
-            android:src="@drawable/ic_arrow_left"
-            app:tint="@drawable/backbutton" />
-
-        <TextView
-            android:id="@+id/currentDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:gravity="center"
-            android:hint="9월 20일 (금)"
-            android:textSize="16sp" />
-
-        <ImageView
-            android:id="@+id/nextDate"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="30dp"
-            android:src="@drawable/ic_arrow_right"
-            app:tint="@drawable/backbutton" />
-    </LinearLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/timeLineRecyclerView"
         android:layout_width="match_parent"
