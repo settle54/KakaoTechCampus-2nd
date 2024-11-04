@@ -2,6 +2,7 @@ package com.example.everymoment.presentation.view.main
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.example.everymoment.databinding.FragmentSettingBinding
 import com.example.everymoment.extensions.CustomDialog
 import com.example.everymoment.extensions.CustomEditDialog
 import com.example.everymoment.extensions.GalleryUtil
+import com.example.everymoment.extensions.SendFilesUtil
 import com.example.everymoment.presentation.viewModel.SettingViewModel
 import com.example.everymoment.presentation.viewModel.SettingViewModelFactory
 
@@ -140,6 +142,7 @@ class SettingFragment : Fragment() {
                 onPositiveClick = {
                     galleryUtil.openGallery(onImageSelected = {
                         addLocalImage(it)
+                        updateProfileImg(it)
                     })
                 }).apply {
                 isCancelable = false
@@ -175,6 +178,7 @@ class SettingFragment : Fragment() {
                     } else {
                         binding.accountName.text = it.trim()
                         nameChangeDialog.dismiss()
+                        viewModel.updateProfile(it, null)
                     }
                 }).apply {
                 isCancelable = false
@@ -194,4 +198,17 @@ class SettingFragment : Fragment() {
             .circleCrop()
             .into(binding.accountImage)
     }
+
+    private fun updateProfileImg(uri: Uri?) {
+        SendFilesUtil.uriToFile(requireContext(), listOf(uri.toString())) { fileParts ->
+            Log.d("SettingFragment", "fileParts size: ${fileParts.size}")
+            if (fileParts.isNotEmpty()) {
+                viewModel.updateProfile(binding.accountName.text.toString(), fileParts.first())
+                Log.d("SettingFragment", "First filePart: ${fileParts.first()}")
+            } else {
+                Log.e("SettingFragment", "fileParts is empty")
+            }
+        }
+    }
+
 }
