@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.everymoment.data.repository.UserRepository
 import com.example.everymoment.databinding.ActivityKakaoLoginBinding
+import com.example.everymoment.presentation.view.sub.OnBoardingActivity
 import com.example.everymoment.presentation.viewModel.KakaoLoginViewModel
 import com.example.everymoment.presentation.viewModel.factory.KakaoLoginViewModelFactory
 import com.kakao.sdk.user.UserApiClient
@@ -47,7 +48,15 @@ class KakaoLoginActivity : AppCompatActivity() {
     }
 
     private fun moveToMainScreen(userId: Long?, userNickname: String?) {
-        val intent = Intent(this, MainActivity::class.java)
+        val isOnboardingCompleted = getSharedPreferences("onboarding", MODE_PRIVATE)
+            .getBoolean("completed", false)
+
+        val intent = if (isOnboardingCompleted) {
+            Intent(this, MainActivity::class.java)
+        } else {
+            Intent(this, OnBoardingActivity::class.java)
+        }
+
         intent.putExtra("userId", userId)
         intent.putExtra("userNickname", userNickname)
         startActivity(intent)
