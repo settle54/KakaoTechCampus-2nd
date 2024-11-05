@@ -5,7 +5,6 @@ import com.example.everymoment.data.model.network.dto.response.GetDetailDiaryRes
 import com.example.everymoment.data.model.network.dto.response.GetCategoriesResponse
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
-import com.example.everymoment.data.model.network.dto.request.PatchFilesRequest
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import com.example.everymoment.data.model.network.dto.response.CoordinatesResponse
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
@@ -17,6 +16,7 @@ import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumbe
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -134,8 +134,7 @@ interface PotatoCakeApiService {
     @GET("/api/friends/{friendId}/diaries")
     fun getFriendDiaries(
         @Header("Authorization") token: String,
-        @Query("friendId") friendId: Int,
-        @Query("date") date: String
+        @Path("friendId") friendId: Int
     ): Call<DiaryResponse>
 
     @GET("/api/diaries/friend")
@@ -190,6 +189,14 @@ interface PotatoCakeApiService {
     fun getMyInfo(
         @Header("Authorization") token: String
     ): Call<MyInformationResponse>
+
+    @Multipart
+    @POST("/api/members")
+    fun updateProfile(
+        @Header("Authorization") token: String,
+        @Part("nickname") nickname: RequestBody?,
+        @Part profileImage: MultipartBody.Part?
+    ): Call<ServerResponse>
 
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(

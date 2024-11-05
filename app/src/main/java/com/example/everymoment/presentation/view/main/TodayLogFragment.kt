@@ -84,15 +84,21 @@ class TodayLogFragment : Fragment() {
         )
 
         checkFineLocationPermission()
-        updateDateText()
 
         val adapter = TimelineAdapter(requireActivity(), viewModel)
         setupRecyclerView(adapter)
         observeViewModel(adapter)
 
-        val initialDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        arguments?.getString("selected_date")?.let { selectedDate ->
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            calendar.time = sdf.parse(selectedDate) ?: calendar.time
+            viewModel.fetchDiaries(selectedDate)
+        } ?: run {
+            val initialDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+            viewModel.fetchDiaries(initialDate)
+        }
 
-        viewModel.fetchDiaries(initialDate)
+        updateDateText()
 
         binding.notification.setOnClickListener {
             navigateToNotificationFragment()
