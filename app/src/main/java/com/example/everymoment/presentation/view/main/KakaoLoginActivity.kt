@@ -22,6 +22,8 @@ class KakaoLoginActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        setupNonLogin()
+
         val userRepository = UserRepository()
         viewModel = ViewModelProvider(this, KakaoLoginViewModelFactory(userRepository)).get(
             KakaoLoginViewModel::class.java
@@ -44,6 +46,15 @@ class KakaoLoginActivity : AppCompatActivity() {
             } else {
                 viewModel.loginWithKakaoAccount(this)
             }
+        }
+    }
+
+    private fun setupNonLogin() {
+        binding.nonLoginButton.setOnClickListener {
+            viewModel.getAnonymousLogin()
+            val intent = Intent(this, OnBoardingActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 

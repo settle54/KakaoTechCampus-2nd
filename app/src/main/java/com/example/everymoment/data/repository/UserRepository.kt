@@ -78,19 +78,26 @@ class UserRepository {
     ) {
         apiService.getAnonymousLogin().enqueue(object : Callback<NonLoginUserNumberResponse> {
             override fun onResponse(
-                p0: Call<NonLoginUserNumberResponse>,
-                p1: Response<NonLoginUserNumberResponse>
+                call: Call<NonLoginUserNumberResponse>,
+                response: Response<NonLoginUserNumberResponse>
             ) {
-                if (p1.isSuccessful) {
-                    callback(true, p1.body())
-                    Log.d("AnonymousLogin", p1.body().toString())
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        // 회원번호가 null이면 새로운 익명 계정 생성
+                        if (it.info.number == null) {
+                            callback(true, it)
+                        } else {
+                            // 회원번호가 있으면 해당 번호로 로그인
+                            callback(true, it)
+                        }
+                    } ?: callback(false, null)
                 } else {
                     callback(false, null)
                 }
             }
 
-            override fun onFailure(p0: Call<NonLoginUserNumberResponse>, p1: Throwable) {
-                Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${p1.message}")
+            override fun onFailure(call: Call<NonLoginUserNumberResponse>, t: Throwable) {
+                Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${t.message}")
                 callback(false, null)
             }
         })

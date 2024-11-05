@@ -23,8 +23,6 @@ class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewMode
 
     private val _uiState = MutableLiveData<KakaoLoginUiState>()
     val uiState: LiveData<KakaoLoginUiState> = _uiState
-    private val _anonymousLoginResult = MutableLiveData<Pair<Boolean, Int?>>()
-    val anonymousLoginResult: LiveData<Pair<Boolean, Int?>> = _anonymousLoginResult
 
     init {
         checkKakaoLoginStatus()

@@ -8,7 +8,7 @@ data class NonLoginUserNumberResponse(
     val info: Info
 ) {
     data class Info(
-        val number: Int,
+        val number: Int?,
         val token: String
     )
 }

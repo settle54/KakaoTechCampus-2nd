@@ -191,7 +191,7 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String
     ): Call<MyInformationResponse>
 
-    @GET("api/diaries/my")
+    @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
     ): Call<NonLoginUserNumberResponse>
 }
