@@ -40,8 +40,6 @@ class ShareViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, ShareViewModelFactory(friendDiaryRepository, friendRepository)).get(ShareViewModel::class.java)
 
-        updateDateText()
-
         val friendListAdapter = SharedFriendListAdapter(viewModel)
         val friendDiaryAdapter = SharedFriendDiaryListAdapter()
         setupRecyclerView(friendListAdapter, friendDiaryAdapter)
@@ -58,20 +56,6 @@ class ShareViewFragment : Fragment() {
                 addToBackStack(null)
                 commit()
             }
-        }
-
-        binding.nextDate.setOnClickListener {
-            calendar.add(Calendar.DATE, 1)
-            updateDateText()
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchTotalFriendDiaryList(currentDate)
-        }
-
-        binding.prevDate.setOnClickListener {
-            calendar.add(Calendar.DATE, -1)
-            updateDateText()
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchTotalFriendDiaryList(currentDate)
         }
     }
 
@@ -94,10 +78,5 @@ class ShareViewFragment : Fragment() {
         binding.friendList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.timeLineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun updateDateText() {
-        val formattedDate = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
-        binding.currentDate.text = formattedDate
     }
 }
