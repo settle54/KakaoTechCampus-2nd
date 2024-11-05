@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
+import androidx.recyclerview.widget.RecyclerView
 
 class TodayLogFragment : Fragment() {
 
@@ -68,6 +69,8 @@ class TodayLogFragment : Fragment() {
     private lateinit var viewModel: TimelineViewModel
     private val diaryRepository = DiaryRepository()
     private val calendar = Calendar.getInstance()
+    private var isLoading = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -143,6 +146,20 @@ class TodayLogFragment : Fragment() {
     private fun setupRecyclerView(adapter: TimelineAdapter) {
         binding.timeLineRecyclerView.adapter = adapter
         binding.timeLineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.timeLineRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                if (!viewModel.isLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
+                    viewModel.fetchNextPage()
+                }
+            }
+        })
     }
 
     private fun checkFineLocationPermission() {

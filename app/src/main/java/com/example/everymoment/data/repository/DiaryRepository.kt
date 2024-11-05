@@ -312,4 +312,23 @@ class DiaryRepository {
         })
     }
 
+    fun getDiariesWithPage(
+        date: String,
+        nextPage: Int,
+        callback: (Boolean, DiaryResponse?) -> Unit) {
+        apiService.getDiaries(token, date, nextPage).enqueue(object : Callback<DiaryResponse> {
+            override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
+                if (response.isSuccessful) {
+                    callback(true, response.body())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
+                callback(false, null)
+            }
+        })
+    }
+
 }
