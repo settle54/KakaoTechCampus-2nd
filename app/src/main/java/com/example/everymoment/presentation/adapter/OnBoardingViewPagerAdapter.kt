@@ -38,7 +38,7 @@ class OnBoardingViewPagerAdapter :
         ),
         AppGuide(
             "설정",
-            "프로필,닉네임, 알림 설정 등\n 자신에게 맞는 설정을 해보세요",
+            "프로필,닉네임,알림 설정 등\n 자신에게 맞는 설정을 해보세요",
             R.drawable.dummy_6
         )
     )

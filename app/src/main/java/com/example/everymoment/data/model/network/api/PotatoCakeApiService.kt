@@ -13,6 +13,7 @@ import com.example.everymoment.data.model.network.dto.response.FriendRequestList
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
 import com.example.everymoment.data.model.network.dto.response.MyInformationResponse
+import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import com.example.everymoment.data.model.network.dto.response.NotificationResponse
 import okhttp3.MultipartBody
@@ -189,4 +190,8 @@ interface PotatoCakeApiService {
     fun getMyInfo(
         @Header("Authorization") token: String
     ): Call<MyInformationResponse>
+
+    @GET("api/diaries/my")
+    fun getAnonymousLogin(
+    ): Call<NonLoginUserNumberResponse>
 }

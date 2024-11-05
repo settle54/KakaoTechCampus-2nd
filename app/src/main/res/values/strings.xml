@@ -94,4 +94,5 @@
     <string name="do_stop">그만 두기</string>
     <string name="skip">건너뛰기</string>
     <string name="next">다음</string>
+    <string name="non_login">비로그인으로 사용해보기</string>
 </resources>

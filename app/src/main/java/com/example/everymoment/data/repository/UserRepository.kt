@@ -2,14 +2,25 @@ package com.example.everymoment.data.repository
 
 import android.app.Activity
 import android.util.Log
+import com.example.everymoment.data.model.network.api.NetworkModule
 import com.example.everymoment.services.location.GlobalApplication
 import com.example.everymoment.data.model.network.api.NetworkUtil
+import com.example.everymoment.data.model.network.api.PotatoCakeApiService
+import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AccessTokenInfo
 import com.kakao.sdk.user.model.User
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class UserRepository {
+    private val apiService: PotatoCakeApiService =
+        NetworkModule.provideApiService(NetworkModule.provideRetrofit())
+    private val jwtToken = GlobalApplication.prefs.getString("token", "null")
+    private val token =
+        "Bearer $jwtToken"
 
     fun getKakaoTokenInfo(callback: (AccessTokenInfo?, Throwable?) -> Unit) {
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
@@ -60,5 +71,28 @@ class UserRepository {
                 Log.d("arieum", "Network failed")
             }
         }
+    }
+
+    fun getAnonymousLogin(
+        callback: (Boolean, NonLoginUserNumberResponse?) -> Unit
+    ) {
+        apiService.getAnonymousLogin().enqueue(object : Callback<NonLoginUserNumberResponse> {
+            override fun onResponse(
+                p0: Call<NonLoginUserNumberResponse>,
+                p1: Response<NonLoginUserNumberResponse>
+            ) {
+                if (p1.isSuccessful) {
+                    callback(true, p1.body())
+                    Log.d("AnonymousLogin", p1.body().toString())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(p0: Call<NonLoginUserNumberResponse>, p1: Throwable) {
+                Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${p1.message}")
+                callback(false, null)
+            }
+        })
     }
 }
