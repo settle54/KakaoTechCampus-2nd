@@ -197,6 +197,7 @@ interface PotatoCakeApiService {
         @Part("nickname") nickname: RequestBody?,
         @Part profileImage: MultipartBody.Part?
     ): Call<ServerResponse>
+
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
     ): Call<NonLoginUserNumberResponse>
