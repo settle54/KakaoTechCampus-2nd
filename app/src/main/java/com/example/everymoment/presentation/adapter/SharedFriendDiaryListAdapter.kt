@@ -1,13 +1,16 @@
 package com.example.everymoment.presentation.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.everymoment.data.model.entity.Emotions
 import com.example.everymoment.data.model.network.dto.response.Diary
 import com.example.everymoment.databinding.ShareItemBinding
 import org.threeten.bp.LocalDate
@@ -39,18 +42,27 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
             binding.addressText.text = item.address
 
             if (item.thumbnailResponse == null) {
-                binding.detailedImageContainer.isGone = true
+                binding.detailedDiaryContainer.isGone = true
             } else {
-                binding.detailedImageContainer.isVisible = true
+                binding.detailedDiaryContainer.isVisible = true
+                binding.diaryImageContent.isVisible = true
 
                 Glide.with(itemView.context)
                     .load(item.thumbnailResponse.imageUrl)
-                    .into(binding.diaryImageContent1)
+                    .into(binding.diaryImageContent)
+            }
+
+            if (item.emoji == null){
+                binding.emotion.visibility = View.GONE
+            } else {
+                binding.emotion.visibility = View.VISIBLE
+                binding.emotion.text = Emotions.fromString(item.emoji)?.getEmotionUnicode()
             }
 
             if (item.content == null) {
-                binding.diaryTextContent.isGone = true
+                binding.diaryTextContent.isInvisible = true
             } else {
+                binding.detailedDiaryContainer.isVisible = true
                 binding.diaryTextContent.isVisible = true
                 binding.diaryTextContent.text = item.content
             }
