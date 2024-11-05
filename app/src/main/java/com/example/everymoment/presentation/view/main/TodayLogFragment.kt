@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 
 class TodayLogFragment : Fragment() {
@@ -69,7 +70,6 @@ class TodayLogFragment : Fragment() {
     private lateinit var viewModel: TimelineViewModel
     private val diaryRepository = DiaryRepository()
     private val calendar = Calendar.getInstance()
-    private var isLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,35 +92,29 @@ class TodayLogFragment : Fragment() {
         setupRecyclerView(adapter)
         observeViewModel(adapter)
 
-        arguments?.getString("selected_date")?.let { selectedDate ->
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            calendar.time = sdf.parse(selectedDate) ?: calendar.time
-            viewModel.fetchDiaries(selectedDate)
-        } ?: run {
-            val initialDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchDiaries(initialDate)
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
-        updateDateText()
+        arguments?.getString("selected_date")?.let { selectedDate ->
+            updateDate(selectedDate)
+        } ?: run {
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time).also {
+                updateDate(it)
+            }
+        }
 
         binding.notification.setOnClickListener {
             navigateToNotificationFragment()
         }
 
         binding.nextDate.setOnClickListener {
-            calendar.add(Calendar.DATE, 1)
-            updateDateText()
-            val currentDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchDiaries(currentDate)
+            changeDate(1)
         }
 
         binding.prevDate.setOnClickListener {
-            calendar.add(Calendar.DATE, -1)
-            updateDateText()
-            val currentDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchDiaries(currentDate)
+            changeDate(-1)
         }
     }
 
@@ -130,9 +124,20 @@ class TodayLogFragment : Fragment() {
         }
     }
 
-    private fun updateDateText() {
-        val formattedDate = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
-        binding.currentDate.text = formattedDate
+    private fun refreshData() {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        viewModel.fetchDiaries(currentDate)
+    }
+
+    private fun changeDate(days: Int) {
+        calendar.add(Calendar.DATE, days)
+        val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        updateDate(formattedDate)
+    }
+
+    private fun updateDate(date: String) {
+        viewModel.fetchDiaries(date)
+        binding.currentDate.text = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
     }
 
     private fun navigateToNotificationFragment() {

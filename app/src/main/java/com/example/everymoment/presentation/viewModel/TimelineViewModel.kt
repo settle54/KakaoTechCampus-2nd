@@ -30,6 +30,7 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
                 _isLoading.value = false
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
+                    Log.d("arieum", response.info.diaries.toString())
                     nextPage = response.info.next
                 }
             }
