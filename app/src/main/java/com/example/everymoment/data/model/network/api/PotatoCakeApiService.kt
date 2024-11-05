@@ -134,7 +134,8 @@ interface PotatoCakeApiService {
     @GET("/api/friends/{friendId}/diaries")
     fun getFriendDiaries(
         @Header("Authorization") token: String,
-        @Path("friendId") friendId: Int
+        @Path("friendId") friendId: Int,
+        @Query("key") key: Int=0
     ): Call<DiaryResponse>
 
     @GET("/api/diaries/friend")

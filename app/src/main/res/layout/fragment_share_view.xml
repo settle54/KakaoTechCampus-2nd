@@ -83,12 +83,23 @@
         android:background="@color/line_color" />
 
     <TextView
+        android:id="@+id/noTodayFriendDiaryList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:gravity="center"
-        android:hint="친구를 클릭해보세요!"
+        android:hint="오늘 친구가 공유한 일기가 없어요!\n친구를 클릭해보세요!"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/noFriendIdDiaryList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:hint="친구가 일기를 공유하지 않았어요!"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
