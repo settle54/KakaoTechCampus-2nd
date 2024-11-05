@@ -59,15 +59,13 @@ class FriendRequestAdapter(
                 binding.requestCompletedButton.visibility = GONE
             }
 
-            if (user.profileImageUrl == null) {
-                binding.profile.setImageResource(R.drawable.account_circle_24px)
-            } else {
-                binding.profile.setPadding(15, 15, 15, 15)
-                Glide.with(itemView.context)
-                    .load(user.profileImageUrl)
-                    .circleCrop()
-                    .into(binding.profile)
-            }
+            Glide.with(itemView.context)
+                .load(user.profileImageUrl)
+                .error(R.drawable.account_circle_24px)
+                .fallback(R.drawable.account_circle_24px)
+                .placeholder(R.drawable.account_circle_24px)
+                .centerCrop()
+                .into(binding.profile)
 
             binding.friendRequestButton.setOnClickListener {
                 showFriendRequestConfirmationDialog(user)

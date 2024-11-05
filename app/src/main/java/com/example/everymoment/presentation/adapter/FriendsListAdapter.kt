@@ -38,15 +38,13 @@ class FriendsListAdapter(
         fun bind(friends: Friends) {
             binding.userNickname.text = friends.nickname
 
-            if (friends.profileImageUrl == null) {
-                binding.profile.setImageResource(R.drawable.account_circle_24px)
-            } else {
-                binding.profile.setPadding(15,15,15,15)
-                Glide.with(itemView.context)
-                    .load(friends.profileImageUrl)
-                    .circleCrop()
-                    .into(binding.profile)
-            }
+            Glide.with(itemView.context)
+                .load(friends.profileImageUrl)
+                .error(R.drawable.account_circle_24px)
+                .fallback(R.drawable.account_circle_24px)
+                .placeholder(R.drawable.account_circle_24px)
+                .centerCrop()
+                .into(binding.profile)
 
             itemView.setOnLongClickListener {
                 showDeleteConfirmationDialog(friends)
