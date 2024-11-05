@@ -175,7 +175,7 @@ class LocationService : Service() {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("에브리모먼트")
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .build()

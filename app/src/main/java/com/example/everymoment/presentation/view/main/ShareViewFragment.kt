@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.everymoment.R
 import com.example.everymoment.data.repository.FriendDiaryRepository
 import com.example.everymoment.data.repository.FriendRepository
@@ -61,7 +62,21 @@ class ShareViewFragment : Fragment() {
 
     private fun observeFriendDiaryList(adapter: SharedFriendDiaryListAdapter) {
         viewModel.diaries.observe(viewLifecycleOwner) { friendDiaryList ->
-            adapter.submitList(friendDiaryList)
+            if (friendDiaryList.isNullOrEmpty()) {
+                if (viewModel.currentFriendId == null) {
+                    binding.noTodayFriendDiaryList.visibility = View.VISIBLE
+                    binding.noFriendIdDiaryList.visibility = View.GONE
+                } else {
+                    binding.noFriendIdDiaryList.visibility = View.VISIBLE
+                    binding.noTodayFriendDiaryList.visibility = View.GONE
+                }
+                binding.timeLineRecyclerView.visibility = View.GONE
+            } else {
+                binding.timeLineRecyclerView.visibility = View.VISIBLE
+                binding.noTodayFriendDiaryList.visibility = View.GONE
+                binding.noFriendIdDiaryList.visibility = View.GONE
+                adapter.submitList(friendDiaryList)
+            }
         }
     }
 
@@ -78,5 +93,19 @@ class ShareViewFragment : Fragment() {
         binding.friendList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.timeLineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.timeLineRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                if (!viewModel.isLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
+                    viewModel.fetchNextPage()
+                }
+            }
+        })
     }
 }
