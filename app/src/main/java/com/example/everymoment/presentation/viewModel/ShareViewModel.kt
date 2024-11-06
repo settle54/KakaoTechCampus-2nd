@@ -14,11 +14,19 @@ class ShareViewModel(
     private val friendDiaryRepository: FriendDiaryRepository,
     private val friendRepository: FriendRepository
 ) : ViewModel() {
+    private val _selectedFriendName = MutableLiveData<String>()
+    val selectedFriendName: LiveData<String> get() = _selectedFriendName
     private val _friends = MutableLiveData<List<Friends>>()
     val friends: LiveData<List<Friends>> get() = _friends
 
     private val _diaries = MutableLiveData<List<Diary>>()
     val diaries: LiveData<List<Diary>> get() = _diaries
+
+    fun setSelectedFriendName(nickName: String) {
+        viewModelScope.launch {
+            _selectedFriendName.postValue(nickName)
+        }
+    }
 
     fun fetchFriendsList() {
         viewModelScope.launch {

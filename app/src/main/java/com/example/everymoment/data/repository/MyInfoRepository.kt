@@ -53,7 +53,7 @@ class MyInfoRepository {
                     p1.body()?.let { callback(true, it) }
                     Log.d("arieum", p1.body().toString())
                 } else {
-                    Log.d("arieum", p1.body().toString())
+                    Log.d("settle54", "fail")
                 }
             }
 

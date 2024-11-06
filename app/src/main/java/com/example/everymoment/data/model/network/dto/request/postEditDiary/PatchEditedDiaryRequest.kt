@@ -6,8 +6,6 @@ import com.google.gson.annotations.SerializedName
 data class PatchEditedDiaryRequest(
     @SerializedName("address")
     val address: String = "",
-    @SerializedName("addressDelete")
-    val addressDelete: Boolean = true,
     @SerializedName("categories")
     val categories: List<Category> = emptyList(),
     @SerializedName("content")
@@ -21,7 +19,5 @@ data class PatchEditedDiaryRequest(
     @SerializedName("emojiDelete")
     val emojiDelete: Boolean = true,
     @SerializedName("locationName")
-    val locationName: String = "",
-    @SerializedName("locationNameDelete")
-    val locationNameDelete: Boolean = true
+    val locationName: String = ""
 )

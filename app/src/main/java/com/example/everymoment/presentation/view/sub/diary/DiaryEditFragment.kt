@@ -2,12 +2,13 @@ package com.example.everymoment.presentation.view.sub.diary
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
@@ -15,7 +16,6 @@ import com.example.everymoment.data.model.entity.Emotions
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.Category
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import com.example.everymoment.data.model.network.dto.vo.DetailDiary
-import com.example.everymoment.data.model.network.dto.vo.File
 import com.example.everymoment.data.repository.DiaryRepository
 import com.example.everymoment.databinding.FragmentDiaryEditBinding
 import com.example.everymoment.extensions.Bookmark
@@ -409,27 +409,29 @@ class DiaryEditFragment : Fragment() {
     }
 
     private fun patchEditedDiary(callback: (Boolean) -> Unit) {
-        val notEmotion = notExistTextViewText(binding.emotion.text.toString())
         val notAddress = notExistTextViewText(binding.address.text.toString())
         val notLocation = notExistTextViewText(binding.location.text.toString())
-        val notContent = notExistTextViewText(binding.content.text.toString())
-        val notCategory = categoryList.isEmpty()
+        if (notAddress == true || notLocation == true) {
+            Toast.makeText(requireContext(), R.string.locantion_and_address_not_blank, Toast.LENGTH_SHORT).show()
+        } else {
+            val notEmotion = notExistTextViewText(binding.emotion.text.toString())
+            val notContent = notExistTextViewText(binding.content.text.toString())
+            val notCategory = categoryList.isEmpty()
 
-        val request = PatchEditedDiaryRequest(
-            address = binding.address.text.toString(),
-            addressDelete = notAddress,
-            categories = categoryList,
-            content = binding.content.text.toString(),
-            contentDelete = notContent,
-            deleteAllCategories = notCategory,
-            emoji = Emotions.getEmotionNameInLowerCase(binding.emotion.text.toString()),
-            emojiDelete = notEmotion,
-            locationName = binding.location.text.toString(),
-            locationNameDelete = notLocation
-        )
-        Log.d("settle54", "patch server: $request")
-        viewModel.patchEditedDiary(request) { success ->
-            callback(success)
+            val request = PatchEditedDiaryRequest(
+                address = binding.address.text.toString(),
+                categories = categoryList,
+                content = binding.content.text.toString(),
+                contentDelete = notContent,
+                deleteAllCategories = notCategory,
+                emoji = Emotions.getEmotionNameInLowerCase(binding.emotion.text.toString()),
+                emojiDelete = notEmotion,
+                locationName = binding.location.text.toString(),
+            )
+            Log.d("settle54", "patch server: $request")
+            viewModel.patchEditedDiary(request) { success ->
+                callback(success)
+            }
         }
     }
 

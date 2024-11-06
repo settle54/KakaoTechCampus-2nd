@@ -8,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.everymoment.R
 import com.example.everymoment.data.repository.MyInfoRepository
 import com.example.everymoment.databinding.FragmentSettingBinding
@@ -125,9 +125,10 @@ class SettingFragment : Fragment() {
             if (myInformation != null) {
                 binding.accountName.text = myInformation.nickname
 
-                Glide.with(this)
+                Glide.with(requireContext())
                     .load(myInformation.profileImageUrl)
                     .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.accountImage)
             }
         }
