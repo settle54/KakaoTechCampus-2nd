@@ -1,12 +1,23 @@
 package com.example.everymoment.presentation.viewModel
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.everymoment.data.model.network.dto.response.MyInformationResponse
+import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.example.everymoment.data.repository.UserRepository
 import com.example.everymoment.data.model.network.dto.vo.KakaoLoginUiState
+import com.example.everymoment.services.location.GlobalApplication
+import dagger.hilt.android.internal.Contexts.getApplication
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
@@ -63,6 +74,12 @@ class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewMode
                     userNickname = user.kakaoAccount?.profile?.nickname
                 )
             }
+        }
+    }
+
+    fun getAnonymousLogin() {
+        viewModelScope.launch {
+            userRepository.getAnonymousLogin() { success, response -> }
         }
     }
 }
