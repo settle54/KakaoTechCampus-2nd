@@ -16,11 +16,11 @@ val properties = Properties().apply {
 }
 
 android {
-    namespace = "com.example.everymoment"
+    namespace = "potatocake.katecam.everymoment"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.everymoment"
+        applicationId = "potatocake.katecam.everymoment"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
