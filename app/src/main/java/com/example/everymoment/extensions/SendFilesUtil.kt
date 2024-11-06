@@ -149,11 +149,15 @@ class SendFilesUtil {
             parts: MutableList<MultipartBody.Part>,
             onComplete: () -> Unit
         ) {
+            Log.d("SendFilesUtil", "Creating multipart body part for file: ${file.name}, exists: ${file.exists()}, size: ${file.length()}")
             val mimeType = when (file.extension.lowercase()) {
                 "jpg", "jpeg" -> "image/jpeg"
                 "png" -> "image/png"
                 "tmp" -> "image/jpeg"
-                else -> throw IllegalArgumentException("Unsupported file type: ${file.extension}")
+                else -> {
+                    Log.e("SendFilesUtil", "Unsupported file type: ${file.extension}")
+                    throw IllegalArgumentException("Unsupported file type: ${file.extension}")
+                }
             }
 
             val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())

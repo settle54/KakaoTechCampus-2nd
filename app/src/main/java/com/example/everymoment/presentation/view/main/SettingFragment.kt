@@ -2,24 +2,30 @@ package com.example.everymoment.presentation.view.main
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.everymoment.R
+import com.example.everymoment.data.repository.MyInfoRepository
 import com.example.everymoment.databinding.FragmentSettingBinding
 import com.example.everymoment.extensions.CustomDialog
 import com.example.everymoment.extensions.CustomEditDialog
 import com.example.everymoment.extensions.GalleryUtil
+import com.example.everymoment.extensions.SendFilesUtil
 import com.example.everymoment.presentation.viewModel.SettingViewModel
+import com.example.everymoment.presentation.viewModel.SettingViewModelFactory
 
 class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
-    private val viewModel by viewModels<SettingViewModel>()
+    private lateinit var viewModel: SettingViewModel
+    private val myInfoRepository = MyInfoRepository()
 
     private val galleryUtil = GalleryUtil(this)
 
@@ -38,6 +44,9 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel = ViewModelProvider(this, SettingViewModelFactory(myInfoRepository)).get(SettingViewModel::class.java)
+        viewModel.fetchMyInfo()
+        observeMyInfo()
         setDialogs()
 
         binding.accountImage.setOnClickListener {
@@ -111,6 +120,20 @@ class SettingFragment : Fragment() {
         }
     }
 
+    private fun observeMyInfo() {
+        viewModel.myInfo.observe(viewLifecycleOwner) { myInformation ->
+            if (myInformation != null) {
+                binding.accountName.text = myInformation.nickname
+
+                Glide.with(requireContext())
+                    .load(myInformation.profileImageUrl)
+                    .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.accountImage)
+            }
+        }
+    }
+
     private fun setDialogs() {
         profileImageDialog =
             CustomDialog(
@@ -120,6 +143,8 @@ class SettingFragment : Fragment() {
                 onPositiveClick = {
                     galleryUtil.openGallery(onImageSelected = {
                         addLocalImage(it)
+                        updateProfileImg(it)
+                        Toast.makeText(requireContext(), getString(R.string.feature_not_available), Toast.LENGTH_LONG).show()
                     })
                 }).apply {
                 isCancelable = false
@@ -155,6 +180,7 @@ class SettingFragment : Fragment() {
                     } else {
                         binding.accountName.text = it.trim()
                         nameChangeDialog.dismiss()
+                        viewModel.updateProfile(it, null)
                     }
                 }).apply {
                 isCancelable = false
@@ -174,4 +200,17 @@ class SettingFragment : Fragment() {
             .circleCrop()
             .into(binding.accountImage)
     }
+
+    private fun updateProfileImg(uri: Uri?) {
+        SendFilesUtil.uriToFile(requireContext(), listOf(uri.toString())) { fileParts ->
+            Log.d("SettingFragment", "fileParts size: ${fileParts.size}")
+            if (fileParts.isNotEmpty()) {
+                viewModel.updateProfile(binding.accountName.text.toString(), fileParts.first())
+                Log.d("SettingFragment", "First filePart: ${fileParts.first()}")
+            } else {
+                Log.e("SettingFragment", "fileParts is empty")
+            }
+        }
+    }
+
 }

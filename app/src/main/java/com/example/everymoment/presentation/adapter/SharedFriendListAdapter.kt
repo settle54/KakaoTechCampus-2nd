@@ -10,6 +10,8 @@ import com.example.everymoment.R
 import com.example.everymoment.data.model.network.dto.response.Friends
 import com.example.everymoment.databinding.FriendItemBinding
 import com.example.everymoment.presentation.viewModel.ShareViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapter<Friends, SharedFriendListAdapter.SharedFriendListViewHolder>(
     object : DiffUtil.ItemCallback<Friends>() {
@@ -22,6 +24,7 @@ class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapt
         }
     }
 ) {
+    private var selectedPosition = RecyclerView.NO_POSITION
     inner class SharedFriendListViewHolder(private val binding: FriendItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Friends) {
             binding.friendName.text = item.nickname
@@ -31,12 +34,38 @@ class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapt
             } else {
                 Glide.with(itemView.context)
                     .load(item.profileImageUrl)
+                    .circleCrop()
                     .into(binding.friendImage)
             }
 
-            binding.friendContainer.setOnClickListener {
+            updateRingBackground(adapterPosition == selectedPosition)
 
+
+            binding.friendContainer.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val oldPosition = selectedPosition
+                    selectedPosition = if (selectedPosition == position) {
+                        RecyclerView.NO_POSITION
+                    } else {
+                        position
+                    }
+
+                    if (oldPosition != RecyclerView.NO_POSITION) {
+                        notifyItemChanged(oldPosition)
+                    }
+                    notifyItemChanged(position)
+                    viewModel.fetchFriendDiaryList(item.id)
+                    viewModel.setSelectedFriendName(item.nickname)
+                }
             }
+        }
+
+        private fun updateRingBackground(isSelected: Boolean) {
+            binding.storyRing.setBackgroundResource(
+                if (isSelected) R.drawable.story_ring_updated
+                else R.drawable.story_ring_not_updated
+            )
         }
     }
 

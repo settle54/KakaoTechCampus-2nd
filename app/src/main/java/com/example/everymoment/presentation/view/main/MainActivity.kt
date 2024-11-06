@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val token = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6OCwiaWF0IjoxNzMwODgzNTI1LCJleHAiOjE3MzEwNTYzMjV9.jA_LHefz1ZMNR_2PuDNNxmWR4e9TEYSMExQO-kPjaIg"
+        GlobalApplication.prefs.setString("token", token)
+
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 0

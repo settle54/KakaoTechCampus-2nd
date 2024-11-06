@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.everymoment"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -39,7 +39,7 @@ android {
         }
         release {
             isDebuggable = false
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             manifestPlaceholders["KAKAO_NATIVE_KEY"] = properties["KAKAO_NATIVE_KEY"] as String
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -93,6 +93,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("androidx.fragment:fragment-ktx:1.7.1")
-
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.tbuonomo:dotsindicator:5.0")
 
 }

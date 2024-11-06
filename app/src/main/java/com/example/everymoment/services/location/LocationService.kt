@@ -21,6 +21,7 @@ import androidx.core.app.NotificationCompat
 import com.example.everymoment.BuildConfig
 import com.example.everymoment.R
 import com.example.everymoment.data.model.entity.Emotions
+import com.example.everymoment.data.model.network.api.GooglePlaceApiUtil
 import com.example.everymoment.data.model.network.api.NetworkUtil
 import com.example.everymoment.data.model.network.dto.vo.DiaryEntry
 import com.example.everymoment.data.model.network.dto.response.GooglePlacesResponse
@@ -108,7 +109,7 @@ class LocationService : Service() {
         val latitude = location.latitude
         val longitude = location.longitude
 
-        getPlaceNamesFromCoordinates(latitude, longitude) { currentPlaceNames, currentAddresses ->
+        GooglePlaceApiUtil.getPlaceNamesFromCoordinates(latitude, longitude) { currentPlaceNames, currentAddresses ->
             if (currentPlaceNames.isNotEmpty()) {
                 Log.d("myplace", "$currentPlaceNames")
                 val currentPlace = currentPlaceNames.firstOrNull()
@@ -156,7 +157,7 @@ class LocationService : Service() {
             }
 
             // 현재 위치 정보로 알림 업데이트
-            updateNotification(latitude, longitude, initialPlaceName ?: "알 수 없는 장소")
+            updateNotification(latitude, longitude, currentPlaceNames.firstOrNull() ?: "알 수 없는 장소")
         }
     }
 
@@ -172,9 +173,9 @@ class LocationService : Service() {
         }
 
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("위치 서비스")
+            .setContentTitle("에브리모먼트")
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .build()
@@ -182,42 +183,8 @@ class LocationService : Service() {
 
     private fun updateNotification(latitude: Double, longitude: Double, placeName: String) {
         //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notification = createNotification("위치: $placeName (위도: $latitude, 경도: $longitude)")
+        val notification = createNotification("현재 ${placeName}에 머무르고 있어요!")
         notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun getPlaceNamesFromCoordinates(
-        latitude: Double,
-        longitude: Double,
-        callback: (List<String>, List<String>) -> Unit
-    ) {
-        val apiKey = BuildConfig.API_KEY
-        val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-
-        val queryParams = mapOf(
-            "location" to "$latitude,$longitude",
-            "language" to "ko",
-            "rankby" to "distance",
-            "key" to apiKey
-        )
-
-        NetworkUtil.getData(
-            url,
-            queryParams = queryParams,
-            responseClass = GooglePlacesResponse::class.java
-        ) { success, response ->
-            if (success && response != null) {
-                try {
-                    val placeNames = response.results.map { it.name }
-                    val addresses = response.results.map { it.vicinity }
-                    callback(placeNames, addresses)
-                } catch (e: Exception) {
-                    callback(emptyList(), emptyList())
-                }
-            } else {
-                callback(emptyList(), emptyList())
-            }
-        }
     }
 
     private fun setEmojiNotification() {
@@ -282,21 +249,21 @@ class LocationService : Service() {
         notificationManager.notify(EMOJI_NOTIFICATION_ID, builder.build())
     }
 
-    private fun createEmojiNotificationChannel() {
-        val descriptionText = getString(R.string.fcm_channel_description)
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = descriptionText
-        }
-        notificationManager.createNotificationChannel(channel)
-    }
+//    private fun createEmojiNotificationChannel() {
+//        val descriptionText = getString(R.string.fcm_channel_description)
+//        val channel = NotificationChannel(
+//            CHANNEL_ID,
+//            CHANNEL_NAME,
+//            NotificationManager.IMPORTANCE_DEFAULT
+//        ).apply {
+//            description = descriptionText
+//        }
+//        notificationManager.createNotificationChannel(channel)
+//    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private const val LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000L
+        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
 
         private const val EMOJI_NOTIFICATION_ID = 222222
         private const val CHANNEL_ID = "main_default_channel"

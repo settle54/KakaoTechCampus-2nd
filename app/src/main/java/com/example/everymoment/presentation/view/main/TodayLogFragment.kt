@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
+import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
 
 class TodayLogFragment : Fragment() {
 
@@ -68,6 +70,7 @@ class TodayLogFragment : Fragment() {
     private lateinit var viewModel: TimelineViewModel
     private val diaryRepository = DiaryRepository()
     private val calendar = Calendar.getInstance()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,34 +87,34 @@ class TodayLogFragment : Fragment() {
         )
 
         checkFineLocationPermission()
-        updateDateText()
 
         val adapter = TimelineAdapter(requireActivity(), viewModel)
         setupRecyclerView(adapter)
         observeViewModel(adapter)
 
-        val initialDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
 
-        viewModel.fetchDiaries(initialDate)
+        arguments?.getString("selected_date")?.let { selectedDate ->
+            updateDate(selectedDate)
+        } ?: run {
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time).also {
+                updateDate(it)
+            }
+        }
 
         binding.notification.setOnClickListener {
             navigateToNotificationFragment()
         }
 
         binding.nextDate.setOnClickListener {
-            calendar.add(Calendar.DATE, 1)
-            updateDateText()
-            val currentDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchDiaries(currentDate)
+            changeDate(1)
         }
 
         binding.prevDate.setOnClickListener {
-            calendar.add(Calendar.DATE, -1)
-            updateDateText()
-            val currentDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-            viewModel.fetchDiaries(currentDate)
+            changeDate(-1)
         }
     }
 
@@ -121,9 +124,20 @@ class TodayLogFragment : Fragment() {
         }
     }
 
-    private fun updateDateText() {
-        val formattedDate = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
-        binding.currentDate.text = formattedDate
+    private fun refreshData() {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        viewModel.fetchDiaries(currentDate)
+    }
+
+    private fun changeDate(days: Int) {
+        calendar.add(Calendar.DATE, days)
+        val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        updateDate(formattedDate)
+    }
+
+    private fun updateDate(date: String) {
+        viewModel.fetchDiaries(date)
+        binding.currentDate.text = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
     }
 
     private fun navigateToNotificationFragment() {
@@ -137,6 +151,20 @@ class TodayLogFragment : Fragment() {
     private fun setupRecyclerView(adapter: TimelineAdapter) {
         binding.timeLineRecyclerView.adapter = adapter
         binding.timeLineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.timeLineRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                if (!viewModel.isLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
+                    viewModel.fetchNextPage()
+                }
+            }
+        })
     }
 
     private fun checkFineLocationPermission() {
