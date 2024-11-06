@@ -5,16 +5,20 @@ import com.example.everymoment.data.model.network.dto.response.GetDetailDiaryRes
 import com.example.everymoment.data.model.network.dto.response.GetCategoriesResponse
 import com.example.everymoment.data.model.network.dto.response.GetFilesResponse
 import com.example.everymoment.data.model.network.dto.request.PostCategoryRequest
+import com.example.everymoment.data.model.network.dto.request.PostCommentRequest
 import com.example.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import com.example.everymoment.data.model.network.dto.response.CoordinatesResponse
 import com.example.everymoment.data.model.network.dto.response.DiaryResponse
 import com.example.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import com.example.everymoment.data.model.network.dto.response.FriendsListResponse
+import com.example.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
 import com.example.everymoment.data.model.network.dto.response.MemberResponse
 import com.example.everymoment.data.model.network.dto.response.MyInformationResponse
 import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.example.everymoment.data.model.network.dto.response.ServerResponse
 import com.example.everymoment.data.model.network.dto.response.NotificationResponse
+import com.example.everymoment.data.model.network.dto.response.getComments.GetCommentsResponse
+import com.example.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -203,4 +207,42 @@ interface PotatoCakeApiService {
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
     ): Call<NonLoginUserNumberResponse>
+
+    @GET("/api/diaries/friend/{diaryId}")
+    fun getFriendDiaryInDetail(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<GetFriendDiaryResponse>
+
+    @POST("/api/diaries/{diaryId}/comments")
+    fun postComment(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: PostCommentRequest
+    ): Call<ServerResponse>
+
+    @GET("/api/diaries/{diaryId}/comments")
+    fun getComments(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Query("key") key: Int
+    ): Call<GetCommentsResponse>
+
+    @POST("/api/diaries/{diaryId}/likes")
+    fun postLike(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<ServerResponse>
+
+    @DELETE("/api/comments/{commentId}")
+    fun delComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int
+    ): Call<ServerResponse>
+
+    @GET("/api/diaries/{diaryId}/likes")
+    fun getLikeCnt(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<GetLikeCountResponse>
 }

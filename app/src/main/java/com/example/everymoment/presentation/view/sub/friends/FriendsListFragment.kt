@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.everymoment.R
-import com.example.everymoment.data.repository.FriendRepository
 import com.example.everymoment.data.model.network.dto.response.Friends
+import com.example.everymoment.data.repository.FriendRepository
 import com.example.everymoment.databinding.FragmentFriendsListBinding
 import com.example.everymoment.presentation.adapter.FriendsListAdapter
 import com.example.everymoment.presentation.view.main.ShareViewFragment

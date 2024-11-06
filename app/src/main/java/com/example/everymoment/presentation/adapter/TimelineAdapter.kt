@@ -150,7 +150,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 viewModel.getPlaceNamesForDiary(item.id) { placeNames ->
                     (binding.root.context as? FragmentActivity)?.runOnUiThread {
                         if (placeNames.isNotEmpty()) {
-                            val popupMenu = PopupMenu(binding.root.context, binding.editIcon)
+                            val popupMenu = PopupMenu(binding.root.context, binding.editIcon, Gravity.NO_GRAVITY, 0, R.style.CustomPopupMenu)
                             placeNames.forEach { placeName ->
                                 popupMenu.menu.add(placeName)
                             }

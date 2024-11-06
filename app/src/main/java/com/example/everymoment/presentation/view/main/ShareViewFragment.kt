@@ -78,6 +78,9 @@ class ShareViewFragment : Fragment() {
                 adapter.submitList(friendDiaryList)
             }
         }
+        viewModel.selectedFriendName.observe(viewLifecycleOwner) {
+            adapter.setSelectedFriendName(it)
+        }
     }
 
     private fun observeFriendList(adapter: SharedFriendListAdapter) {
