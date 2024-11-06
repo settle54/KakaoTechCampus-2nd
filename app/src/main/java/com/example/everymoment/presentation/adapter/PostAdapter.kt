@@ -94,7 +94,7 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                 val adjustedPosition = adapterPosition - 1
                 if (adjustedPosition >= 0) {
                     val commentId = comments[adjustedPosition].id
-                    Log.d("dd","$commentId")
+                    Log.d("dd", "$commentId")
                     viewModel.delComment(commentId)
                 }
                 true
@@ -163,6 +163,9 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                     binding.emotion.visibility = View.VISIBLE
                 }
                 binding.header.visibility = View.VISIBLE
+                if (!it.content.isNullOrBlank()) {
+                    binding.content.visibility = View.VISIBLE
+                }
             }
         }
 
