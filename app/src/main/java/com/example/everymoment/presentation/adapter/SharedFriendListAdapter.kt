@@ -56,6 +56,7 @@ class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapt
                     }
                     notifyItemChanged(position)
                     viewModel.fetchFriendDiaryList(item.id)
+                    viewModel.setSelectedFriendName(item.nickname)
                 }
             }
         }

@@ -91,8 +91,7 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
     fun updateDiaryLocation(diaryId: Int, locationName: String){
         viewModelScope.launch {
             val request = PatchEditedDiaryRequest(
-                locationName = locationName,
-                locationNameDelete = false
+                locationName = locationName
             )
 
             diaryRepository.patchEditedDiary(diaryId, request) { success, message ->

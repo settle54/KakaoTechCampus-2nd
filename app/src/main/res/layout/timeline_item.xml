@@ -1,5 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp">
@@ -142,8 +143,12 @@
                 android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@drawable/image_background"
+                android:clipToOutline="true"
                 android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <!-- 동적 텍스트 콘텐츠 -->
             <TextView
@@ -151,12 +156,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="15dp"
                 android:layout_weight="2"
-                android:visibility="gone"
                 android:gravity="center_vertical|start"
+                android:ellipsize="end"
                 android:maxLines="4"
-                android:ellipsize="end"/>
+                android:visibility="gone"
+                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 
