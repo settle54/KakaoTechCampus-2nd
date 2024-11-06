@@ -157,7 +157,7 @@ class LocationService : Service() {
             }
 
             // 현재 위치 정보로 알림 업데이트
-            updateNotification(latitude, longitude, initialPlaceName ?: "알 수 없는 장소")
+            updateNotification(latitude, longitude, currentPlaceNames.firstOrNull() ?: "알 수 없는 장소")
         }
     }
 

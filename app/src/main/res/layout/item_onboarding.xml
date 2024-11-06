@@ -10,7 +10,8 @@
     <ImageView
         android:id="@+id/appGuideImage"
         android:layout_width="match_parent"
-        android:layout_height="545dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:layout_marginBottom="32dp" />
 
     <TextView
