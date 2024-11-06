@@ -15,12 +15,23 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
     private val _diaries = MutableLiveData<List<Diary>>()
     val diaries: LiveData<List<Diary>> get() = _diaries
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var nextPage = 1
+    private var selectedDate: String? = null
+
 
     fun fetchDiaries(date: String) {
+        selectedDate = date
+        _isLoading.value = true
         viewModelScope.launch {
             diaryRepository.getDiaries(date) { success, response ->
+                _isLoading.value = false
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
+                    Log.d("arieum", response.info.diaries.toString())
+                    nextPage = response.info.next
                 }
             }
         }
@@ -105,6 +116,22 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
                     Log.d("arieum", "Diary emoji updated successfully")
                 } else {
                     Log.e("arieum", "Failed to update diary emoji")
+                }
+            }
+        }
+    }
+
+    fun fetchNextPage() {
+        if (nextPage != 0 && _isLoading.value != true) {
+            _isLoading.value = true
+            viewModelScope.launch {
+                diaryRepository.getDiariesWithPage(selectedDate!!, nextPage) { success, response ->
+                    _isLoading.value = false
+                    if (success && response != null) {
+                        val currentList = _diaries.value.orEmpty()
+                        _diaries.postValue(currentList + response.info.diaries)
+                        nextPage = response.info.next
+                    }
                 }
             }
         }

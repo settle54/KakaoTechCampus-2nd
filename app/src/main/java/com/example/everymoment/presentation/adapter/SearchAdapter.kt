@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.everymoment.R
+import com.example.everymoment.data.model.entity.Emotions
 import com.example.everymoment.data.model.network.dto.response.Diary
 import com.example.everymoment.databinding.SearchItemBinding
 import com.example.everymoment.databinding.TimelineItemBinding
@@ -45,19 +46,12 @@ class SearchAdapter(private val activity: FragmentActivity, private val viewMode
             binding.locationNameText.text = item.locationName
             binding.addressText.text = item.address
 
-            val emotionPopupManager = EmotionPopup(binding.root.context) { selectedEmotion ->
-                binding.emotion.text = selectedEmotion.getEmotionUnicode()
-                binding.addEmotion.visibility = View.GONE
+            if (item.emoji == null){
+                binding.emotion.visibility = View.GONE
+            } else {
                 binding.emotion.visibility = View.VISIBLE
+                binding.emotion.text = Emotions.fromString(item.emoji)?.getEmotionUnicode()
             }
-
-/*            binding.addEmotion.setOnClickListener {
-                emotionPopupManager.showEmotionsPopup(it, ToPxConverter().dpToPx(10))
-            }
-
-            binding.emotion.setOnClickListener {
-                emotionPopupManager.showEmotionsPopup(it, ToPxConverter().dpToPx(10))
-            }*/
 
             var isBookmarked = item.bookmark
             updateBookmarkIcon(isBookmarked)
@@ -69,10 +63,10 @@ class SearchAdapter(private val activity: FragmentActivity, private val viewMode
                 binding.detailedDiaryContainer.isGone = true
             } else {
                 binding.detailedDiaryContainer.isVisible = true
+                binding.diaryImageContent.isVisible = true
 
                 Glide.with(itemView.context)
                     .load(item.thumbnailResponse.imageUrl)
-                    .circleCrop()
                     .into(binding.diaryImageContent)
             }
 

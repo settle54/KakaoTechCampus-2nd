@@ -2,14 +2,25 @@ package com.example.everymoment.data.repository
 
 import android.app.Activity
 import android.util.Log
+import com.example.everymoment.data.model.network.api.NetworkModule
 import com.example.everymoment.services.location.GlobalApplication
 import com.example.everymoment.data.model.network.api.NetworkUtil
+import com.example.everymoment.data.model.network.api.PotatoCakeApiService
+import com.example.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AccessTokenInfo
 import com.kakao.sdk.user.model.User
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class UserRepository {
+    private val apiService: PotatoCakeApiService =
+        NetworkModule.provideApiService(NetworkModule.provideRetrofit())
+    private val jwtToken = GlobalApplication.prefs.getString("token", "null")
+    private val token =
+        "Bearer $jwtToken"
 
     fun getKakaoTokenInfo(callback: (AccessTokenInfo?, Throwable?) -> Unit) {
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
@@ -60,5 +71,35 @@ class UserRepository {
                 Log.d("arieum", "Network failed")
             }
         }
+    }
+
+    fun getAnonymousLogin(
+        callback: (Boolean, NonLoginUserNumberResponse?) -> Unit
+    ) {
+        apiService.getAnonymousLogin().enqueue(object : Callback<NonLoginUserNumberResponse> {
+            override fun onResponse(
+                call: Call<NonLoginUserNumberResponse>,
+                response: Response<NonLoginUserNumberResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        // 회원번호가 null이면 새로운 익명 계정 생성
+                        if (it.info.number == null) {
+                            callback(true, it)
+                        } else {
+                            // 회원번호가 있으면 해당 번호로 로그인
+                            callback(true, it)
+                        }
+                    } ?: callback(false, null)
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(call: Call<NonLoginUserNumberResponse>, t: Throwable) {
+                Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${t.message}")
+                callback(false, null)
+            }
+        })
     }
 }

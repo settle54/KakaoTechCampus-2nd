@@ -157,7 +157,7 @@ class LocationService : Service() {
             }
 
             // 현재 위치 정보로 알림 업데이트
-            updateNotification(latitude, longitude, initialPlaceName ?: "알 수 없는 장소")
+            updateNotification(latitude, longitude, currentPlaceNames.firstOrNull() ?: "알 수 없는 장소")
         }
     }
 
@@ -173,9 +173,9 @@ class LocationService : Service() {
         }
 
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("위치 서비스")
+            .setContentTitle("에브리모먼트")
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .build()
@@ -183,7 +183,7 @@ class LocationService : Service() {
 
     private fun updateNotification(latitude: Double, longitude: Double, placeName: String) {
         //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notification = createNotification("위치: $placeName (위도: $latitude, 경도: $longitude)")
+        val notification = createNotification("현재 ${placeName}에 머무르고 있어요!")
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
@@ -249,17 +249,17 @@ class LocationService : Service() {
         notificationManager.notify(EMOJI_NOTIFICATION_ID, builder.build())
     }
 
-    private fun createEmojiNotificationChannel() {
-        val descriptionText = getString(R.string.fcm_channel_description)
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = descriptionText
-        }
-        notificationManager.createNotificationChannel(channel)
-    }
+//    private fun createEmojiNotificationChannel() {
+//        val descriptionText = getString(R.string.fcm_channel_description)
+//        val channel = NotificationChannel(
+//            CHANNEL_ID,
+//            CHANNEL_NAME,
+//            NotificationManager.IMPORTANCE_DEFAULT
+//        ).apply {
+//            description = descriptionText
+//        }
+//        notificationManager.createNotificationChannel(channel)
+//    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
