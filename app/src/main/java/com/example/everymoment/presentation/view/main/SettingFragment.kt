@@ -143,6 +143,7 @@ class SettingFragment : Fragment() {
                     galleryUtil.openGallery(onImageSelected = {
                         addLocalImage(it)
                         updateProfileImg(it)
+                        Toast.makeText(requireContext(), getString(R.string.feature_not_available), Toast.LENGTH_LONG).show()
                     })
                 }).apply {
                 isCancelable = false

@@ -34,7 +34,8 @@ interface PotatoCakeApiService {
     @GET("api/diaries/my")
     fun getDiaries(
         @Header("Authorization") token: String,
-        @Query("date") date: String
+        @Query("date") date: String,
+        @Query("key") key: Int=0
     ): Call<DiaryResponse>
 
     @PATCH("api/diaries/{diaryId}/bookmark")
@@ -134,7 +135,8 @@ interface PotatoCakeApiService {
     @GET("/api/friends/{friendId}/diaries")
     fun getFriendDiaries(
         @Header("Authorization") token: String,
-        @Path("friendId") friendId: Int
+        @Path("friendId") friendId: Int,
+        @Query("key") key: Int=0
     ): Call<DiaryResponse>
 
     @GET("/api/diaries/friend")

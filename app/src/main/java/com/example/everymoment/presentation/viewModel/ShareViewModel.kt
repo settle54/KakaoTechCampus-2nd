@@ -20,6 +20,12 @@ class ShareViewModel(
     private val _diaries = MutableLiveData<List<Diary>>()
     val diaries: LiveData<List<Diary>> get() = _diaries
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var nextPage = 1
+    var currentFriendId: Int? = null
+
     fun fetchFriendsList() {
         viewModelScope.launch {
             friendRepository.getFriendsList() { success, response ->
@@ -31,10 +37,14 @@ class ShareViewModel(
     }
 
     fun fetchFriendDiaryList(friendId: Int) {
+        currentFriendId = friendId
+        _isLoading.value = true
         viewModelScope.launch {
             friendDiaryRepository.getFriendDiaries(friendId) { success, response ->
+                _isLoading.value = false
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
+                    nextPage = response.info.next
                 }
             }
         }
@@ -45,6 +55,24 @@ class ShareViewModel(
             friendDiaryRepository.getTotalFriendDiaries(date) { success, response ->
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
+                }
+            }
+        }
+    }
+
+    fun fetchNextPage() {
+        if (nextPage != 0 && _isLoading.value != true) {
+            _isLoading.value = true
+            viewModelScope.launch {
+                friendDiaryRepository.getFriendDiariesWithPage(currentFriendId!!, nextPage) { success, response ->
+                    _isLoading.value = false
+                    if (success && response != null) {
+                        val currentList = _diaries.value.orEmpty()
+                        _diaries.postValue(currentList + response.info.diaries)
+                        nextPage = response.info.next
+                    } else {
+                        _diaries.postValue(emptyList())
+                    }
                 }
             }
         }
