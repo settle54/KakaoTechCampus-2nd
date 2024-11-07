@@ -23,8 +23,8 @@ android {
         applicationId = "potatocake.katecam.everymoment"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,12 +39,12 @@ android {
         }
         release {
             isDebuggable = false
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             manifestPlaceholders["KAKAO_NATIVE_KEY"] = properties["KAKAO_NATIVE_KEY"] as String
-            proguardFiles(
+            /*proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
-            )
+            )*/
         }
     }
     buildFeatures {
