@@ -33,6 +33,8 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
         getCategories()
     }
 
+
+
     /**
      * 카테고리
      */
@@ -105,32 +107,21 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
         }
     }
 
-    suspend fun getDiaryinDetail(diaryId: Int?, callback: (DetailDiary) -> Unit) {
+    fun getDiaryinDetail(diaryId: Int?) {
         this.diaryId = diaryId
         diaryId?.let {
-            val result = withContext(Dispatchers.IO) {
-                suspendCoroutine { continuation ->
-                    diaryRepository.getDiaryinDetail(it) { success, response ->
-                        Log.d("settle54", "success: $success")
-                        if (success && response != null) {
-                            Log.d("settle54", "success: ${response.info}")
-                            continuation.resume(response.info)
-                        } else {
-                            continuation.resume(null)
-                        }
-                    }
+            diaryRepository.getDiaryinDetail(it) { success, response ->
+                Log.d("settle54", "success: $success")
+                if (success && response != null) {
+                    Log.d("settle54", "success: ${response.info}")
+                    val diary = response.info
+                    _diary.postValue(diary)
                 }
-            }
-
-            result?.let { diary ->
-                Log.d("settle54", "lambda: $diary")
-                _diary.value = diary
-                callback.invoke(diary)
             }
         }
     }
 
-    fun getFiles(diaryId: Int?, callback: (List<String>) -> Unit) {
+    fun getFiles(diaryId: Int?) {
         viewModelScope.launch {
             diaryId?.let {
                 diaryRepository.getFiles(diaryId) { success, response ->
@@ -138,9 +129,6 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
                         val imageUrls = response.info.map { it.imageUrl }
                         _images.postValue(imageUrls)
                         Log.d("getFiles", "${images.value}")
-                        callback.invoke(imageUrls)
-                    } else {
-                        callback.invoke(emptyList())
                     }
                 }
             }

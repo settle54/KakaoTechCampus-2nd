@@ -46,9 +46,11 @@ class DiaryReadFragment : Fragment() {
         bookmark = Bookmark(requireContext(), binding.bookmark)
         diaryId = arguments?.getInt("diary_id")
         Log.d("diaryId", diaryId.toString())
-        getDiaryinDetail()
-        getImages()
-        setClickListeners()
+        lifecycleScope.launch {
+            getDiaryinDetail()
+            getImages()
+            setClickListeners()
+        }
     }
 
     override fun onResume() {
@@ -60,17 +62,13 @@ class DiaryReadFragment : Fragment() {
     private fun getDiaryinDetail() {
         Log.d("settle54", "getDetailDiary")
         lifecycleScope.launch {
-            viewModel.getDiaryinDetail(diaryId) {
-                updateDiary(it)
-            }
+            viewModel.getDiaryinDetail(diaryId)
         }
     }
 
     private fun getImages() {
         lifecycleScope.launch {
-            viewModel.getFiles(diaryId) {
-                updateImages(it)
-            }
+            viewModel.getFiles(diaryId)
         }
     }
 
@@ -84,9 +82,14 @@ class DiaryReadFragment : Fragment() {
     }
 
     private fun updateDiary(diary: DetailDiary) {
-        Emotions.fromString(diary.emoji)?.getEmotionUnicode()?.let { emotion ->
-            binding.emotion.text = emotion
-            binding.emotion.visibility = View.VISIBLE
+        Log.d("settle54", "updateDiary")
+        if (diary.emoji == null) {
+            binding.emotion.visibility = View.GONE
+        } else {
+            Emotions.fromString(diary.emoji)?.getEmotionUnicode()?.let { emotion ->
+                binding.emotion.text = emotion
+                binding.emotion.visibility = View.VISIBLE
+            }
         }
         binding.location.text = diary.locationName
         binding.address.text = diary.address
@@ -110,7 +113,10 @@ class DiaryReadFragment : Fragment() {
             binding.category1.visibility = View.VISIBLE
             binding.category1.text =
                 resources.getString(R.string.category_text, diary.categories[0].categoryName)
+            binding.category2.visibility = View.INVISIBLE
             binding.categories.visibility = View.VISIBLE
+        } else {
+            binding.categories.visibility = View.GONE
         }
 
         binding.toolBar.visibility = View.VISIBLE
@@ -123,11 +129,15 @@ class DiaryReadFragment : Fragment() {
                 binding.image2.visibility = View.VISIBLE
                 binding.image2.scaleType = ImageView.ScaleType.CENTER_CROP
                 Glide.with(requireContext()).load(images[1]).into(binding.image2)
+            } else {
+                binding.image2.visibility = View.INVISIBLE
             }
             binding.image1.visibility = View.VISIBLE
             binding.image1.scaleType = ImageView.ScaleType.CENTER_CROP
             Glide.with(requireContext()).load(images[0]).into(binding.image1)
             binding.images.visibility = View.VISIBLE
+        } else {
+            binding.images.visibility = View.GONE
         }
     }
 
