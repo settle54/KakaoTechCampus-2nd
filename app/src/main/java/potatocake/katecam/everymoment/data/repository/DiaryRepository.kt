@@ -121,7 +121,7 @@ class DiaryRepository {
                 ) {
                     if (p1.isSuccessful) {
                         Log.d("settle54", "${p1.body()}")
-                        callback(true, p1.body())
+                        callback.invoke(true, p1.body())
                     } else {
                         callback(false, null)
                     }
