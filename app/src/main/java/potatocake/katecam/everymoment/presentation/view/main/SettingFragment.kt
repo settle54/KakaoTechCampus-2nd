@@ -20,6 +20,8 @@ import potatocake.katecam.everymoment.extensions.GalleryUtil
 import potatocake.katecam.everymoment.extensions.SendFilesUtil
 import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModelFactory
+import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.services.location.LocationService
 
 class SettingFragment : Fragment() {
 
@@ -93,28 +95,45 @@ class SettingFragment : Fragment() {
             }
         }
 
+        val savedTime = GlobalApplication.prefs.getLong("selectedTime", 15 * 60 * 1000L)
+        when (savedTime) {
+            TIME_15_MINUTES -> binding.timeRadioGroup.check(R.id.time15m)
+            TIME_20_MINUTES -> binding.timeRadioGroup.check(R.id.time20m)
+            TIME_25_MINUTES -> binding.timeRadioGroup.check(R.id.time25m)
+            TIME_30_MINUTES -> binding.timeRadioGroup.check(R.id.time30m)
+        }
+
         binding.timeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            var selectedTime = ""
+            var selectedTime = TIME_15_MINUTES
+            var selectedTimeText = ""
             when (checkedId) {
                 R.id.time15m -> {
-                    selectedTime = resources.getString(R.string.time_15min)
+                    selectedTimeText = resources.getString(R.string.time_15min)
+                    selectedTime = TIME_15_MINUTES
                 }
 
                 R.id.time20m -> {
-                    selectedTime = resources.getString(R.string.time_20min)
+                    selectedTimeText = resources.getString(R.string.time_20min)
+                    selectedTime = TIME_20_MINUTES
                 }
 
                 R.id.time25m -> {
-                    selectedTime = resources.getString(R.string.time_25min)
+                    selectedTimeText = resources.getString(R.string.time_25min)
+                    selectedTime = TIME_25_MINUTES
                 }
 
                 R.id.time30m -> {
-                    selectedTime = resources.getString(R.string.time_30min)
+                    selectedTimeText = resources.getString(R.string.time_30min)
+                    selectedTime = TIME_30_MINUTES
                 }
             }
+
+            GlobalApplication.prefs.setLong("selectedTime", selectedTime)
+            LocationService.setLocationUpdateInterval(selectedTime)
+
             Toast.makeText(
                 requireContext(),
-                getString(R.string.time_interval_text, selectedTime),
+                getString(R.string.time_interval_text, selectedTimeText),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -211,6 +230,13 @@ class SettingFragment : Fragment() {
                 Log.e("SettingFragment", "fileParts is empty")
             }
         }
+    }
+
+    companion object {
+        private const val TIME_15_MINUTES = 15 * 60 * 1000L
+        private const val TIME_20_MINUTES = 20 * 60 * 1000L
+        private const val TIME_25_MINUTES = 25 * 60 * 1000L
+        private const val TIME_30_MINUTES = 30 * 60 * 1000L
     }
 
 }

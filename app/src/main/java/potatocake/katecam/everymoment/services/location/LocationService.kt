@@ -260,7 +260,11 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+        private var LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+
+        fun setLocationUpdateInterval(interval: Long) {
+            LOCATION_UPDATE_INTERVAL = interval
+        }
 
         private const val EMOJI_NOTIFICATION_ID = 222222
         private const val CHANNEL_ID = "main_default_channel"
