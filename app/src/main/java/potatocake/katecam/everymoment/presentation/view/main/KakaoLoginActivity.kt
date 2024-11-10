@@ -53,7 +53,14 @@ class KakaoLoginActivity : AppCompatActivity() {
         binding.nonLoginButton.setOnClickListener {
             viewModel.getAnonymousLogin { success ->
                 if (success) {
-                    val intent = Intent(this, OnBoardingActivity::class.java)
+                    val isOnboardingCompleted = getSharedPreferences("onboarding", MODE_PRIVATE)
+                        .getBoolean("completed", false)
+
+                    val intent = if (isOnboardingCompleted) {
+                        Intent(this, MainActivity::class.java)
+                    } else {
+                        Intent(this, OnBoardingActivity::class.java)
+                    }
                     startActivity(intent)
                     finish()
                 } else {
