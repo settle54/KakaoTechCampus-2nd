@@ -51,10 +51,15 @@ class KakaoLoginActivity : AppCompatActivity() {
 
     private fun setupNonLogin() {
         binding.nonLoginButton.setOnClickListener {
-            viewModel.getAnonymousLogin()
-            val intent = Intent(this, OnBoardingActivity::class.java)
-            startActivity(intent)
-            finish()
+            viewModel.getAnonymousLogin { success ->
+                if (success) {
+                    val intent = Intent(this, OnBoardingActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

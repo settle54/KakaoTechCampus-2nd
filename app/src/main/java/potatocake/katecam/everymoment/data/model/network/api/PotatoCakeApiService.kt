@@ -206,6 +206,7 @@ interface PotatoCakeApiService {
 
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
+        @Query("number") number: Int?,
     ): Call<NonLoginUserNumberResponse>
 
     @GET("/api/diaries/friend/{diaryId}")

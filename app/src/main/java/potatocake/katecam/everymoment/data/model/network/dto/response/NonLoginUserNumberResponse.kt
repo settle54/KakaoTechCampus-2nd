@@ -7,6 +7,6 @@ data class NonLoginUserNumberResponse(
 ) {
     data class Info(
         val number: Int?,
-        val token: String
+        val token: String?
     )
 }
