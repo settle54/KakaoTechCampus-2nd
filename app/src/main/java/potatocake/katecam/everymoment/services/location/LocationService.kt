@@ -169,10 +169,21 @@ class LocationService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE // `FLAG_IMMUTABLE`는 Android 12 이상에서 필요합니다.
+        )
+
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("에브리모먼트")
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_notification)
+            .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .build()
@@ -260,7 +271,11 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+        private var LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+
+        fun setLocationUpdateInterval(interval: Long) {
+            LOCATION_UPDATE_INTERVAL = interval
+        }
 
         private const val EMOJI_NOTIFICATION_ID = 222222
         private const val CHANNEL_ID = "main_default_channel"
