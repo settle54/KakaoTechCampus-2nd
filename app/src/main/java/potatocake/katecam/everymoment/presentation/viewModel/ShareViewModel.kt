@@ -1,5 +1,6 @@
 package potatocake.katecam.everymoment.presentation.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -59,10 +60,14 @@ class ShareViewModel(
     }
 
     fun fetchTotalFriendDiaryList(date: String){
+        _isLoading.value = true
         viewModelScope.launch {
             friendDiaryRepository.getTotalFriendDiaries(date) { success, response ->
+                _isLoading.value = false
                 if (success && response != null) {
                     _diaries.postValue(response.info.diaries)
+                    Log.d("arieum", response.info.diaries.toString())
+                    nextPage = response.info.next
                 }
             }
         }

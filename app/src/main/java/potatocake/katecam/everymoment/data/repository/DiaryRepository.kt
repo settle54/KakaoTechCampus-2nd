@@ -1,5 +1,6 @@
 package potatocake.katecam.everymoment.data.repository
 
+import android.location.LocationRequest
 import android.util.Log
 import potatocake.katecam.everymoment.services.location.GlobalApplication
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetDetailDiaryResponse
@@ -13,6 +14,8 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.Coordinate
 import potatocake.katecam.everymoment.data.model.network.dto.response.DiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import okhttp3.MultipartBody
+import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -328,4 +331,49 @@ class DiaryRepository {
         })
     }
 
+    fun patchEmoji(
+        diaryId: Int,
+        request: EmojiRequest,
+        callback: (Boolean, String?) -> Unit
+    ){
+        apiService.patchEditedEmoji(token, diaryId, request)
+            .enqueue(object : Callback<ServerResponse> {
+                override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
+                    if (p1.isSuccessful) {
+                        Log.d("settle54", "${p1.body()}")
+                        callback(true, p1.message())
+                    } else {
+                        callback(false, null)
+                    }
+                }
+
+                override fun onFailure(p0: Call<ServerResponse>, p1: Throwable) {
+                    Log.d("settle54", "Failed to patch editedDairy: ${p1.message}")
+                    callback(false, null)
+                }
+            })
+    }
+
+    fun patchLocationName(
+        diaryId: Int,
+        request: LocationNameRequest,
+        callback: (Boolean, String?) -> Unit
+    ){
+        apiService.patchEditedLocationName(token, diaryId, request)
+            .enqueue(object : Callback<ServerResponse> {
+                override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
+                    if (p1.isSuccessful) {
+                        Log.d("settle54", "${p1.body()}")
+                        callback(true, p1.message())
+                    } else {
+                        callback(false, null)
+                    }
+                }
+
+                override fun onFailure(p0: Call<ServerResponse>, p1: Throwable) {
+                    Log.d("settle54", "Failed to patch editedDairy: ${p1.message}")
+                    callback(false, null)
+                }
+            })
+    }
 }

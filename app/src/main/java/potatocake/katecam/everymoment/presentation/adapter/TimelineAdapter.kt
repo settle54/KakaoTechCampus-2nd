@@ -1,6 +1,7 @@
 package potatocake.katecam.everymoment.presentation.adapter
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -29,6 +30,7 @@ import potatocake.katecam.everymoment.presentation.viewModel.TimelineViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class TimelineAdapter(private val activity: FragmentActivity, private val viewModel: TimelineViewModel) : ListAdapter<Diary, TimelineAdapter.TimelineViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
@@ -57,7 +59,8 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                     .commit()
             }
 
-            binding.timeText.text = item.createAt.substring(11, 16)
+            val originalTime = item.createAt.substring(11, 16)
+            binding.timeText.text = reformatTime(originalTime)
             binding.locationNameText.text = item.locationName
             binding.addressText.text = item.address
 
@@ -192,6 +195,15 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             val newList = currentList.toMutableList()
             newList.removeAt(position)
             submitList(newList)
+        }
+
+        private fun reformatTime(originalTime: String): String {
+            val originalFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val date = originalFormat.parse(originalTime)
+
+            val targetFormat = SimpleDateFormat("a h:m", Locale.getDefault())
+            val formattedTime = targetFormat.format(date)
+            return formattedTime
         }
     }
 
