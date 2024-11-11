@@ -138,6 +138,9 @@ class TodayLogFragment : Fragment() {
     }
 
     private fun updateDate(date: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        calendar.time = dateFormat.parse(date) ?: calendar.time
+
         viewModel.fetchDiaries(date)
         binding.currentDate.text = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
     }
