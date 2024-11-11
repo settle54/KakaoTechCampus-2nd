@@ -132,7 +132,7 @@ interface PotatoCakeApiService {
         @Path("requestId") requestId: Int
     ): Call<ServerResponse>
 
-    @GET("api/members?size=30")
+    @GET("api/members?size=60")
     fun getMembers(
         @Header("Authorization") token: String,
     ): Call<MemberResponse>
@@ -207,6 +207,7 @@ interface PotatoCakeApiService {
 
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
+        @Query("number") number: Int?,
     ): Call<NonLoginUserNumberResponse>
 
     @GET("/api/diaries/friend/{diaryId}")
