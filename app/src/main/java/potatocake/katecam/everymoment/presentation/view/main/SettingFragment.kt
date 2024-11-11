@@ -1,5 +1,6 @@
 package potatocake.katecam.everymoment.presentation.view.main
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -63,14 +64,23 @@ class SettingFragment : Fragment() {
             profileNameDialog.show(requireActivity().supportFragmentManager, "CustomDialog")
         }
 
+        val isAutoNotificationEnabled = GlobalApplication.prefs.getBoolean("isAutoNotificationEnabled", false)
+        binding.autoNotificationToggle.isChecked = isAutoNotificationEnabled
+
         binding.autoNotificationToggle.setOnCheckedChangeListener { _, isChecked ->
+            val serviceIntent = Intent(requireContext(), LocationService::class.java)
+
             if (isChecked) {
+                requireContext().startService(serviceIntent)
+                GlobalApplication.prefs.setBoolean("isAutoNotificationEnabled", true)
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.auto_notification_isChecked),
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
+                requireContext().stopService(serviceIntent)
+                GlobalApplication.prefs.setBoolean("isAutoNotificationEnabled", false)
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.auto_notification_isUnChecked),
@@ -95,7 +105,7 @@ class SettingFragment : Fragment() {
             }
         }
 
-        val savedTime = GlobalApplication.prefs.getLong("selectedTime", 15 * 60 * 1000L)
+        val savedTime = GlobalApplication.prefs.getLong("selectedTime", TIME_15_MINUTES)
         when (savedTime) {
             TIME_15_MINUTES -> binding.timeRadioGroup.check(R.id.time15m)
             TIME_20_MINUTES -> binding.timeRadioGroup.check(R.id.time20m)
@@ -233,10 +243,10 @@ class SettingFragment : Fragment() {
     }
 
     companion object {
-        private const val TIME_15_MINUTES = 15 * 60 * 1000L
-        private const val TIME_20_MINUTES = 20 * 60 * 1000L
-        private const val TIME_25_MINUTES = 25 * 60 * 1000L
-        private const val TIME_30_MINUTES = 30 * 60 * 1000L
+        private const val TIME_15_MINUTES = 1 * 60 * 1000L
+        private const val TIME_20_MINUTES = 2 * 60 * 1000L
+        private const val TIME_25_MINUTES = 3 * 60 * 1000L
+        private const val TIME_30_MINUTES = 4 * 60 * 1000L
     }
 
 }

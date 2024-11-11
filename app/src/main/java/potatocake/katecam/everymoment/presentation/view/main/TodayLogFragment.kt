@@ -26,6 +26,7 @@ import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
 import androidx.recyclerview.widget.RecyclerView
+import potatocake.katecam.everymoment.services.location.GlobalApplication
 
 class TodayLogFragment : Fragment() {
 
@@ -50,7 +51,7 @@ class TodayLogFragment : Fragment() {
     private val notificationPermissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                startLocationService()
+                startLocationServiceIfEnabled()
             } else {
                 showPermissionDeniedDialog("알림 권한")
             }
@@ -86,6 +87,8 @@ class TodayLogFragment : Fragment() {
         )
 
         checkFineLocationPermission()
+
+        startLocationServiceIfEnabled()
 
         val adapter = TimelineAdapter(requireActivity(), viewModel)
         setupRecyclerView(adapter)
@@ -199,10 +202,10 @@ class TodayLogFragment : Fragment() {
             ) {
                 notificationPermissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                startLocationService()
+                startLocationServiceIfEnabled()
             }
         } else {
-            startLocationService()
+            startLocationServiceIfEnabled()
         }
     }
 
@@ -240,5 +243,19 @@ class TodayLogFragment : Fragment() {
     private fun startLocationService() {
         val intent = Intent(requireContext(), LocationService::class.java)
         ContextCompat.startForegroundService(requireContext(), intent)
+    }
+
+    private fun startLocationServiceIfEnabled() {
+        val isInitialLaunch = GlobalApplication.prefs.getBoolean("isInitialLaunch", false)
+        val isAutoNotificationEnabled = GlobalApplication.prefs.getBoolean("isAutoNotificationEnabled", false)
+
+        if (isInitialLaunch || isAutoNotificationEnabled) {
+            val intent = Intent(requireContext(), LocationService::class.java)
+            ContextCompat.startForegroundService(requireContext(), intent)
+        }
+
+        if (isInitialLaunch) {
+            GlobalApplication.prefs.setBoolean("isInitialLaunch", false)
+        }
     }
 }
