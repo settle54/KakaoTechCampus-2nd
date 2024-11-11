@@ -33,7 +33,7 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
         }
     }
 ) {
-    private lateinit var selectedFriendName: String
+    private var selectedFriendName: String = ""
 
     fun setSelectedFriendName(nickName: String){
         selectedFriendName = nickName
