@@ -18,10 +18,10 @@ data class Diary(
     val id: Int,
 
     @SerializedName("locationName")
-    val locationName: String,
+    val locationName: String?,
 
     @SerializedName("address")
-    val address: String,
+    val address: String?,
 
     @SerializedName("emoji")
     val emoji: String,
