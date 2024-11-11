@@ -29,7 +29,8 @@ class PreferenceUtil(context: Context) {
 
     fun getBoolean(key: String, defaultValue: Boolean): Boolean {
         return prefs.getBoolean(key, defaultValue)
-        
+    }
+
     fun setInt(key: String, value: Int?) {
         if (value == null) {
             prefs.edit().remove(key).apply()
