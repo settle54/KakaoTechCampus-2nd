@@ -45,7 +45,7 @@ class LocationService : Service() {
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        //createEmojiNotificationChannel()
+        createEmojiNotificationChannel()
         initializeLocationComponents()
         startLocationUpdates()
         startForeground(NOTIFICATION_ID, createNotification("위치 서비스 시작"))
@@ -137,7 +137,7 @@ class LocationService : Service() {
                         ) { success, code, message, infoObject ->
                             if (success) {
                                 Log.d("arieum", "성공! 코드: $code, 메시지: $message, 정보: $infoObject")
-                                //setEmojiNotification()
+                                setEmojiNotification()
                             } else {
                                 Log.d("arieum", "실패!")
                             }
@@ -165,7 +165,7 @@ class LocationService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
                 NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
-            //val notificationManager = getSystemService(NotificationManager::class.java)
+            val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -190,7 +190,7 @@ class LocationService : Service() {
     }
 
     private fun updateNotification(latitude: Double, longitude: Double, placeName: String) {
-        //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = createNotification("현재 ${placeName}에 머무르고 있어요!")
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
@@ -245,7 +245,7 @@ class LocationService : Service() {
             this,
             CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("지금의 기분은 어떠신가요?")
             .setContentIntent(pendingIntent)
             //.setContentText("현재 XX 위치에 머무르고 있어요! ")
@@ -257,21 +257,21 @@ class LocationService : Service() {
         notificationManager.notify(EMOJI_NOTIFICATION_ID, builder.build())
     }
 
-//    private fun createEmojiNotificationChannel() {
-//        val descriptionText = getString(R.string.fcm_channel_description)
-//        val channel = NotificationChannel(
-//            CHANNEL_ID,
-//            CHANNEL_NAME,
-//            NotificationManager.IMPORTANCE_DEFAULT
-//        ).apply {
-//            description = descriptionText
-//        }
-//        notificationManager.createNotificationChannel(channel)
-//    }
+    private fun createEmojiNotificationChannel() {
+        val descriptionText = getString(R.string.fcm_channel_description)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = descriptionText
+        }
+        notificationManager.createNotificationChannel(channel)
+    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private var LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+        private var LOCATION_UPDATE_INTERVAL = 1 * 20 * 1000L
 
         fun setLocationUpdateInterval(interval: Long) {
             LOCATION_UPDATE_INTERVAL = interval
