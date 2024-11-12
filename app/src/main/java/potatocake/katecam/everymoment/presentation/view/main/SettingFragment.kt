@@ -1,5 +1,6 @@
 package potatocake.katecam.everymoment.presentation.view.main
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +20,9 @@ import potatocake.katecam.everymoment.extensions.CustomEditDialog
 import potatocake.katecam.everymoment.extensions.GalleryUtil
 import potatocake.katecam.everymoment.extensions.SendFilesUtil
 import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModelFactory
+import potatocake.katecam.everymoment.presentation.viewModel.factory.SettingViewModelFactory
+import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.services.location.LocationService
 
 class SettingFragment : Fragment() {
 
@@ -44,10 +47,7 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(
-            this,
-            SettingViewModelFactory(myInfoRepository)
-        ).get(SettingViewModel::class.java)
+        viewModel = ViewModelProvider(this, SettingViewModelFactory(myInfoRepository)).get(SettingViewModel::class.java)
         viewModel.fetchMyInfo()
         observeMyInfo()
         setDialogs()
@@ -64,14 +64,23 @@ class SettingFragment : Fragment() {
             profileNameDialog.show(requireActivity().supportFragmentManager, "CustomDialog")
         }
 
+        val isAutoNotificationEnabled = GlobalApplication.prefs.getBoolean("isAutoNotificationEnabled", false)
+        binding.autoNotificationToggle.isChecked = isAutoNotificationEnabled
+
         binding.autoNotificationToggle.setOnCheckedChangeListener { _, isChecked ->
+            val serviceIntent = Intent(requireContext(), LocationService::class.java)
+
             if (isChecked) {
+                requireContext().startService(serviceIntent)
+                GlobalApplication.prefs.setBoolean("isAutoNotificationEnabled", true)
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.auto_notification_isChecked),
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
+                requireContext().stopService(serviceIntent)
+                GlobalApplication.prefs.setBoolean("isAutoNotificationEnabled", false)
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.auto_notification_isUnChecked),
@@ -96,28 +105,45 @@ class SettingFragment : Fragment() {
             }
         }
 
+        val savedTime = GlobalApplication.prefs.getLong("selectedTime", TIME_15_MINUTES)
+        when (savedTime) {
+            TIME_15_MINUTES -> binding.timeRadioGroup.check(R.id.time15m)
+            TIME_20_MINUTES -> binding.timeRadioGroup.check(R.id.time20m)
+            TIME_25_MINUTES -> binding.timeRadioGroup.check(R.id.time25m)
+            TIME_30_MINUTES -> binding.timeRadioGroup.check(R.id.time30m)
+        }
+
         binding.timeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            var selectedTime = ""
+            var selectedTime = TIME_15_MINUTES
+            var selectedTimeText = ""
             when (checkedId) {
                 R.id.time15m -> {
-                    selectedTime = resources.getString(R.string.time_15min)
+                    selectedTimeText = resources.getString(R.string.time_15min)
+                    selectedTime = TIME_15_MINUTES
                 }
 
                 R.id.time20m -> {
-                    selectedTime = resources.getString(R.string.time_20min)
+                    selectedTimeText = resources.getString(R.string.time_20min)
+                    selectedTime = TIME_20_MINUTES
                 }
 
                 R.id.time25m -> {
-                    selectedTime = resources.getString(R.string.time_25min)
+                    selectedTimeText = resources.getString(R.string.time_25min)
+                    selectedTime = TIME_25_MINUTES
                 }
 
                 R.id.time30m -> {
-                    selectedTime = resources.getString(R.string.time_30min)
+                    selectedTimeText = resources.getString(R.string.time_30min)
+                    selectedTime = TIME_30_MINUTES
                 }
             }
+
+            GlobalApplication.prefs.setLong("selectedTime", selectedTime)
+            LocationService.setLocationUpdateInterval(selectedTime)
+
             Toast.makeText(
                 requireContext(),
-                getString(R.string.time_interval_text, selectedTime),
+                getString(R.string.time_interval_text, selectedTimeText),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -215,6 +241,13 @@ class SettingFragment : Fragment() {
                 Log.e("SettingFragment", "fileParts is empty")
             }
         }
+    }
+
+    companion object {
+        private const val TIME_15_MINUTES = 1 * 60 * 1000L
+        private const val TIME_20_MINUTES = 2 * 60 * 1000L
+        private const val TIME_25_MINUTES = 3 * 60 * 1000L
+        private const val TIME_30_MINUTES = 4 * 60 * 1000L
     }
 
 }

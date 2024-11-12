@@ -73,33 +73,53 @@ class UserRepository {
         }
     }
 
+    private fun saveAnonymousNumber(number: Int?) {
+        GlobalApplication.prefs.setInt(KEY_ANONYMOUS_NUMBER, number)
+    }
+
+    private fun getStoredAnonymousNumber(): Int? {
+        return GlobalApplication.prefs.getInt(KEY_ANONYMOUS_NUMBER)
+    }
+
     fun getAnonymousLogin(
         callback: (Boolean, NonLoginUserNumberResponse?) -> Unit
     ) {
-        apiService.getAnonymousLogin().enqueue(object : Callback<NonLoginUserNumberResponse> {
-            override fun onResponse(
-                call: Call<NonLoginUserNumberResponse>,
-                response: Response<NonLoginUserNumberResponse>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        // 회원번호가 null이면 새로운 익명 계정 생성
-                        if (it.info.number == null) {
-                            callback(true, it)
-                        } else {
-                            // 회원번호가 있으면 해당 번호로 로그인
-                            callback(true, it)
-                        }
-                    } ?: callback(false, null)
-                } else {
+        val storedNumber = getStoredAnonymousNumber()
+        val storedToken = GlobalApplication.prefs.getString("token", null)
+
+        apiService.getAnonymousLogin(storedNumber)
+            .enqueue(object : Callback<NonLoginUserNumberResponse> {
+                override fun onResponse(
+                    call: Call<NonLoginUserNumberResponse>,
+                    response: Response<NonLoginUserNumberResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { responseBody ->
+                            responseBody.info.number?.let { number ->
+                                saveAnonymousNumber(number)
+                            }
+
+                            responseBody.info.token?.let { token ->
+                                GlobalApplication.prefs.setString("token", token)
+                                Log.d("AnonymousLogin", "Token saved: $token")
+                            }
+
+                            callback(true, responseBody)
+                        } ?: callback(false, null)
+                    } else {
+                        Log.d("AnonymousLogin", "Response not successful: ${response.code()}")
+                        callback(false, null)
+                    }
+                }
+
+                override fun onFailure(call: Call<NonLoginUserNumberResponse>, t: Throwable) {
+                    Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${t.message}")
                     callback(false, null)
                 }
-            }
+            })
+    }
 
-            override fun onFailure(call: Call<NonLoginUserNumberResponse>, t: Throwable) {
-                Log.d("AnonymousLogin", "Failed to AnonymousLogin: ${t.message}")
-                callback(false, null)
-            }
-        })
+    companion object {
+        private const val KEY_ANONYMOUS_NUMBER = "anonymous_user_number"
     }
 }

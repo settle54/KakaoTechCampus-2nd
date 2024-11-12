@@ -10,6 +10,8 @@ import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDia
 import potatocake.katecam.everymoment.data.repository.DiaryRepository
 import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
 
 class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewModel() {
     private val _diaries = MutableLiveData<List<Diary>>()
@@ -90,15 +92,15 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
 
     fun updateDiaryLocation(diaryId: Int, locationName: String){
         viewModelScope.launch {
-            val request = PatchEditedDiaryRequest(
+            val request = LocationNameRequest(
                 locationName = locationName
             )
 
-            diaryRepository.patchEditedDiary(diaryId, request) { success, message ->
+            diaryRepository.patchLocationName(diaryId, request) { success, message ->
                 if (success) {
                     Log.d("arieum", "Diary location updated successfully")
                 } else {
-                    Log.e("arieum", "Failed to update diary location")
+                    Log.e("arieum", "$message")
                 }
             }
         }
@@ -106,16 +108,15 @@ class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewMode
 
     fun updateEmotions(diaryId: Int, selectedEmoji: String){
         viewModelScope.launch {
-            val request = PatchEditedDiaryRequest(
-                emojiDelete = false,
+            val request = EmojiRequest(
                 emoji = selectedEmoji
             )
 
-            diaryRepository.patchEditedDiary(diaryId, request) { success, message ->
+            diaryRepository.patchEmoji(diaryId, request) { success, message ->
                 if (success) {
                     Log.d("arieum", "Diary emoji updated successfully")
                 } else {
-                    Log.e("arieum", "Failed to update diary emoji")
+                    Log.e("arieum", "$message")
                 }
             }
         }

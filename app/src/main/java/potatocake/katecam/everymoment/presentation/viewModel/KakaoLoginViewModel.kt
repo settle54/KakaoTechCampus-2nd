@@ -68,9 +68,15 @@ class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewMode
         }
     }
 
-    fun getAnonymousLogin() {
+    fun getAnonymousLogin(onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            userRepository.getAnonymousLogin() { success, response -> }
+            userRepository.getAnonymousLogin() { success, response ->
+                if (success) {
+                    response?.info?.number?.let { number ->
+                    }
+                }
+                onComplete(success)
+            }
         }
     }
 }

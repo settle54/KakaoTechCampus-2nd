@@ -12,7 +12,7 @@ import potatocake.katecam.everymoment.data.repository.NotificationRepository
 import potatocake.katecam.everymoment.databinding.FragmentNotificationBinding
 import potatocake.katecam.everymoment.presentation.adapter.NotificationAdapter
 import potatocake.katecam.everymoment.presentation.viewModel.NotificationViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.NotificationViewModelFactory
+import potatocake.katecam.everymoment.presentation.viewModel.factory.NotificationViewModelFactory
 
 class NotificationFragment : Fragment() {
 

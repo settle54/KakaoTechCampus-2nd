@@ -23,6 +23,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
+import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -133,7 +134,7 @@ interface PotatoCakeApiService {
         @Path("requestId") requestId: Int
     ): Call<ServerResponse>
 
-    @GET("api/members?size=30")
+    @GET("api/members?size=60")
     fun getMembers(
         @Header("Authorization") token: String,
     ): Call<MemberResponse>
@@ -208,6 +209,7 @@ interface PotatoCakeApiService {
 
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
+        @Query("number") number: Int?,
     ): Call<NonLoginUserNumberResponse>
 
     @GET("/api/diaries/friend/{diaryId}")
@@ -259,5 +261,19 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
         @Path("commentId") commentId: Int,
         @Body request: PatchCommentRequest
+    ): Call<ServerResponse>
+
+    @PATCH("/api/diaries/{diaryId}")
+    fun patchEditedEmoji(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: EmojiRequest
+    ): Call<ServerResponse>
+
+    @PATCH("/api/diaries/{diaryId}")
+    fun patchEditedLocationName(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: LocationNameRequest
     ): Call<ServerResponse>
 }
