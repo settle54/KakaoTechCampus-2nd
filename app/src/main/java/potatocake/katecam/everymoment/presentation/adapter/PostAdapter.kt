@@ -88,7 +88,6 @@ class PostAdapter(
             setClickListeners()
         }
 
-        @SuppressLint("ClickableViewAccessibility")
         private fun setClickListeners() {
             binding.root.setOnLongClickListener {
                 val adjustedPosition = adapterPosition - 1
