@@ -10,10 +10,10 @@ class Like(private val likeId: ImageView) {
 
     fun setLike(isLiked: Boolean) {
         this.isLiked = isLiked
-        if (!isLiked) {
-            likeId.setImageResource(R.drawable.favorite_24px)
-        } else {
+        if (isLiked) {
             likeId.setImageResource(R.drawable.favorite_fill_24px)
+        } else {
+            likeId.setImageResource(R.drawable.favorite_24px)
         }
     }
 
@@ -23,7 +23,7 @@ class Like(private val likeId: ImageView) {
 
     fun toggleLike() {
         Log.d("like", "like clicked")
-        if (!isLiked) {
+        if (isLiked) {
             likeId.setImageResource(R.drawable.favorite_24px)
         } else {
             likeId.setImageResource(R.drawable.favorite_fill_24px)

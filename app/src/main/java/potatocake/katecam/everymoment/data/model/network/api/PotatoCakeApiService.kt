@@ -202,8 +202,8 @@ interface PotatoCakeApiService {
     @POST("/api/members")
     fun updateProfile(
         @Header("Authorization") token: String,
-        @Part("nickname") nickname: RequestBody?,
-        @Part profileImage: MultipartBody.Part?
+        @Query ("nickname") nickname: String?,
+        @Part profileImage: MultipartBody.Part
     ): Call<ServerResponse>
 
     @GET("/api/members/anonymous-login")

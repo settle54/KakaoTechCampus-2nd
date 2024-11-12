@@ -43,11 +43,17 @@ class MyInfoRepository {
     }
 
     fun updateMyInfo(
-        nickname: RequestBody? = null,
+        nickname: String? = null,
         profileImg: MultipartBody.Part? = null,
         callback: (Boolean, ServerResponse) -> Unit
     ) {
-        apiService.updateProfile(token, nickname, profileImg).enqueue(object : Callback<ServerResponse> {
+        val part =  if (profileImg == null) {
+            MultipartBody.Part.createFormData("emptyPart", "")
+        } else {
+            profileImg
+        }
+        Log.d("myInfo", "profileImg: $part")
+        apiService.updateProfile(token, nickname, part).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
                 if (p1.isSuccessful) {
                     p1.body()?.let { callback(true, it) }

@@ -8,6 +8,6 @@ data class MyInformationResponse(
 
 data class MyInformation(
     val id: Int,
-    val profileImageUrl: String,
+    val profileImageUrl: String?,
     val nickname: String
 )

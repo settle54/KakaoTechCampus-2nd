@@ -44,7 +44,10 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, SettingViewModelFactory(myInfoRepository)).get(SettingViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this,
+            SettingViewModelFactory(myInfoRepository)
+        ).get(SettingViewModel::class.java)
         viewModel.fetchMyInfo()
         observeMyInfo()
         setDialogs()
@@ -121,16 +124,14 @@ class SettingFragment : Fragment() {
     }
 
     private fun observeMyInfo() {
-        viewModel.myInfo.observe(viewLifecycleOwner) { myInformation ->
-            if (myInformation != null) {
-                binding.accountName.text = myInformation.nickname
-
-                Glide.with(requireContext())
-                    .load(myInformation.profileImageUrl)
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.accountImage)
-            }
+        viewModel.myInfo.observe(viewLifecycleOwner) {
+            binding.accountName.text = it.nickname
+            if (it.profileImageUrl == null) return@observe
+            Glide.with(requireContext())
+                .load(it.profileImageUrl)
+                .circleCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(binding.accountImage)
         }
     }
 
@@ -144,7 +145,6 @@ class SettingFragment : Fragment() {
                     galleryUtil.openGallery(onImageSelected = {
                         addLocalImage(it)
                         updateProfileImg(it)
-                        Toast.makeText(requireContext(), getString(R.string.feature_not_available), Toast.LENGTH_LONG).show()
                     })
                 }).apply {
                 isCancelable = false
@@ -167,7 +167,7 @@ class SettingFragment : Fragment() {
         nameChangeDialog =
             CustomEditDialog(
                 resources.getString(R.string.change_name_dialog),
-                binding.accountName.text.toString(),
+                "",
                 resources.getString(R.string.example_name),
                 resources.getString(R.string.change_name_dialog_instruction),
                 resources.getString(R.string.cancel),
@@ -202,7 +202,11 @@ class SettingFragment : Fragment() {
     }
 
     private fun updateProfileImg(uri: Uri?) {
-        SendFilesUtil.uriToFile(requireContext(), listOf(uri.toString())) { fileParts ->
+        SendFilesUtil.uriToFile(
+            requireContext(),
+            "profileImage",
+            listOf(uri.toString())
+        ) { fileParts ->
             Log.d("SettingFragment", "fileParts size: ${fileParts.size}")
             if (fileParts.isNotEmpty()) {
                 viewModel.updateProfile(binding.accountName.text.toString(), fileParts.first())

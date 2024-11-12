@@ -180,6 +180,7 @@ class PostAdapter(
             post?.let {
                 binding.location.text = it.locationName
                 binding.content.text = it.content
+                binding.likeCnt.text = it.likeCount.likeCount.toString()
                 binding.dateAndTime.text = formatCreateAt(it.createAt)
                 like.setLike(it.liked)
 

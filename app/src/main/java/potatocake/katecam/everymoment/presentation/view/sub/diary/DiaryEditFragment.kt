@@ -383,7 +383,7 @@ class DiaryEditFragment : Fragment() {
     }
 
     private fun patchFiles(callback: (Boolean) -> Unit) {
-        SendFilesUtil.uriToFile(requireContext(), imagesList) { images ->
+        SendFilesUtil.uriToFile(requireContext(), "files", imagesList) { images ->
             viewModel.patchFiles(images) { success ->
                 callback(success)
             }
