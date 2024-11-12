@@ -4,6 +4,7 @@ import android.util.Log
 import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCommentRequest
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetFilesResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
@@ -102,7 +103,28 @@ class PostRepository {
             }
 
             override fun onFailure(p0: Call<GetLikeCountResponse>, p1: Throwable) {
-                Log.d("settle54", "Failed to Get Files: ${p1.message}")
+                Log.d("settle54", "Failed to Get LikeCnt: ${p1.message}")
+                callback(false, null)
+            }
+        })
+    }
+
+    fun getCommentCnt(diaryId: Int, callback: (Boolean, GetCommentCntResponse?) -> Unit) {
+        apiService.getCommentCnt(token, diaryId).enqueue(object : Callback<GetCommentCntResponse> {
+            override fun onResponse(
+                p0: Call<GetCommentCntResponse>,
+                p1: Response<GetCommentCntResponse>
+            ) {
+                if (p1.isSuccessful) {
+                    Log.d("settle54", "${p1.body()}")
+                    callback(true, p1.body())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(p0: Call<GetCommentCntResponse>, p1: Throwable) {
+                Log.d("settle54", "Failed to Get CommentCnt: ${p1.message}")
                 callback(false, null)
             }
         })

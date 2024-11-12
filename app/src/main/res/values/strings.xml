@@ -99,4 +99,6 @@
     <string name="skip">건너뛰기</string>
     <string name="next">다음</string>
     <string name="non_login">비로그인으로 사용해보기</string>
+    <string name="location_text_length">장소명은 30자까지 작성 가능합니다.</string>
+    <string name="address_text_length">주소명은 100자까지만 작성 가능합니다.</string>
 </resources>

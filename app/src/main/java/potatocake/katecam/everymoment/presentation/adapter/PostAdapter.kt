@@ -15,17 +15,17 @@ import potatocake.katecam.everymoment.databinding.CommentItemBinding
 import potatocake.katecam.everymoment.databinding.PostRecyclerHeaderBinding
 import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.extensions.Like
+import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PostAdapter(private val context: Context, private val viewModel: PostViewModel) :
+class PostAdapter(private val listener: OnDeleteCommentListener, private val viewModel: PostViewModel) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var commentCount = 0
     private var likeCnt = 0
-    private lateinit var delCommentDialog: CustomDialog
+    private var commentCnt = 0
 
     private var post: Post? = null
     private var images: List<String>? = null
@@ -34,21 +34,6 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
     companion object {
         const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_ITEM = 1
-    }
-
-    init {
-        setDialog()
-    }
-
-    fun setDialog() {
-        delCommentDialog = CustomDialog(
-            message = context.getString(R.string.del_comment),
-            negText = context.getString(R.string.cancel),
-            posText = context.getString(R.string.delete),
-            onPositiveClick = {
-
-            }
-        )
     }
 
     fun updatePost(post: Post) {
@@ -68,6 +53,11 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
 
     fun updateLikeCnt(likeCnt: Int) {
         this.likeCnt = likeCnt
+        notifyItemChanged(0)
+    }
+
+    fun updateCommentCnt(commentCnt: Int) {
+        this.commentCnt = commentCnt
         notifyItemChanged(0)
     }
 
@@ -91,11 +81,10 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
         fun setClickListeners() {
             binding.root.setOnLongClickListener {
                 val adjustedPosition = adapterPosition - 1
-                if (adjustedPosition >= 0) {
-                    val commentId = comments[adjustedPosition].id
-                    Log.d("dd", "$commentId")
-                    viewModel.delComment(commentId)
-                }
+                val commentUserId = comments[adjustedPosition].commentFriend.id
+                if (!viewModel.checkIsUserId(commentUserId)) return@setOnLongClickListener true
+                val commentId = comments[adjustedPosition].id
+                listener.onDeleteCommentRequested(commentId)
                 true
             }
         }
@@ -106,18 +95,15 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
 
         private var like = Like(binding.like)
 
-        init {
-            binding.commentCnt.text = commentCount.toString()
-        }
-
         fun bind() {
             setDiaryContent()
             setImages()
+            setCommentCnt()
             setClickListeners()
         }
 
-        private fun updateCommentCnt() {
-            binding.commentCnt.text = commentCount.toString()
+        fun setCommentCnt() {
+            binding.commentCnt.text = commentCnt.toString()
         }
 
         private fun setImages() {
@@ -126,11 +112,11 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                     if (it.size == 2) {
                         binding.image2.visibility = View.VISIBLE
                         binding.image2.scaleType = ImageView.ScaleType.CENTER_CROP
-                        Glide.with(context).load(it[1]).into(binding.image2)
+                        Glide.with(itemView.context).load(it[1]).into(binding.image2)
                     }
                     binding.image1.visibility = View.VISIBLE
                     binding.image1.scaleType = ImageView.ScaleType.CENTER_CROP
-                    Glide.with(context).load(it[0]).into(binding.image1)
+                    Glide.with(itemView.context).load(it[0]).into(binding.image1)
                     binding.images.visibility = View.VISIBLE
                 }
             }
@@ -149,15 +135,16 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                     if (it.categories.size == 2) {
                         binding.category2.visibility = View.VISIBLE
                         binding.category2.text =
-                            context.getString(R.string.category_text, it.categories[1].categoryName)
+                            itemView.context.getString(R.string.category_text, it.categories[1].categoryName)
                     }
                     binding.category1.visibility = View.VISIBLE
                     binding.category1.text =
-                        context.getString(R.string.category_text, it.categories[0].categoryName)
+                        itemView.context.getString(R.string.category_text, it.categories[0].categoryName)
                     binding.categories.visibility = View.VISIBLE
                 }
 
-                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)?.getEmotionUnicode()?.let { emotion ->
+                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)
+                    ?.getEmotionUnicode()?.let { emotion ->
                     binding.emotion.text = emotion
                     binding.emotion.visibility = View.VISIBLE
                 }
