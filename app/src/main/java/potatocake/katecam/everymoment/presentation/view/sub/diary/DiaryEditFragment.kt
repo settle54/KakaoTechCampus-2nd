@@ -90,10 +90,11 @@ class DiaryEditFragment : Fragment() {
         val diary = viewModel.diary.value
         diary?.let { it ->
             if (it.emoji != null) {
-                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)?.getEmotionUnicode()?.let { emotion ->
-                    binding.emotion.text = emotion
-                    binding.emotion.visibility = View.VISIBLE
-                }
+                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)
+                    ?.getEmotionUnicode()?.let { emotion ->
+                        binding.emotion.text = emotion
+                        binding.emotion.visibility = View.VISIBLE
+                    }
                 binding.addEmotion.visibility = View.GONE
             } else {
                 binding.addEmotion.visibility = View.VISIBLE
@@ -352,14 +353,17 @@ class DiaryEditFragment : Fragment() {
         }
 
         binding.diaryDoneButton.setOnClickListener {
+            if (!checkLocationAndAddress()) return@setOnClickListener
+
             patchViewModelDiary()
             patchViewModelFiles()
+
             patchEditedDiary { successDiary ->
                 Log.d("successDiary", "$successDiary")
                 if (successDiary) {
                     patchFiles {
                         Log.d("patchFiles", "$it")
-                        if (it)
+                        if (it && requireActivity().supportFragmentManager.backStackEntryCount != 0)
                             requireActivity().supportFragmentManager.popBackStack()
                     }
                 }
@@ -379,11 +383,39 @@ class DiaryEditFragment : Fragment() {
     }
 
     private fun patchFiles(callback: (Boolean) -> Unit) {
-        SendFilesUtil.uriToFile(requireContext(), imagesList) { images ->
+        SendFilesUtil.uriToFile(requireContext(), "files", imagesList) { images ->
             viewModel.patchFiles(images) { success ->
                 callback(success)
             }
         }
+    }
+
+    private fun checkLocationAndAddress(): Boolean {
+        val locationText = binding.location.text.toString()
+        val addressText = binding.address.text.toString()
+
+        return when {
+            notExistTextViewText(locationText) || notExistTextViewText(addressText) -> {
+                showToast(R.string.locantion_and_address_not_blank)
+                false
+            }
+
+            locationText.length > 30 -> {
+                showToast(R.string.location_text_length)
+                false
+            }
+
+            addressText.length > 100 -> {
+                showToast(R.string.address_text_length)
+                false
+            }
+
+            else -> true
+        }
+    }
+
+    private fun showToast(messageResId: Int) {
+        Toast.makeText(requireContext(), messageResId, Toast.LENGTH_SHORT).show()
     }
 
     private fun patchViewModelDiary() {
@@ -399,7 +431,9 @@ class DiaryEditFragment : Fragment() {
             },
             content = binding.content.text.toString(),
             createAt = viewModel.diary.value!!.createAt,
-            emoji = potatocake.katecam.everymoment.data.model.entity.Emotions.getEmotionNameInLowerCase(binding.emotion.text.toString()),
+            emoji = potatocake.katecam.everymoment.data.model.entity.Emotions.getEmotionNameInLowerCase(
+                binding.emotion.text.toString()
+            ),
             id = viewModel.getDiaryId(),
             locationName = binding.location.text.toString()
         )
@@ -408,29 +442,25 @@ class DiaryEditFragment : Fragment() {
     }
 
     private fun patchEditedDiary(callback: (Boolean) -> Unit) {
-        val notAddress = notExistTextViewText(binding.address.text.toString())
-        val notLocation = notExistTextViewText(binding.location.text.toString())
-        if (notAddress == true || notLocation == true) {
-            Toast.makeText(requireContext(), R.string.locantion_and_address_not_blank, Toast.LENGTH_SHORT).show()
-        } else {
-            val notEmotion = notExistTextViewText(binding.emotion.text.toString())
-            val notContent = notExistTextViewText(binding.content.text.toString())
-            val notCategory = categoryList.isEmpty()
+        val notEmotion = notExistTextViewText(binding.emotion.text.toString())
+        val notContent = notExistTextViewText(binding.content.text.toString())
+        val notCategory = categoryList.isEmpty()
 
-            val request = PatchEditedDiaryRequest(
-                address = binding.address.text.toString(),
-                categories = categoryList,
-                content = binding.content.text.toString(),
-                contentDelete = notContent,
-                deleteAllCategories = notCategory,
-                emoji = potatocake.katecam.everymoment.data.model.entity.Emotions.getEmotionNameInLowerCase(binding.emotion.text.toString()),
-                emojiDelete = notEmotion,
-                locationName = binding.location.text.toString(),
-            )
-            Log.d("settle54", "patch server: $request")
-            viewModel.patchEditedDiary(request) { success ->
-                callback(success)
-            }
+        val request = PatchEditedDiaryRequest(
+            address = binding.address.text.toString(),
+            categories = categoryList,
+            content = binding.content.text.toString(),
+            contentDelete = notContent,
+            deleteAllCategories = notCategory,
+            emoji = potatocake.katecam.everymoment.data.model.entity.Emotions.getEmotionNameInLowerCase(
+                binding.emotion.text.toString()
+            ),
+            emojiDelete = notEmotion,
+            locationName = binding.location.text.toString(),
+        )
+        Log.d("settle54", "patch server: $request")
+        viewModel.patchEditedDiary(request) { success ->
+            callback(success)
         }
     }
 

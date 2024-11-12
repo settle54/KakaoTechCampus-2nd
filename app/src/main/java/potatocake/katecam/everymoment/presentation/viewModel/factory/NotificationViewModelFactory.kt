@@ -1,9 +1,10 @@
-package potatocake.katecam.everymoment.presentation.viewModel
+package potatocake.katecam.everymoment.presentation.viewModel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import potatocake.katecam.everymoment.data.repository.FriendRepository
 import potatocake.katecam.everymoment.data.repository.NotificationRepository
+import potatocake.katecam.everymoment.presentation.viewModel.NotificationViewModel
 
 class NotificationViewModelFactory(
     private val notificationRepository: NotificationRepository,

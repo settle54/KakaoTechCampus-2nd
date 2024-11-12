@@ -20,16 +20,21 @@ import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.PostViewModelFactory
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.extensions.CustomDialog
+import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
 
-class PostFragment : Fragment() {
+class PostFragment : Fragment(), OnDeleteCommentListener {
 
     private lateinit var binding: FragmentPostBinding
     private lateinit var postAdapter: PostAdapter
     private lateinit var imm: InputMethodManager
     private val postRepository: PostRepository = PostRepository()
+    private val myInfoRepository: MyInfoRepository = MyInfoRepository()
+    private lateinit var delCommentDialog: CustomDialog
 
     private val viewModel: PostViewModel by viewModels {
-        PostViewModelFactory(postRepository)
+        PostViewModelFactory(postRepository, myInfoRepository)
     }
 
     override fun onCreateView(
@@ -67,6 +72,15 @@ class PostFragment : Fragment() {
         (activity as? MainActivity)?.showNavigationBar()
     }
 
+    fun hideCommentWindow() {
+        binding.commentWindow.visibility = View.GONE
+    }
+
+    fun showCommentWindow() {
+        binding.commentWindow.visibility = View.VISIBLE
+        imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
+    }
+
     private fun setViewModelObserver() {
         viewModel.post.observe(viewLifecycleOwner) {
             postAdapter.updatePost(it)
@@ -75,16 +89,25 @@ class PostFragment : Fragment() {
             postAdapter.updateImages(it)
         }
         viewModel.comments.observe(viewLifecycleOwner) {
-            postAdapter.updateComments(it)
+            postAdapter.updateComments(it.comments)
+            if (it.scrollToBottom) {
+                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
+                binding.recyclerView.scrollToPosition(lastPosition)
+            }
         }
         viewModel.likeCnt.observe(viewLifecycleOwner) {
             postAdapter.updateLikeCnt(it)
+        }
+        viewModel.commentCnt.observe(viewLifecycleOwner) {
+            postAdapter.updateCommentCnt(it)
         }
     }
 
     private fun getComments() {
         lifecycleScope.launch {
+            viewModel.getCommentCnt()
             viewModel.getComments()
+            viewModel.getUserId()
         }
     }
 
@@ -116,7 +139,6 @@ class PostFragment : Fragment() {
                 }
                 // 스크롤 방향이 위로 올라가는 경우 (dy < 0)
                 else if (dy < 0 && firstVisibleItemPosition == 0) {
-                    viewModel.loadPreviousComments()
                 }
             }
         })
@@ -134,16 +156,26 @@ class PostFragment : Fragment() {
                 imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
                 binding.comment.clearFocus()
                 binding.comment.setText("")
-                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
-                binding.recyclerView.scrollToPosition(lastPosition)
             }
         }
     }
 
     private fun setPostAdapter() {
-        postAdapter = PostAdapter(requireContext(), viewModel)
+        postAdapter = PostAdapter(this, this, viewModel)
         binding.recyclerView.adapter = postAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    override fun onDeleteCommentRequested(commentId: Int) {
+        delCommentDialog = CustomDialog(
+            message = resources.getString(R.string.del_comment),
+            negText = resources.getString(R.string.cancel),
+            posText = resources.getString(R.string.delete),
+            onPositiveClick = {
+                viewModel.delComment(commentId)
+            }
+        )
+        delCommentDialog.show(parentFragmentManager, "delCommentDialog")
     }
 
 }

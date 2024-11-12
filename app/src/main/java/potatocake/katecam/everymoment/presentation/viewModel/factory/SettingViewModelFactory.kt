@@ -1,8 +1,9 @@
-package potatocake.katecam.everymoment.presentation.viewModel
+package potatocake.katecam.everymoment.presentation.viewModel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModel
 
 class SettingViewModelFactory(
     private val myInfoRepository: MyInfoRepository

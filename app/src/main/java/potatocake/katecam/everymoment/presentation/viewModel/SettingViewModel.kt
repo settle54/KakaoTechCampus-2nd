@@ -25,10 +25,8 @@ class SettingViewModel(private val myInfoRepository: MyInfoRepository): ViewMode
     }
 
     fun updateProfile(nickname: String?, profileImagePart: MultipartBody.Part?) {
-        val nicknameRequestBody = nickname?.toRequestBody("text/plain".toMediaTypeOrNull())
-
         viewModelScope.launch {
-            myInfoRepository.updateMyInfo(nicknameRequestBody, profileImagePart) { success, response ->
+            myInfoRepository.updateMyInfo(nickname, profileImagePart) { success, response ->
                 if (success) {
                     Log.d("arieum", "Profile updated successfully")
                     Log.d("arieum", profileImagePart.toString())
