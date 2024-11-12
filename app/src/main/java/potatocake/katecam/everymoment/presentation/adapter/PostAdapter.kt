@@ -108,7 +108,8 @@ class PostAdapter(
             }
 
             binding.editComment.setOnFocusChangeListener { v, hasFocus ->
-
+                if (hasFocus) parentFragment.hideCommentWindow()
+                else parentFragment.showCommentWindow()
             }
 
             binding.done.setOnClickListener {
