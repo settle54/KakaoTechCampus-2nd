@@ -363,7 +363,7 @@ class DiaryEditFragment : Fragment() {
                 if (successDiary) {
                     patchFiles {
                         Log.d("patchFiles", "$it")
-                        if (it)
+                        if (it && requireActivity().supportFragmentManager.backStackEntryCount != 0)
                             requireActivity().supportFragmentManager.popBackStack()
                     }
                 }

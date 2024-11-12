@@ -32,7 +32,7 @@ class PostAdapter(
     private val viewModel: PostViewModel
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+    private lateinit var like: Like
     private var likeCnt = 0
     private var commentCnt = 0
 
@@ -140,17 +140,23 @@ class PostAdapter(
     inner class HeaderViewHolder(private val binding: PostRecyclerHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private var like = Like(binding.like)
-
         fun bind() {
+            if (!::like.isInitialized) {
+                like = Like(binding.like)
+            }
             setDiaryContent()
             setImages()
             setCommentCnt()
+            setLikeCnt()
             setClickListeners()
         }
 
         fun setCommentCnt() {
             binding.commentCnt.text = commentCnt.toString()
+        }
+
+        fun setLikeCnt() {
+            binding.likeCnt.text = likeCnt.toString()
         }
 
         private fun setImages() {
@@ -173,8 +179,6 @@ class PostAdapter(
             post?.let {
                 binding.location.text = it.locationName
                 binding.content.text = it.content
-                likeCnt = it.likeCount.likeCount
-                binding.likeCnt.text = likeCnt.toString()
                 binding.dateAndTime.text = formatCreateAt(it.createAt)
                 like.setLike(it.liked)
 
