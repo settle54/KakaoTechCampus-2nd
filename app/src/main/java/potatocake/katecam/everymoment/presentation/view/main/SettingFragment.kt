@@ -154,8 +154,10 @@ class SettingFragment : Fragment() {
             if (myInformation != null) {
                 binding.accountName.text = myInformation.nickname
 
+                val imageUrl = myInformation.profileImageUrl ?: R.drawable.account_circle_24px
+
                 Glide.with(requireContext())
-                    .load(myInformation.profileImageUrl)
+                    .load(imageUrl)
                     .circleCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.accountImage)
