@@ -10,6 +10,7 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.getComment
 import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.Post
 import potatocake.katecam.everymoment.data.repository.PostRepository
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.repository.MyInfoRepository
 
 class PostViewModel(private val postRepository: PostRepository, private val myInfoRepository: MyInfoRepository) : ViewModel() {
@@ -21,17 +22,17 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
     private val _images = MutableLiveData<List<String>>()
     val images: LiveData<List<String>> get() = _images
 
-    private val _comments = MutableLiveData<List<Comment>>()
-    val comments: LiveData<List<Comment>> get() = _comments
+    private val _comments = MutableLiveData<CommentState>()
+    val comments: LiveData<CommentState> get() = _comments
     private val _likeCnt = MutableLiveData<Int>()
     val likeCnt: LiveData<Int> get() = _likeCnt
     private val _commentCnt = MutableLiveData<Int>()
     val commentCnt: LiveData<Int> get() = _commentCnt
 
-    data class PageState(var currentPage: Int, var nextPage: Int?)
-    var pageState = PageState(0, null)
+    data class PageState(var currentPage: Int, var nextPage: Int?, var isLoading: Boolean)
+    var pageState = PageState(0, null, false)
+    data class CommentState(var comments: List<Comment>, var scrollToBottom: Boolean)
 
-    private var isLoading = false
     private val currentComments: MutableList<Comment> = mutableListOf()
 
     /**
@@ -132,8 +133,18 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
             val request = PostCommentRequest(comment)
             postRepository.postComment(diaryId!!, request) { success, response ->
                 if (success && response != null) {
-                    getComments()
+                    getComments(true)
                     getCommentCnt()
+                }
+            }
+        }
+    }
+
+    fun patchComment(commentId: Int, comment: String) {
+        viewModelScope.launch {
+            val request = PatchCommentRequest(comment)
+            postRepository.patchComment(commentId, request) { success, response ->
+                if (success && response != null) {
                 }
             }
         }
@@ -143,16 +154,16 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
         viewModelScope.launch {
             postRepository.delComment(commentId) { success, response ->
                 if (success && response != null) {
-                    getComments()
+                    getComments(true)
                     getCommentCnt()
                 }
             }
         }
     }
 
-    fun getComments() {
-        if (isLoading) return
-        isLoading = true
+    fun getComments(scrollToBottom: Boolean = false) {
+        if (pageState.isLoading) return
+        pageState.isLoading = true
         viewModelScope.launch {
             Log.d("postViewModel", "pageState: $pageState")
             postRepository.getComments(diaryId!!, pageState.currentPage) { success, response ->
@@ -165,10 +176,10 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
                     }
 
                     currentComments.addAll(newComments)
-                    _comments.postValue(currentComments.toList())
+                    _comments.postValue(CommentState(currentComments.toList(), scrollToBottom))
 
                     pageState.nextPage = response.commentList.next
-                    isLoading = false
+                    pageState.isLoading = false
                 }
             }
         }
@@ -180,15 +191,6 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
             getComments()
         } else {
             Log.d("postViewModel", "다음 페이지가 없습니다.")
-        }
-    }
-
-    fun loadPreviousComments() {
-        if (pageState.currentPage > 0) {
-            pageState.currentPage -= 1
-            getComments()
-        } else {
-            Log.d("postViewModel", "이전 페이지가 없습니다.")
         }
     }
 

@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val token = "eyJhbGciOiJIUzM4NCJ9.eyJpZCI6OCwiaWF0IjoxNzMxMjQ1MTU0LCJleHAiOjE3MzE0MTc5NTR9.ot-arBkCnuhNfvXIzNS4GSX1mL7qK0D-X4keUAohX3CrAQOJYrBXvek_Y5sRpNJq"
+        val token = "eyJhbGciOiJIUzM4NCJ9.eyJpZCI6OCwiaWF0IjoxNzMxNDI2NzQ5LCJleHAiOjE3MzE1OTk1NDl9.UxuW86iKeihWERfU2IAjK26uQS6JKSVOD12JkoDV5E_I3aSAiffuhS-SDmvByjNw"
         GlobalApplication.prefs.setString("token", token)
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig

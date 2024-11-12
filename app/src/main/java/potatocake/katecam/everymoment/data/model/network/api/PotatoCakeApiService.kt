@@ -21,6 +21,7 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.getComment
 import potatocake.katecam.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -252,4 +253,11 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int
     ): Call<GetCommentCntResponse>
+
+    @PATCH("/api/comments/{commentId}")
+    fun patchComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: PatchCommentRequest
+    ): Call<ServerResponse>
 }

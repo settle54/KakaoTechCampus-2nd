@@ -1,11 +1,15 @@
 package potatocake.katecam.everymoment.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import potatocake.katecam.everymoment.R
@@ -16,12 +20,17 @@ import potatocake.katecam.everymoment.databinding.PostRecyclerHeaderBinding
 import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.extensions.Like
 import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
+import potatocake.katecam.everymoment.presentation.view.sub.PostFragment
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PostAdapter(private val listener: OnDeleteCommentListener, private val viewModel: PostViewModel) :
+class PostAdapter(
+    private val parentFragment: PostFragment,
+    private val listener: OnDeleteCommentListener,
+    private val viewModel: PostViewModel
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var likeCnt = 0
@@ -75,10 +84,12 @@ class PostAdapter(private val listener: OnDeleteCommentListener, private val vie
                 .load(item.commentFriend.profileImageUrl)
                 .circleCrop()
                 .into(binding.profileImg)
+            binding.edit.isVisible = viewModel.checkIsUserId(item.commentFriend.id)
             setClickListeners()
         }
 
-        fun setClickListeners() {
+        @SuppressLint("ClickableViewAccessibility")
+        private fun setClickListeners() {
             binding.root.setOnLongClickListener {
                 val adjustedPosition = adapterPosition - 1
                 val commentUserId = comments[adjustedPosition].commentFriend.id
@@ -86,6 +97,42 @@ class PostAdapter(private val listener: OnDeleteCommentListener, private val vie
                 val commentId = comments[adjustedPosition].id
                 listener.onDeleteCommentRequested(commentId)
                 true
+            }
+
+            binding.edit.setOnClickListener {
+                binding.editComment.setText(binding.comment.text.toString())
+                binding.comment.visibility = View.GONE
+                binding.edit.visibility = View.GONE
+                binding.editCommentView.visibility = View.VISIBLE
+                binding.editTools.visibility = View.VISIBLE
+            }
+
+            binding.editComment.setOnFocusChangeListener { v, hasFocus ->
+
+            }
+
+            binding.done.setOnClickListener {
+                val newText = binding.editComment.text.toString()
+                if (newText.isEmpty()) {
+                    Toast.makeText(itemView.context, "빈 댓글은 작성할 수 없습니다", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val commentId = comments[adapterPosition - 1].id
+                binding.comment.text = newText
+                binding.comment.visibility = View.VISIBLE
+                binding.edit.visibility = View.VISIBLE
+                binding.editCommentView.visibility = View.GONE
+                binding.editTools.visibility = View.GONE
+                viewModel.patchComment(commentId, newText)
+                parentFragment.showCommentWindow()
+            }
+
+            binding.cancel.setOnClickListener {
+                binding.comment.visibility = View.VISIBLE
+                binding.edit.visibility = View.VISIBLE
+                binding.editCommentView.visibility = View.GONE
+                binding.editTools.visibility = View.GONE
+                parentFragment.showCommentWindow()
             }
         }
     }
@@ -135,19 +182,25 @@ class PostAdapter(private val listener: OnDeleteCommentListener, private val vie
                     if (it.categories.size == 2) {
                         binding.category2.visibility = View.VISIBLE
                         binding.category2.text =
-                            itemView.context.getString(R.string.category_text, it.categories[1].categoryName)
+                            itemView.context.getString(
+                                R.string.category_text,
+                                it.categories[1].categoryName
+                            )
                     }
                     binding.category1.visibility = View.VISIBLE
                     binding.category1.text =
-                        itemView.context.getString(R.string.category_text, it.categories[0].categoryName)
+                        itemView.context.getString(
+                            R.string.category_text,
+                            it.categories[0].categoryName
+                        )
                     binding.categories.visibility = View.VISIBLE
                 }
 
                 potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)
                     ?.getEmotionUnicode()?.let { emotion ->
-                    binding.emotion.text = emotion
-                    binding.emotion.visibility = View.VISIBLE
-                }
+                        binding.emotion.text = emotion
+                        binding.emotion.visibility = View.VISIBLE
+                    }
                 binding.header.visibility = View.VISIBLE
                 if (!it.content.isNullOrBlank()) {
                     binding.content.visibility = View.VISIBLE

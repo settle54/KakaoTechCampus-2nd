@@ -72,6 +72,15 @@ class PostFragment : Fragment(), OnDeleteCommentListener {
         (activity as? MainActivity)?.showNavigationBar()
     }
 
+    fun hideCommentWindow() {
+        binding.commentWindow.visibility = View.GONE
+    }
+
+    fun showCommentWindow() {
+        binding.commentWindow.visibility = View.VISIBLE
+        imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
+    }
+
     private fun setViewModelObserver() {
         viewModel.post.observe(viewLifecycleOwner) {
             postAdapter.updatePost(it)
@@ -80,7 +89,11 @@ class PostFragment : Fragment(), OnDeleteCommentListener {
             postAdapter.updateImages(it)
         }
         viewModel.comments.observe(viewLifecycleOwner) {
-            postAdapter.updateComments(it)
+            postAdapter.updateComments(it.comments)
+            if (it.scrollToBottom) {
+                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
+                binding.recyclerView.scrollToPosition(lastPosition)
+            }
         }
         viewModel.likeCnt.observe(viewLifecycleOwner) {
             postAdapter.updateLikeCnt(it)
@@ -126,7 +139,6 @@ class PostFragment : Fragment(), OnDeleteCommentListener {
                 }
                 // 스크롤 방향이 위로 올라가는 경우 (dy < 0)
                 else if (dy < 0 && firstVisibleItemPosition == 0) {
-                    viewModel.loadPreviousComments()
                 }
             }
         })
@@ -144,14 +156,12 @@ class PostFragment : Fragment(), OnDeleteCommentListener {
                 imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
                 binding.comment.clearFocus()
                 binding.comment.setText("")
-                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
-                binding.recyclerView.scrollToPosition(lastPosition)
             }
         }
     }
 
     private fun setPostAdapter() {
-        postAdapter = PostAdapter(this, viewModel)
+        postAdapter = PostAdapter(this, this, viewModel)
         binding.recyclerView.adapter = postAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
