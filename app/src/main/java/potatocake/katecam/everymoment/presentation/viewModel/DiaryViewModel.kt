@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
+import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiaryRequest
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -170,4 +171,12 @@ class DiaryViewModel(private val diaryRepository: DiaryRepository) : ViewModel()
         }
     }
 
+    fun postManualDiary(request: ManualDiaryRequest, callback: (Boolean) -> Unit){
+        viewModelScope.launch {
+            diaryRepository.postNewManualDiary(request) { success, message ->
+                Log.d("arieum", message.toString())
+                callback(success)
+            }
+        }
+    }
 }

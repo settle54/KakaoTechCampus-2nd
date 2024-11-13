@@ -145,6 +145,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 CustomDialog("이 일기를 삭제하시겠습니까?", "취소", "삭제", onPositiveClick = {
                     removeItem(adapterPosition)
                     viewModel.deleteDiary(item.id)
+                    // Log.d("arieum", item.id.toString())
                 }).show(activity.supportFragmentManager, "delAutoDiary")
             }
 
@@ -201,7 +202,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             val originalFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             val date = originalFormat.parse(originalTime)
 
-            val targetFormat = SimpleDateFormat("a h:m", Locale.getDefault())
+            val targetFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
             val formattedTime = targetFormat.format(date)
             return formattedTime
         }

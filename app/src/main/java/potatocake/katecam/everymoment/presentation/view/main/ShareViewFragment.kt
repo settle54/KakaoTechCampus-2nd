@@ -52,7 +52,7 @@ class ShareViewFragment : Fragment() {
 
         val initialDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
         viewModel.fetchFriendsList()
-        viewModel.fetchTotalFriendDiaryList(initialDate)
+        viewModel.fetchTodayFriendDiaryList(initialDate)
 
         binding.friendListIcon.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -124,8 +124,22 @@ class ShareViewFragment : Fragment() {
                 val totalItemCount = layoutManager.itemCount
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
-                if (!viewModel.isLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
-                    viewModel.fetchNextPage()
+                if (!viewModel.isFriendDiaryListLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
+                    viewModel.fetchFriendDiaryNextPage()
+                }
+            }
+        })
+
+        binding.friendList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                if (!viewModel.isFriendListLoading.value!! && totalItemCount <= (lastVisibleItemPosition + 2)) {
+                    viewModel.fetchFriendsNextPage()
                 }
             }
         })
