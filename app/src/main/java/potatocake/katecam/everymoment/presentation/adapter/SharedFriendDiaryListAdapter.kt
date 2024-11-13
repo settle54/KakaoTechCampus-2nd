@@ -34,9 +34,14 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
     }
 ) {
     private var selectedFriendName: String = ""
+    private var selectedFriendPosition: Int? = null
 
-    fun setSelectedFriendName(nickName: String){
+    fun setSelectedFriendName(nickName: String) {
         selectedFriendName = nickName
+    }
+
+    fun setSelectedFriendPosition(position: Int) {
+        selectedFriendPosition = position
     }
 
     inner class ViewHolder(private val binding: ShareItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -53,6 +58,7 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
                 val bundle = Bundle().apply {
                     putInt("diary_id", item.id)
                     putString("selected_friend_name", selectedFriendName)
+                    putInt("selected_friend_position", selectedFriendPosition ?: -1)
                 }
                 postFragment.arguments = bundle
 
