@@ -275,7 +275,11 @@ class TodayLogFragment : Fragment() {
     private fun moveToManualDiary(){
         val fragment = ManualDiaryEditFragment()
         val bundle = Bundle()
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formattedDate = dateFormat.format(calendar.time)
         bundle.putString("selected_date", binding.currentDate.text.toString())
+        bundle.putString("formatted_date", formattedDate)
         fragment.arguments = bundle
 
         parentFragmentManager.beginTransaction().apply {

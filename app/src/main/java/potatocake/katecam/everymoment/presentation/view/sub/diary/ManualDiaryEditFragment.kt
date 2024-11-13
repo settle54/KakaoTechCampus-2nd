@@ -26,6 +26,9 @@ import potatocake.katecam.everymoment.extensions.ToPxConverter
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class ManualDiaryEditFragment : Fragment() {
 
@@ -228,7 +231,16 @@ class ManualDiaryEditFragment : Fragment() {
         }
 
         binding.diaryDoneButton.setOnClickListener {
-            postManualDiary { successDiary ->
+            val selectedDateStr = arguments?.getString("formatted_date")
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            val selectedDateFormatted = try {
+                selectedDateStr?.let { dateFormat.format(dateFormat.parse(it)) }
+            } catch (e: Exception) {
+                dateFormat.format(Calendar.getInstance().time)
+            }
+
+            postManualDiary(selectedDateFormatted) { successDiary ->
                 Log.d("successDiary", "$successDiary")
                 if (successDiary) {
                     navigateToTodayLogFragment()
@@ -266,7 +278,7 @@ class ManualDiaryEditFragment : Fragment() {
         viewModel.patchViewModelDiary(diary)
     }
 
-    private fun postManualDiary(callback: (Boolean) -> Unit) {
+    private fun postManualDiary(diaryDate: String?, callback: (Boolean) -> Unit) {
         val notAddress = notExistTextViewText(binding.address.text.toString())
         val notLocation = notExistTextViewText(binding.location.text.toString())
         if (notAddress == true || notLocation == true) {
@@ -277,6 +289,7 @@ class ManualDiaryEditFragment : Fragment() {
             ).show()
         } else {
             val request = ManualDiaryRequest(
+                diaryDate = diaryDate,
                 locationPoint = LocationPoint(0.0, 0.0),
                 address = binding.address.text.toString(),
                 categories = categoryList,

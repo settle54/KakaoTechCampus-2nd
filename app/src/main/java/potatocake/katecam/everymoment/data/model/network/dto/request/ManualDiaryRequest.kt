@@ -4,6 +4,7 @@ import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDia
 import potatocake.katecam.everymoment.data.model.network.dto.vo.LocationPoint
 
 data class ManualDiaryRequest(
+    val diaryDate: String?,
     val categories: MutableList<Category>,
     val locationPoint: LocationPoint,
     val locationName: String,
