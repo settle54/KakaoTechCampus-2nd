@@ -26,6 +26,7 @@ import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
 import androidx.recyclerview.widget.RecyclerView
+import potatocake.katecam.everymoment.presentation.view.sub.diary.ManualDiaryEditFragment
 import potatocake.katecam.everymoment.services.location.GlobalApplication
 
 class TodayLogFragment : Fragment() {
@@ -118,6 +119,15 @@ class TodayLogFragment : Fragment() {
         binding.prevDate.setOnClickListener {
             changeDate(-1)
         }
+
+        binding.addDiaryButton.setOnClickListener {
+            moveToManualDiary()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshData()
     }
 
     private fun observeViewModel(adapter: TimelineAdapter) {
@@ -259,6 +269,19 @@ class TodayLogFragment : Fragment() {
 
         if (isInitialLaunch) {
             GlobalApplication.prefs.setBoolean("isInitialLaunch", false)
+        }
+    }
+
+    private fun moveToManualDiary(){
+        val fragment = ManualDiaryEditFragment()
+        val bundle = Bundle()
+        bundle.putString("selected_date", binding.currentDate.text.toString())
+        fragment.arguments = bundle
+
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, fragment)
+            addToBackStack(null)
+            commit()
         }
     }
 }
