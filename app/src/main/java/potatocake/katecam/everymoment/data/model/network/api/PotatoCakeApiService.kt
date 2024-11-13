@@ -21,8 +21,11 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.getComment
 import potatocake.katecam.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
 import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiaryRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.TokenRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -203,8 +206,8 @@ interface PotatoCakeApiService {
     @POST("/api/members")
     fun updateProfile(
         @Header("Authorization") token: String,
-        @Part("nickname") nickname: RequestBody?,
-        @Part profileImage: MultipartBody.Part?
+        @Query ("nickname") nickname: String?,
+        @Part profileImage: MultipartBody.Part
     ): Call<ServerResponse>
 
     @GET("/api/members/anonymous-login")
@@ -250,6 +253,19 @@ interface PotatoCakeApiService {
         @Path("diaryId") diaryId: Int
     ): Call<GetLikeCountResponse>
 
+    @GET("/api/comments/{diaryId}/count")
+    fun getCommentCnt(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<GetCommentCntResponse>
+
+    @PATCH("/api/comments/{commentId}")
+    fun patchComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: PatchCommentRequest
+    ): Call<ServerResponse>
+
     @PATCH("/api/diaries/{diaryId}")
     fun patchEditedEmoji(
         @Header("Authorization") token: String,
@@ -268,5 +284,11 @@ interface PotatoCakeApiService {
     fun postManualDiary(
         @Header("Authorization") token: String,
         @Body request: ManualDiaryRequest
+    ): Call<ServerResponse>
+
+    @POST("/api/fcm/token")
+    fun postToken(
+        @Header("Authorization") token: String,
+        @Body tokenRequest: TokenRequest
     ): Call<ServerResponse>
 }

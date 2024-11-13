@@ -1,11 +1,15 @@
 package potatocake.katecam.everymoment.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import potatocake.katecam.everymoment.R
@@ -15,17 +19,22 @@ import potatocake.katecam.everymoment.databinding.CommentItemBinding
 import potatocake.katecam.everymoment.databinding.PostRecyclerHeaderBinding
 import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.extensions.Like
+import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
+import potatocake.katecam.everymoment.presentation.view.sub.PostFragment
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PostAdapter(private val context: Context, private val viewModel: PostViewModel) :
+class PostAdapter(
+    private val parentFragment: PostFragment,
+    private val listener: OnDeleteCommentListener,
+    private val viewModel: PostViewModel
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private var commentCount = 0
+    private lateinit var like: Like
     private var likeCnt = 0
-    private lateinit var delCommentDialog: CustomDialog
+    private var commentCnt = 0
 
     private var post: Post? = null
     private var images: List<String>? = null
@@ -34,21 +43,6 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
     companion object {
         const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_ITEM = 1
-    }
-
-    init {
-        setDialog()
-    }
-
-    fun setDialog() {
-        delCommentDialog = CustomDialog(
-            message = context.getString(R.string.del_comment),
-            negText = context.getString(R.string.cancel),
-            posText = context.getString(R.string.delete),
-            onPositiveClick = {
-
-            }
-        )
     }
 
     fun updatePost(post: Post) {
@@ -71,6 +65,11 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
         notifyItemChanged(0)
     }
 
+    fun updateCommentCnt(commentCnt: Int) {
+        this.commentCnt = commentCnt
+        notifyItemChanged(0)
+    }
+
     override fun getItemViewType(position: Int): Int {
         if (position == 0) return VIEW_TYPE_HEADER
         else return VIEW_TYPE_ITEM
@@ -85,18 +84,55 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                 .load(item.commentFriend.profileImageUrl)
                 .circleCrop()
                 .into(binding.profileImg)
+            binding.edit.isVisible = viewModel.checkIsUserId(item.commentFriend.id)
             setClickListeners()
         }
 
-        fun setClickListeners() {
+        private fun setClickListeners() {
             binding.root.setOnLongClickListener {
                 val adjustedPosition = adapterPosition - 1
-                if (adjustedPosition >= 0) {
-                    val commentId = comments[adjustedPosition].id
-                    Log.d("dd", "$commentId")
-                    viewModel.delComment(commentId)
-                }
+                val commentUserId = comments[adjustedPosition].commentFriend.id
+                if (!viewModel.checkIsUserId(commentUserId)) return@setOnLongClickListener true
+                val commentId = comments[adjustedPosition].id
+                listener.onDeleteCommentRequested(commentId)
                 true
+            }
+
+            binding.edit.setOnClickListener {
+                binding.editComment.setText(binding.comment.text.toString())
+                binding.comment.visibility = View.GONE
+                binding.edit.visibility = View.GONE
+                binding.editCommentView.visibility = View.VISIBLE
+                binding.editTools.visibility = View.VISIBLE
+            }
+
+            binding.editComment.setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) parentFragment.hideCommentWindow()
+                else parentFragment.showCommentWindow()
+            }
+
+            binding.done.setOnClickListener {
+                val newText = binding.editComment.text.toString()
+                if (newText.isEmpty()) {
+                    Toast.makeText(itemView.context, "빈 댓글은 작성할 수 없습니다", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val commentId = comments[adapterPosition - 1].id
+                binding.comment.text = newText
+                binding.comment.visibility = View.VISIBLE
+                binding.edit.visibility = View.VISIBLE
+                binding.editCommentView.visibility = View.GONE
+                binding.editTools.visibility = View.GONE
+                viewModel.patchComment(commentId, newText)
+                parentFragment.showCommentWindow()
+            }
+
+            binding.cancel.setOnClickListener {
+                binding.comment.visibility = View.VISIBLE
+                binding.edit.visibility = View.VISIBLE
+                binding.editCommentView.visibility = View.GONE
+                binding.editTools.visibility = View.GONE
+                parentFragment.showCommentWindow()
             }
         }
     }
@@ -104,20 +140,21 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
     inner class HeaderViewHolder(private val binding: PostRecyclerHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private var like = Like(binding.like)
-
-        init {
-            binding.commentCnt.text = commentCount.toString()
-        }
-
         fun bind() {
+            like = Like(binding.like)
             setDiaryContent()
             setImages()
+            setCommentCnt()
+            setLikeCnt()
             setClickListeners()
         }
 
-        private fun updateCommentCnt() {
-            binding.commentCnt.text = commentCount.toString()
+        fun setCommentCnt() {
+            binding.commentCnt.text = commentCnt.toString()
+        }
+
+        fun setLikeCnt() {
+            binding.likeCnt.text = likeCnt.toString()
         }
 
         private fun setImages() {
@@ -126,11 +163,11 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                     if (it.size == 2) {
                         binding.image2.visibility = View.VISIBLE
                         binding.image2.scaleType = ImageView.ScaleType.CENTER_CROP
-                        Glide.with(context).load(it[1]).into(binding.image2)
+                        Glide.with(itemView.context).load(it[1]).into(binding.image2)
                     }
                     binding.image1.visibility = View.VISIBLE
                     binding.image1.scaleType = ImageView.ScaleType.CENTER_CROP
-                    Glide.with(context).load(it[0]).into(binding.image1)
+                    Glide.with(itemView.context).load(it[0]).into(binding.image1)
                     binding.images.visibility = View.VISIBLE
                 }
             }
@@ -140,8 +177,7 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
             post?.let {
                 binding.location.text = it.locationName
                 binding.content.text = it.content
-                likeCnt = it.likeCount.likeCount
-                binding.likeCnt.text = likeCnt.toString()
+                binding.likeCnt.text = it.likeCount.likeCount.toString()
                 binding.dateAndTime.text = formatCreateAt(it.createAt)
                 like.setLike(it.liked)
 
@@ -149,18 +185,25 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
                     if (it.categories.size == 2) {
                         binding.category2.visibility = View.VISIBLE
                         binding.category2.text =
-                            context.getString(R.string.category_text, it.categories[1].categoryName)
+                            itemView.context.getString(
+                                R.string.category_text,
+                                it.categories[1].categoryName
+                            )
                     }
                     binding.category1.visibility = View.VISIBLE
                     binding.category1.text =
-                        context.getString(R.string.category_text, it.categories[0].categoryName)
+                        itemView.context.getString(
+                            R.string.category_text,
+                            it.categories[0].categoryName
+                        )
                     binding.categories.visibility = View.VISIBLE
                 }
 
-                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)?.getEmotionUnicode()?.let { emotion ->
-                    binding.emotion.text = emotion
-                    binding.emotion.visibility = View.VISIBLE
-                }
+                potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(it.emoji)
+                    ?.getEmotionUnicode()?.let { emotion ->
+                        binding.emotion.text = emotion
+                        binding.emotion.visibility = View.VISIBLE
+                    }
                 binding.header.visibility = View.VISIBLE
                 if (!it.content.isNullOrBlank()) {
                     binding.content.visibility = View.VISIBLE
@@ -180,10 +223,8 @@ class PostAdapter(private val context: Context, private val viewModel: PostViewM
         private fun setClickListeners() {
             binding.like.setOnClickListener {
                 viewModel.postLike()
-                like.toggleLike()
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

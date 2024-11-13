@@ -91,8 +91,6 @@
             android:layout_height="wrap_content"
             android:text="@string/search_nothing"
             android:textColor="@color/search_icon_background"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -124,8 +124,11 @@
                 <EditText
                     android:id="@+id/location"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:minHeight="40dp"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
                     android:background="@android:color/transparent"
                     android:hint="장소명"
                     android:lines="1"
@@ -138,13 +141,16 @@
                 <EditText
                     android:id="@+id/address"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="3dp"
+                    android:minHeight="40dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/address_hint"
                     android:lines="1"
                     android:singleLine="true"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
                     android:textColorHint="#838383"
                     android:textSize="17sp" />
 
@@ -231,6 +237,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="30dp"
+                    android:minHeight="70dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/diary_hint_sentence"
                     android:inputType="textMultiLine"

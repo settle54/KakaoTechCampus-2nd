@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import potatocake.katecam.everymoment.extensions.SendFilesUtil
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -18,6 +19,8 @@ object NetworkModule {
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(SendFilesUtil.client)
+            .addConverterFactory(GsonConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create()) // Gson 변환기
             .build()
     }

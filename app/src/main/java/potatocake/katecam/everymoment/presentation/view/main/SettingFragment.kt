@@ -20,7 +20,7 @@ import potatocake.katecam.everymoment.extensions.CustomEditDialog
 import potatocake.katecam.everymoment.extensions.GalleryUtil
 import potatocake.katecam.everymoment.extensions.SendFilesUtil
 import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModelFactory
+import potatocake.katecam.everymoment.presentation.viewModel.factory.SettingViewModelFactory
 import potatocake.katecam.everymoment.services.location.GlobalApplication
 import potatocake.katecam.everymoment.services.location.LocationService
 
@@ -150,18 +150,14 @@ class SettingFragment : Fragment() {
     }
 
     private fun observeMyInfo() {
-        viewModel.myInfo.observe(viewLifecycleOwner) { myInformation ->
-            if (myInformation != null) {
-                binding.accountName.text = myInformation.nickname
-
-                val imageUrl = myInformation.profileImageUrl ?: R.drawable.account_circle_24px
-
-                Glide.with(requireContext())
-                    .load(imageUrl)
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.accountImage)
-            }
+        viewModel.myInfo.observe(viewLifecycleOwner) {
+            binding.accountName.text = it.nickname
+            if (it.profileImageUrl == null) return@observe
+            Glide.with(requireContext())
+                .load(it.profileImageUrl)
+                .circleCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(binding.accountImage)
         }
     }
 
@@ -175,7 +171,6 @@ class SettingFragment : Fragment() {
                     galleryUtil.openGallery(onImageSelected = {
                         addLocalImage(it)
                         updateProfileImg(it)
-                        Toast.makeText(requireContext(), getString(R.string.feature_not_available), Toast.LENGTH_LONG).show()
                     })
                 }).apply {
                 isCancelable = false
@@ -198,7 +193,7 @@ class SettingFragment : Fragment() {
         nameChangeDialog =
             CustomEditDialog(
                 resources.getString(R.string.change_name_dialog),
-                binding.accountName.text.toString(),
+                "",
                 resources.getString(R.string.example_name),
                 resources.getString(R.string.change_name_dialog_instruction),
                 resources.getString(R.string.cancel),
@@ -233,7 +228,11 @@ class SettingFragment : Fragment() {
     }
 
     private fun updateProfileImg(uri: Uri?) {
-        SendFilesUtil.uriToFile(requireContext(), listOf(uri.toString())) { fileParts ->
+        SendFilesUtil.uriToFile(
+            requireContext(),
+            "profileImage",
+            listOf(uri.toString())
+        ) { fileParts ->
             Log.d("SettingFragment", "fileParts size: ${fileParts.size}")
             if (fileParts.isNotEmpty()) {
                 viewModel.updateProfile(binding.accountName.text.toString(), fileParts.first())
