@@ -24,6 +24,7 @@ import okhttp3.RequestBody
 import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
 import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.TokenRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -275,5 +276,11 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int,
         @Body request: LocationNameRequest
+    ): Call<ServerResponse>
+
+    @POST("/api/fcm/token")
+    fun postToken(
+        @Header("Authorization") token: String,
+        @Body tokenRequest: TokenRequest
     ): Call<ServerResponse>
 }

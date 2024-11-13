@@ -45,7 +45,6 @@ class LocationService : Service() {
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        //createEmojiNotificationChannel()
         initializeLocationComponents()
         startLocationUpdates()
         startForeground(NOTIFICATION_ID, createNotification("위치 서비스 시작"))
@@ -106,7 +105,10 @@ class LocationService : Service() {
         val latitude = location.latitude
         val longitude = location.longitude
 
-        GooglePlaceApiUtil.getPlaceNamesFromCoordinates(latitude, longitude) { currentPlaceNames, currentAddresses ->
+        GooglePlaceApiUtil.getPlaceNamesFromCoordinates(
+            latitude,
+            longitude
+        ) { currentPlaceNames, currentAddresses ->
             if (currentPlaceNames.isNotEmpty()) {
                 Log.d("myplace", "$currentPlaceNames")
                 val currentPlace = currentPlaceNames.firstOrNull()
@@ -137,7 +139,6 @@ class LocationService : Service() {
                         ) { success, code, message, infoObject ->
                             if (success) {
                                 Log.d("arieum", "성공! 코드: $code, 메시지: $message, 정보: $infoObject")
-                                //setEmojiNotification()
                             } else {
                                 Log.d("arieum", "실패!")
                             }
@@ -165,7 +166,7 @@ class LocationService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
                 NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
-            //val notificationManager = getSystemService(NotificationManager::class.java)
+            val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -190,95 +191,23 @@ class LocationService : Service() {
     }
 
     private fun updateNotification(latitude: Double, longitude: Double, placeName: String) {
-        //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = createNotification("현재 ${placeName}에 머무르고 있어요!")
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun setEmojiNotification() {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
 
-        val remoteViews = RemoteViews(packageName, R.layout.custom_notification)
-        //remoteViews.setTextViewText(R.id.locationText, "${initialPlaceName}에서의 기분은 어떤가요?")
-        remoteViews.setTextViewText(R.id.happyEmojiTextView, potatocake.katecam.everymoment.data.model.entity.Emotions.HAPPY.getEmotionUnicode())
-        remoteViews.setTextViewText(R.id.sadEmojiTextView, potatocake.katecam.everymoment.data.model.entity.Emotions.SAD.getEmotionUnicode())
-        remoteViews.setTextViewText(
-            R.id.insensitiveEmojiTextView,
-            potatocake.katecam.everymoment.data.model.entity.Emotions.INSENSITIVE.getEmotionUnicode()
-        )
-        remoteViews.setTextViewText(R.id.angryEmojiTextView, potatocake.katecam.everymoment.data.model.entity.Emotions.ANGRY.getEmotionUnicode())
-        remoteViews.setTextViewText(
-            R.id.confoundedEmojiTextView,
-            potatocake.katecam.everymoment.data.model.entity.Emotions.CONFOUNDED.getEmotionUnicode()
-        )
-
-        val emotions = listOf(
-            R.id.happyEmojiTextView to potatocake.katecam.everymoment.data.model.entity.Emotions.HAPPY,
-            R.id.sadEmojiTextView to potatocake.katecam.everymoment.data.model.entity.Emotions.SAD,
-            R.id.insensitiveEmojiTextView to potatocake.katecam.everymoment.data.model.entity.Emotions.INSENSITIVE,
-            R.id.angryEmojiTextView to potatocake.katecam.everymoment.data.model.entity.Emotions.ANGRY,
-            R.id.confoundedEmojiTextView to potatocake.katecam.everymoment.data.model.entity.Emotions.CONFOUNDED
-        )
-
-        emotions.forEach { (viewId, emotion) ->
-            val emotionIntent = Intent(this, NotificationActionReceiver::class.java).apply {
-                action = "${emotion.name}_ACTION"
-            }
-            val emotionPendingIntent = PendingIntent.getBroadcast(
-                this,
-                viewId,
-                emotionIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            remoteViews.setOnClickPendingIntent(viewId, emotionPendingIntent)
-        }
-
-        val builder = NotificationCompat.Builder(
-            this,
-            CHANNEL_ID
-        )
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("지금의 기분은 어떠신가요?")
-            .setContentIntent(pendingIntent)
-            //.setContentText("현재 XX 위치에 머무르고 있어요! ")
-            .setCustomContentView(remoteViews)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-
-        notificationManager.notify(EMOJI_NOTIFICATION_ID, builder.build())
-    }
-
-//    private fun createEmojiNotificationChannel() {
-//        val descriptionText = getString(R.string.fcm_channel_description)
-//        val channel = NotificationChannel(
-//            CHANNEL_ID,
-//            CHANNEL_NAME,
-//            NotificationManager.IMPORTANCE_DEFAULT
-//        ).apply {
-//            description = descriptionText
-//        }
-//        notificationManager.createNotificationChannel(channel)
-//    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private var LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+        private var LOCATION_UPDATE_INTERVAL = 1 * 20 * 1000L
+
+        private const val CHANNEL_ID = "main_default_channel"
+        private const val CHANNEL_NAME = "main channelName"
 
         fun setLocationUpdateInterval(interval: Long) {
             LOCATION_UPDATE_INTERVAL = interval
         }
-
-        private const val EMOJI_NOTIFICATION_ID = 222222
-        private const val CHANNEL_ID = "main_default_channel"
-        private const val CHANNEL_NAME = "main channelName"
     }
 }

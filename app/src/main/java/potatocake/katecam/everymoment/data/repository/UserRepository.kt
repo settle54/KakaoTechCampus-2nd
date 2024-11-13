@@ -11,6 +11,8 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AccessTokenInfo
 import com.kakao.sdk.user.model.User
+import potatocake.katecam.everymoment.data.model.network.dto.request.TokenRequest
+import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -119,6 +121,32 @@ class UserRepository {
             })
     }
 
+    fun postToken(
+        fcmToken: String,
+        deviceId: String,
+        callback: (Boolean, ServerResponse?) -> Unit
+    ) {
+        val tokenRequest = TokenRequest(fcmToken, deviceId)
+
+        apiService.postToken(token, tokenRequest).enqueue(object : Callback<ServerResponse> {
+            override fun onResponse(
+                p0: Call<ServerResponse>,
+                p1: Response<ServerResponse>
+            ) {
+                if (p1.isSuccessful) {
+                    Log.d("FCMToken", "${p1.body()}")
+                    callback(true, p1.body())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(p0: Call<ServerResponse>, p1: Throwable) {
+                Log.d("FCMToken", "Failed to post FCM Token: ${p1.message}")
+                callback(false, null)
+            }
+        })
+    }
     companion object {
         private const val KEY_ANONYMOUS_NUMBER = "anonymous_user_number"
     }
