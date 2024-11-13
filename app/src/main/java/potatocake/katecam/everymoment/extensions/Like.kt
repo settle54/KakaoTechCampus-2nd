@@ -6,28 +6,31 @@ import potatocake.katecam.everymoment.R
 
 class Like(private val likeId: ImageView) {
 
-    private var isLiked: Boolean = false
+    data class LikeState (var isLiked: Boolean, var initialize: Boolean)
+    private val likeState = LikeState(false, false)
 
-    fun setLike(isLiked: Boolean) {
-        this.isLiked = isLiked
-        if (isLiked) {
+    fun setLike(liked: Boolean) {
+        if (likeState.initialize) return
+        likeState.isLiked = liked
+        if (liked) {
             likeId.setImageResource(R.drawable.favorite_fill_24px)
         } else {
             likeId.setImageResource(R.drawable.favorite_24px)
         }
+        likeState.initialize = true
     }
 
     fun checkIsLike(): Boolean {
-        return isLiked
+        return likeState.isLiked
     }
 
     fun toggleLike() {
         Log.d("like", "like clicked")
-        if (isLiked) {
+        if (likeState.isLiked) {
             likeId.setImageResource(R.drawable.favorite_24px)
         } else {
             likeId.setImageResource(R.drawable.favorite_fill_24px)
         }
-        isLiked = !isLiked
+        likeState.isLiked = !likeState.isLiked
     }
 }
