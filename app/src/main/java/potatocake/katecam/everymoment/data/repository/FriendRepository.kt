@@ -172,4 +172,20 @@ class FriendRepository {
             }
         })
     }
+
+    fun getFriendsListWithPage(key: Int, callback: (Boolean, FriendsListResponse?) -> Unit) {
+        apiService.getFriendsList(token, key).enqueue(object : Callback<FriendsListResponse> {
+            override fun onResponse(call: Call<FriendsListResponse>, response: Response<FriendsListResponse>) {
+                if (response.isSuccessful) {
+                    callback(true, response.body())
+                } else {
+                    callback(false, null)
+                }
+            }
+
+            override fun onFailure(call: Call<FriendsListResponse>, t: Throwable) {
+                callback(false, null)
+            }
+        })
+    }
 }
