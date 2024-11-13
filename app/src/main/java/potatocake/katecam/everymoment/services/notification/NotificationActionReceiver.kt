@@ -31,13 +31,19 @@ class NotificationActionReceiver : BroadcastReceiver() {
             else -> null
         }
 
-        emotion?.let { handleEmotion(context, it) }
+        Log.d("NotificationActionReceiver", "Intent extras: ${intent.extras}")
+        val targetId = intent.getStringExtra("diaryId")
+        val diaryId = targetId?.toInt() ?: -1
+        Log.d("emoji notification", "diaryId: $diaryId")
+
+        emotion?.let { handleEmotion(context, it, diaryId) }
+
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(EMOJI_NOTIFICATION_ID)
     }
 
-    private fun handleEmotion(context: Context, emotion: potatocake.katecam.everymoment.data.model.entity.Emotions) {
+    private fun handleEmotion(context: Context, emotion: potatocake.katecam.everymoment.data.model.entity.Emotions, diaryId: Int) {
         val emoji = when (emotion) {
             potatocake.katecam.everymoment.data.model.entity.Emotions.HAPPY -> "happy"
             potatocake.katecam.everymoment.data.model.entity.Emotions.SAD -> "sad"
@@ -53,7 +59,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
             potatocake.katecam.everymoment.data.model.entity.Emotions.CONFOUNDED -> "싫음"
         }
 
-        updateEmojiStatus(30, emoji) { success, message ->
+        updateEmojiStatus(diaryId, emoji) { success, message ->
             val toastMessage = if (success) {
                 "감정이 업데이트되었습니다: $emoji $label"
             } else {
