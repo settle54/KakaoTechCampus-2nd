@@ -61,13 +61,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         updateEmojiStatus(diaryId, emoji) { success, message ->
             val toastMessage = if (success) {
-                "감정이 업데이트되었습니다: $emoji $label"
+                "감정이 업데이트되었습니다: $label"
             } else {
                 "감정 업데이트 실패: ${message ?: "알 수 없는 오류"}"
             }
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
         }
-        Toast.makeText(context, "선택된 감정: $emoji $label", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateEmojiStatus(

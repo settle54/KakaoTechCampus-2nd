@@ -201,7 +201,7 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private var LOCATION_UPDATE_INTERVAL = 1 * 20 * 1000L
+        private var LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
 
         private const val CHANNEL_ID = "main_default_channel"
         private const val CHANNEL_NAME = "main channelName"
