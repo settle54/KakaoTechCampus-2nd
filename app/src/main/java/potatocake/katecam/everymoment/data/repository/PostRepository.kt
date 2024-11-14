@@ -72,6 +72,7 @@ class PostRepository {
     }
 
     fun postLike(diaryId: Int, callback: (Boolean, String?) -> Unit) {
+        Log.d("postRepo", "$diaryId")
         apiService.postLike(token, diaryId).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
                 if (p1.isSuccessful) {
