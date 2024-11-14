@@ -71,6 +71,7 @@ class PostViewModel(private val postRepository: PostRepository, private val myIn
             diaryId?.let {
                 postRepository.postLike(diaryId!!) { success, response ->
                     if (success && response != null) {
+                        Log.d("postViewModel", "$response")
                         toggleLikedState()
                         getLikeCnt()
                     }
