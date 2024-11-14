@@ -19,8 +19,6 @@ object NetworkModule {
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(SendFilesUtil.client)
-            .addConverterFactory(GsonConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create()) // Gson 변환기
             .build()
     }

@@ -69,6 +69,7 @@ class ShareViewFragment : Fragment() {
             val result = bundle.getInt("selected_friend_position")
             if (result >= 0) {
                 viewModel.setSelectedFriendPosition(result)
+                friendListAdapter.setSelectedPosition(result)
             }
         }
     }
@@ -94,14 +95,14 @@ class ShareViewFragment : Fragment() {
         viewModel.selectedFriendName.observe(viewLifecycleOwner) {
             adapter.setSelectedFriendName(it)
         }
+        viewModel.selectedFriendPosition.observe(viewLifecycleOwner) {
+            adapter.setSelectedFriendPosition(it)
+        }
     }
 
     private fun observeFriendList(adapter: SharedFriendListAdapter) {
         viewModel.friends.observe(viewLifecycleOwner) { friendList ->
             adapter.submitList(friendList)
-        }
-        viewModel.selectedFriendPosition.observe(viewLifecycleOwner) {
-            adapter.setSelectedPosition(it)
         }
     }
 
