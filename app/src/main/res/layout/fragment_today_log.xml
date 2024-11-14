@@ -115,7 +115,6 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/addDiaryButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="bottom|end"
@@ -127,6 +126,7 @@
         app:cardElevation="10dp">
 
         <ImageView
+            android:id="@+id/addDiaryButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
