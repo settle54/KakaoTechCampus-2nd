@@ -77,6 +77,7 @@ class ShareViewModel(
     fun fetchTodayFriendDiaryList(date: String){
         _isFriendDiaryListLoading.value = true
         viewModelScope.launch {
+            Log.d("shareViewModel", "fetchTotalFriendDiaryList")
             friendDiaryRepository.getTotalFriendDiaries(date) { success, response ->
                 _isFriendDiaryListLoading.value = false
                 if (success && response != null) {
