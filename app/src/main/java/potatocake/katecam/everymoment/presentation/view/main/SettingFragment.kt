@@ -202,7 +202,7 @@ class SettingFragment : Fragment() {
                     if (checkNickname(it) == -1) {
                         nameChangeDialog.setWrongInstruction(resources.getString(R.string.nickname_less_one))
                     } else if (checkNickname(it) == 1) {
-                        nameChangeDialog.setWrongInstruction(resources.getString(R.string.nickname_more_six))
+                        nameChangeDialog.setWrongInstruction(resources.getString(R.string.nickname_more_ten))
                     } else {
                         binding.accountName.text = it.trim()
                         nameChangeDialog.dismiss()
@@ -216,7 +216,7 @@ class SettingFragment : Fragment() {
     private fun checkNickname(userInput: String): Int {
         val nickName = userInput.trim()
         if (nickName.isEmpty()) return -1
-        else if (nickName.length > 6) return 1
+        else if (nickName.length > 10) return 1
         else return 0
     }
 
