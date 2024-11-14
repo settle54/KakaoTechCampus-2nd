@@ -54,7 +54,7 @@ class SharedFriendListAdapter(private val viewModel: ShareViewModel) : ListAdapt
                 if (position != RecyclerView.NO_POSITION) {
                     val oldPosition = selectedPosition
                     selectedPosition = if (selectedPosition == position) {
-                        position
+                        RecyclerView.NO_POSITION
                     } else {
                         position
                     }
