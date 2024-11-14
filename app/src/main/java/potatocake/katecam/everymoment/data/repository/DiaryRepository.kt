@@ -16,6 +16,7 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResp
 import okhttp3.MultipartBody
 import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiaryRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -375,5 +376,24 @@ class DiaryRepository {
                     callback(false, null)
                 }
             })
+    }
+
+    fun postNewManualDiary(
+        request: ManualDiaryRequest,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        apiService.postManualDiary(token, request).enqueue(object : Callback<ServerResponse> {
+            override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
+                if (p1.isSuccessful) {
+                    Log.d("arieum", "${p1.body()}")
+                    callback(true, p1.message())
+                }
+            }
+
+            override fun onFailure(p0: Call<ServerResponse>, p1: Throwable) {
+                Log.d("arieum", "Failed to post manualDairy: ${p1.message}")
+                callback(false, null)
+            }
+        })
     }
 }

@@ -10,8 +10,10 @@ import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDia
 import potatocake.katecam.everymoment.data.repository.DiaryRepository
 import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
+import potatocake.katecam.everymoment.presentation.view.sub.diary.ManualDiaryEditFragment
 
 class TimelineViewModel(private val diaryRepository: DiaryRepository) : ViewModel() {
     private val _diaries = MutableLiveData<List<Diary>>()

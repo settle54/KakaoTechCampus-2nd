@@ -1,6 +1,8 @@
 package potatocake.katecam.everymoment.presentation.adapter
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +14,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kr.co.prnd.readmore.ReadMoreTextView
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import potatocake.katecam.everymoment.databinding.SearchItemBinding
 import potatocake.katecam.everymoment.presentation.viewModel.SearchViewModel
+import java.util.Locale
 
 class SearchAdapter(private val activity: FragmentActivity, private val viewModel: SearchViewModel) : ListAdapter<Diary, SearchAdapter.SearchViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
@@ -32,7 +36,8 @@ class SearchAdapter(private val activity: FragmentActivity, private val viewMode
         fun bind(item: Diary) {
 
             binding.dayText.text = item.createAt.substring(0, 10)
-            binding.timeText.text = item.createAt.substring(11, 16)
+            val originalTime = item.createAt.substring(11, 16)
+            binding.timeText.text = reformatTime(originalTime)
             binding.locationNameText.text = item.locationName
             binding.addressText.text = item.address
 
@@ -63,8 +68,14 @@ class SearchAdapter(private val activity: FragmentActivity, private val viewMode
             if (item.content == null) {
                 binding.diaryTextContent.isGone = true
             } else {
+                binding.detailedDiaryContainer.isVisible = true
                 binding.diaryTextContent.isVisible = true
                 binding.diaryTextContent.text = item.content
+                binding.diaryTextContent.changeListener = object : ReadMoreTextView.ChangeListener {
+                    override fun onStateChange(state: ReadMoreTextView.State) {
+                        Log.d("prnd", "state: $state")
+                    }
+                }
             }
         }
 
@@ -98,5 +109,14 @@ class SearchAdapter(private val activity: FragmentActivity, private val viewMode
 
     private fun Context.showToast(messageResId: Int) {
         Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun reformatTime(originalTime: String): String {
+        val originalFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val date = originalFormat.parse(originalTime)
+
+        val targetFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
+        val formattedTime = targetFormat.format(date)
+        return formattedTime
     }
 }

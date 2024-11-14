@@ -131,7 +131,8 @@
                     android:minLines="1"
                     android:background="@android:color/transparent"
                     android:hint="장소명"
-                    android:text="location"
+                    android:lines="1"
+                    android:singleLine="true"
                     android:textColor="#1B3C69"
                     android:textColorHint="#8493A6"
                     android:textSize="27sp"
@@ -146,9 +147,10 @@
                     android:minHeight="40dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/address_hint"
+                    android:lines="1"
+                    android:singleLine="true"
                     android:inputType="textMultiLine"
                     android:minLines="1"
-                    android:text="address"
                     android:textColorHint="#838383"
                     android:textSize="17sp" />
 
