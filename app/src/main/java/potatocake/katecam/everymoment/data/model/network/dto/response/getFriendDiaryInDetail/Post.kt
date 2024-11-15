@@ -11,7 +11,7 @@ data class Post(
     @SerializedName("createAt")
     val createAt: String,
     @SerializedName("emoji")
-    val emoji: String,
+    val emoji: String?,
     @SerializedName("id")
     val id: Int,
     @SerializedName("likeCount")
@@ -19,5 +19,5 @@ data class Post(
     @SerializedName("locationName")
     val locationName: String,
     @SerializedName("liked")
-    val liked: Boolean
+    var liked: Boolean
 )

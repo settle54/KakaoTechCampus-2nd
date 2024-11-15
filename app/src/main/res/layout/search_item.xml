@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp">
@@ -69,44 +70,31 @@
             </LinearLayout>
         </LinearLayout>
 
-
-        <LinearLayout
+        <!-- 위치 이름 -->
+        <TextView
+            android:id="@+id/locationNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- 위치 이름 -->
-            <TextView
-                android:id="@+id/locationNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary_color"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
+            android:textColor="@color/primary_color"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <!-- 주소 -->
         <TextView
             android:id="@+id/addressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:ellipsize="end"
             android:textSize="12sp" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/emotion"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginEnd="3dp"
-                android:textSize="13sp"
-                android:visibility="gone" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/emotion"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="3dp"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/detailedDiaryContainer"
@@ -127,11 +115,14 @@
                 android:visibility="gone" />
 
             <!-- 동적 텍스트 콘텐츠 -->
-            <TextView
+            <kr.co.prnd.readmore.ReadMoreTextView
                 android:id="@+id/diaryTextContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:readMoreColor="@color/search_gray"
+                app:readMoreMaxLine="4"
+                app:readMoreText="…더보기" />
         </LinearLayout>
     </LinearLayout>
 

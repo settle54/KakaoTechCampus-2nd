@@ -5,29 +5,44 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.getComments.Comment
 import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.Post
+import potatocake.katecam.everymoment.data.repository.MyInfoRepository
 import potatocake.katecam.everymoment.data.repository.PostRepository
-import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.di.MyInfoRepositoryQualifier
+import potatocake.katecam.everymoment.di.PostRepositoryQualifier
+import javax.inject.Inject
 
-class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    @PostRepositoryQualifier
+    private val postRepository: PostRepository,
+    @MyInfoRepositoryQualifier
+    private val myInfoRepository: MyInfoRepository
+) : ViewModel() {
     private var diaryId: Int? = null
+    private var userId: Int? = null
 
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post> get() = _post
     private val _images = MutableLiveData<List<String>>()
     val images: LiveData<List<String>> get() = _images
 
-    private val _comments = MutableLiveData<List<Comment>>()
-    val comments: LiveData<List<Comment>> get() = _comments
+    private val _comments = MutableLiveData<CommentState>()
+    val comments: LiveData<CommentState> get() = _comments
     private val _likeCnt = MutableLiveData<Int>()
     val likeCnt: LiveData<Int> get() = _likeCnt
+    private val _commentCnt = MutableLiveData<Int>()
+    val commentCnt: LiveData<Int> get() = _commentCnt
 
-    private var key: Int = 0
-    private var isLoading = false
-    private var commentHasNextPage = true
-    private var commentHasPreviousPage = false
+    data class PageState(var currentPage: Int, var nextPage: Int?, var isLoading: Boolean)
+    var pageState = PageState(0, null, false)
+    data class CommentState(var comments: List<Comment>, var scrollToBottom: Boolean)
+
     private val currentComments: MutableList<Comment> = mutableListOf()
 
     /**
@@ -66,12 +81,21 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
             diaryId?.let {
                 postRepository.postLike(diaryId!!) { success, response ->
                     if (success && response != null) {
+                        Log.d("postViewModel", "$response")
+                        toggleLikedState()
                         getLikeCnt()
                     }
                 }
             }
         }
     }
+
+    private fun toggleLikedState() {
+        _post.value?.let {
+            _post.postValue(it.copy(liked = !it.liked))
+        }
+    }
+
 
     fun getLikeCnt() {
         viewModelScope.launch {
@@ -92,12 +116,54 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     /**
      * 댓글
      */
+    fun getUserId() {
+        viewModelScope.launch {
+            myInfoRepository.getMyInfo { success, response ->
+                if (success && response != null) {
+                    userId = response.info.id
+                }
+            }
+        }
+    }
+
+    fun checkIsUserId(commentUserId: Int): Boolean {
+        userId?.let {
+         return it == commentUserId
+        }
+        return false
+    }
+
+    fun getCommentCnt() {
+        viewModelScope.launch {
+            diaryId?.let {
+                postRepository.getCommentCnt(diaryId!!) { success, response ->
+                    Log.d("settle54", "success: $success")
+                    if (success && response != null) {
+                        Log.d("settle54", "success: ${response.commentCnt}")
+                        _commentCnt.postValue(response.commentCnt)
+                    }
+                }
+            }
+        }
+    }
+
     fun postComment(comment: String) {
         viewModelScope.launch {
             val request = PostCommentRequest(comment)
             postRepository.postComment(diaryId!!, request) { success, response ->
                 if (success && response != null) {
-                    getComments()
+                    getComments(true)
+                    getCommentCnt()
+                }
+            }
+        }
+    }
+
+    fun patchComment(commentId: Int, comment: String) {
+        viewModelScope.launch {
+            val request = PatchCommentRequest(comment)
+            postRepository.patchComment(commentId, request) { success, response ->
+                if (success && response != null) {
                 }
             }
         }
@@ -107,54 +173,43 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
         viewModelScope.launch {
             postRepository.delComment(commentId) { success, response ->
                 if (success && response != null) {
-                    getComments()
+                    getComments(true)
+                    getCommentCnt()
                 }
             }
         }
     }
 
-    fun getComments() {
-        if (isLoading) return
-        isLoading = true
+    fun getComments(scrollToBottom: Boolean = false) {
+        if (pageState.isLoading) return
+        pageState.isLoading = true
         viewModelScope.launch {
-            Log.d("postViewModel", "key: $key")
-            postRepository.getComments(diaryId!!, key) { success, response ->
+            Log.d("postViewModel", "pageState: $pageState")
+            postRepository.getComments(diaryId!!, pageState.currentPage) { success, response ->
                 if (success && response != null) {
                     val newComments = response.commentList.comments
                     Log.d("PostViewModel", "getComments: $newComments")
 
-                    if (key == 0) {
+                    if (pageState.currentPage == 0) {
                         currentComments.clear()
                     }
 
                     currentComments.addAll(newComments)
-                    _comments.postValue(currentComments.toList())
+                    _comments.postValue(CommentState(currentComments.toList(), scrollToBottom))
 
-                    commentHasNextPage = response.commentList.next != null
-                    commentHasPreviousPage = key > 0
-                    if (commentHasNextPage) {
-                        key += 1
-                    }
-                    isLoading = false
+                    pageState.nextPage = response.commentList.next
+                    pageState.isLoading = false
                 }
             }
         }
     }
 
     fun loadNextComments() {
-        if (commentHasNextPage) {
+        if (pageState.nextPage != null) {
+            pageState.currentPage = pageState.nextPage!!
             getComments()
         } else {
             Log.d("postViewModel", "다음 페이지가 없습니다.")
-        }
-    }
-
-    fun loadPreviousComments() {
-        if (key > 0) {
-            key -= 1
-            getComments()
-        } else {
-            Log.d("postViewModel", "이전 페이지가 없습니다.")
         }
     }
 

@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="88dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -67,10 +67,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendList"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginStart="70dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toEndOf="@id/friendListIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/friend_item" />

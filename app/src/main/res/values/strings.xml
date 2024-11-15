@@ -34,7 +34,7 @@
     <string name="cancel">취소</string>
     <string name="profile_name_dialog">닉네임을 변경하시겠습니까?</string>
     <string name="change_name_dialog">닉네임 변경</string>
-    <string name="change_name_dialog_instruction">6자 이내의 닉네임만 가능합니다</string>
+    <string name="change_name_dialog_instruction">10자 이내의 닉네임만 가능합니다</string>
     <string name="save">저장</string>
     <string name="example_name">홍길동</string>
     <string name="add_comment_guide">댓글을 달아보세요</string>
@@ -60,7 +60,7 @@
     <string name="location_hint">장소명</string>
     <string name="address_hint">주소</string>
     <string name="nickname_less_one">닉네임은 한 글자 이상이어야 합니다</string>
-    <string name="nickname_more_six">닉네임은 여섯 글자 이하여야 합니다</string>
+    <string name="nickname_more_ten">닉네임은 열 글자 이하여야 합니다</string>
     <string name="category_less_one">카테고리는 한 글자 이상이어야 합니다</string>
     <string name="category_more_six">카테고리는 여섯 글자 이하여야 합니다</string>
     <string name="search_bookmark">북마크로 검색하기</string>
@@ -99,4 +99,6 @@
     <string name="skip">건너뛰기</string>
     <string name="next">다음</string>
     <string name="non_login">비로그인으로 사용해보기</string>
+    <string name="location_text_length">장소명은 30자까지 작성 가능합니다.</string>
+    <string name="address_text_length">주소명은 100자까지만 작성 가능합니다.</string>
 </resources>

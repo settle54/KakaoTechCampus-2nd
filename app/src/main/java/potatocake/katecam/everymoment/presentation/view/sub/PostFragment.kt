@@ -7,30 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.PostRepository
 import potatocake.katecam.everymoment.databinding.FragmentPostBinding
+import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.presentation.adapter.PostAdapter
+import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.PostViewModelFactory
-import kotlinx.coroutines.launch
 
-class PostFragment : Fragment() {
+@AndroidEntryPoint
+class PostFragment : Fragment(), OnDeleteCommentListener {
 
     private lateinit var binding: FragmentPostBinding
     private lateinit var postAdapter: PostAdapter
-    private lateinit var imm: InputMethodManager
-    private val postRepository: PostRepository = PostRepository()
+    private val imm: InputMethodManager by lazy { requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager }
+    private lateinit var delCommentDialog: CustomDialog
+    private var selectedFriendPosition: Int = -1
 
-    private val viewModel: PostViewModel by viewModels {
-        PostViewModelFactory(postRepository)
-    }
+    private val viewModel: PostViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,11 +47,11 @@ class PostFragment : Fragment() {
         Log.d("postFragment", "${arguments?.getInt("diary_id")}")
         val diaryId = arguments?.getInt("diary_id")
         val selectedFriendName = arguments?.getString("selected_friend_name", "")
+        selectedFriendPosition = arguments?.getInt("selected_friend_position", -1)!!
 
         (activity as? MainActivity)?.hideNavigationBar()
 
         setPostAdapter()
-        imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         binding.instruction.text =
             resources.getString(R.string.post_instruction, selectedFriendName)
 
@@ -59,12 +61,20 @@ class PostFragment : Fragment() {
         getComments()
         setViewModelObserver()
         setScrollListener()
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         (activity as? MainActivity)?.showNavigationBar()
+    }
+
+    fun hideCommentWindow() {
+        binding.commentWindow.visibility = View.GONE
+    }
+
+    fun showCommentWindow() {
+        binding.commentWindow.visibility = View.VISIBLE
+        imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
     }
 
     private fun setViewModelObserver() {
@@ -75,16 +85,25 @@ class PostFragment : Fragment() {
             postAdapter.updateImages(it)
         }
         viewModel.comments.observe(viewLifecycleOwner) {
-            postAdapter.updateComments(it)
+            postAdapter.updateComments(it.comments)
+            if (it.scrollToBottom) {
+                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
+                binding.recyclerView.scrollToPosition(lastPosition)
+            }
         }
         viewModel.likeCnt.observe(viewLifecycleOwner) {
             postAdapter.updateLikeCnt(it)
+        }
+        viewModel.commentCnt.observe(viewLifecycleOwner) {
+            postAdapter.updateCommentCnt(it)
         }
     }
 
     private fun getComments() {
         lifecycleScope.launch {
+            viewModel.getCommentCnt()
             viewModel.getComments()
+            viewModel.getUserId()
         }
     }
 
@@ -116,7 +135,6 @@ class PostFragment : Fragment() {
                 }
                 // 스크롤 방향이 위로 올라가는 경우 (dy < 0)
                 else if (dy < 0 && firstVisibleItemPosition == 0) {
-                    viewModel.loadPreviousComments()
                 }
             }
         })
@@ -124,6 +142,10 @@ class PostFragment : Fragment() {
 
     private fun setClickListeners() {
         binding.backButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selected_friend_position", selectedFriendPosition)
+            }
+            requireActivity().supportFragmentManager.setFragmentResult("selected_position", bundle)
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -134,16 +156,34 @@ class PostFragment : Fragment() {
                 imm.hideSoftInputFromWindow(binding.comment.windowToken, 0)
                 binding.comment.clearFocus()
                 binding.comment.setText("")
-                val lastPosition = postAdapter?.itemCount?.minus(1) ?: 0
-                binding.recyclerView.scrollToPosition(lastPosition)
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            val bundle = Bundle().apply {
+                putInt("selected_friend_position", selectedFriendPosition)
+            }
+            requireActivity().supportFragmentManager.setFragmentResult("selected_position", bundle)
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
     private fun setPostAdapter() {
-        postAdapter = PostAdapter(requireContext(), viewModel)
+        postAdapter = PostAdapter(this, this, viewModel)
         binding.recyclerView.adapter = postAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    override fun onDeleteCommentRequested(commentId: Int) {
+        delCommentDialog = CustomDialog(
+            message = resources.getString(R.string.del_comment),
+            negText = resources.getString(R.string.cancel),
+            posText = resources.getString(R.string.delete),
+            onPositiveClick = {
+                viewModel.delComment(commentId)
+            }
+        )
+        delCommentDialog.show(parentFragmentManager, "delCommentDialog")
     }
 
 }

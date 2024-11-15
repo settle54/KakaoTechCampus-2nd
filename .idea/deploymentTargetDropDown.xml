@@ -2,6 +2,21 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="DiaryRepositoryTest">
+        <State />
+      </entry>
+      <entry key="FriendDiaryRepositoryTest">
+        <State />
+      </entry>
+      <entry key="FriendRepositoryTest">
+        <State />
+      </entry>
+      <entry key="NotificationRepositoryTest">
+        <State />
+      </entry>
+      <entry key="TodayLogFragmentUiTest">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -15,7 +30,7 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-11-02T07:37:45.052632600Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-11-14T03:30:35.520231Z" />
         </State>
       </entry>
     </value>

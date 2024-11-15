@@ -1,112 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    tools:context=".presentation.view.main.TodayLogFragment">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="오늘의 일기"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <View
-            android:id="@+id/line"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@+id/title"
-            android:layout_marginTop="15dp"
-            android:background="@color/line_color" />
-
-        <LinearLayout
-            android:id="@+id/notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/notificationIcon"
-                android:layout_width="27dp"
-                android:layout_height="27dp"
-                android:src="@drawable/ic_notification_unread" />
-
-            <TextView
-                android:id="@+id/notificationText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="알림"
-                android:textColor="#FF5f6368"
-                android:textSize="10sp" />
-        </LinearLayout>
-    </RelativeLayout>
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_height="match_parent"
         android:background="@color/white"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="vertical"
+        tools:context=".presentation.view.main.TodayLogFragment">
 
-        <ImageView
-            android:id="@+id/prevDate"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="30dp"
-            android:src="@drawable/ic_arrow_left"
-            app:tint="@drawable/backbutton" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/currentDate"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="오늘의 일기"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@+id/title"
+                android:layout_marginTop="15dp"
+                android:background="@color/line_color" />
+
+            <LinearLayout
+                android:id="@+id/notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/notificationIcon"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
+                    android:src="@drawable/ic_notification_unread" />
+
+                <TextView
+                    android:id="@+id/notificationText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="알림"
+                    android:textColor="#FF5f6368"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/white"
             android:gravity="center"
-            android:hint="9월 20일 (금)"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/nextDate"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="30dp"
-            android:src="@drawable/ic_arrow_right"
-            app:tint="@drawable/backbutton" />
+            <ImageView
+                android:id="@+id/prevDate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="30dp"
+                android:src="@drawable/ic_arrow_left"
+                app:tint="@drawable/backbutton" />
+
+            <TextView
+                android:id="@+id/currentDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:gravity="center"
+                android:hint="9월 20일 (금)"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/nextDate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="30dp"
+                android:src="@drawable/ic_arrow_right"
+                app:tint="@drawable/backbutton" />
+        </LinearLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/timeLineRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+    <androidx.cardview.widget.CardView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:elevation="10dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="100dp"
+        app:cardElevation="10dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/timeLineRecyclerView"
+        <ImageView
+            android:id="@+id/addDiaryButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</LinearLayout>
+            android:scaleType="centerCrop"
+            android:src="@drawable/add_diary_button" />
+    </androidx.cardview.widget.CardView>
+
+
+</FrameLayout>
+
 
