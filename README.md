@@ -7,7 +7,7 @@
 
   <img src="https://github.com/arieum/Computer-Networking_A-Top-Down-Approach/blob/main/playstoredark.webp" width="500px" height="220px">
 
-- [kakaotechcampus.mentor@gmail.com]()를 테스터 계정으로 추가하였습니다!
+- [kakaotechcampus.mentor@gmail.com]()를 테스터 계정으로 추가하였습니다!   
   이 계정으로 테스트를 진행해주시기를 바랍니다 😊
 
 <br>
