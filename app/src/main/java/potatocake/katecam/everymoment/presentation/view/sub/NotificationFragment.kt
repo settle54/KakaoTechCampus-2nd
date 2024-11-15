@@ -8,12 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
-import potatocake.katecam.everymoment.data.repository.impl.NotificationRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentNotificationBinding
 import potatocake.katecam.everymoment.presentation.adapter.NotificationAdapter
 import potatocake.katecam.everymoment.presentation.viewModel.NotificationViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.NotificationViewModelFactory
 
 @AndroidEntryPoint
 class NotificationFragment : Fragment() {

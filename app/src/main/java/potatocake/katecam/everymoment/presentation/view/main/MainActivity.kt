@@ -6,21 +6,26 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.installations.FirebaseInstallations
-import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.databinding.ActivityMainBinding
-import potatocake.katecam.everymoment.presentation.view.main.search.SearchFragment
-import potatocake.katecam.everymoment.GlobalApplication
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
-import potatocake.katecam.everymoment.data.repository.impl.UserRepository
+import potatocake.katecam.everymoment.GlobalApplication
+import potatocake.katecam.everymoment.R
+import potatocake.katecam.everymoment.data.repository.UserRepository
+import potatocake.katecam.everymoment.databinding.ActivityMainBinding
+import potatocake.katecam.everymoment.di.UserRepositoryQualifier
+import potatocake.katecam.everymoment.presentation.view.main.search.SearchFragment
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val userRepository = UserRepository()
+
+    @Inject
+    @UserRepositoryQualifier
+    lateinit var userRepository: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

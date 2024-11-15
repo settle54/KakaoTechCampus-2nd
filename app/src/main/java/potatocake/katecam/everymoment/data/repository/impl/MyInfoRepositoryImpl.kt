@@ -1,24 +1,23 @@
 package potatocake.katecam.everymoment.data.repository.impl
 
 import android.util.Log
-import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
+import okhttp3.MultipartBody
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.response.MyInformationResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
-import potatocake.katecam.everymoment.GlobalApplication
-import okhttp3.MultipartBody
+import potatocake.katecam.everymoment.data.repository.MyInfoRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Named
 
-class MyInfoRepositoryImpl {
-    private val apiService: PotatoCakeApiService =
-        NetworkModule.provideApiService(NetworkModule.provideRetrofit())
-    private val jwtToken = GlobalApplication.prefs.getString("token", "null")
-    private val token =
-        "Bearer $jwtToken"
+class MyInfoRepositoryImpl @Inject constructor(
+    private val apiService: PotatoCakeApiService,
+    @Named("jwtToken") private val token: String
+) : MyInfoRepository {
 
-    fun getMyInfo(
+    override fun getMyInfo(
         callback: (Boolean, MyInformationResponse?) -> Unit
     ) {
         apiService.getMyInfo(token).enqueue(object : Callback<MyInformationResponse> {
@@ -41,12 +40,12 @@ class MyInfoRepositoryImpl {
         })
     }
 
-    fun updateMyInfo(
-        nickname: String? = null,
-        profileImg: MultipartBody.Part? = null,
+    override fun updateMyInfo(
+        nickname: String?,
+        profileImg: MultipartBody.Part?,
         callback: (Boolean, ServerResponse) -> Unit
     ) {
-        val part =  if (profileImg == null) {
+        val part = if (profileImg == null) {
             MultipartBody.Part.createFormData("emptyPart", "")
         } else {
             profileImg

@@ -17,14 +17,19 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import potatocake.katecam.everymoment.GlobalApplication
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.api.GooglePlaceApiUtil
 import potatocake.katecam.everymoment.data.model.network.api.NetworkUtil
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DiaryEntry
 import potatocake.katecam.everymoment.data.model.network.dto.vo.LocationPoint
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
-import com.google.android.gms.location.*
-import potatocake.katecam.everymoment.GlobalApplication
 
 class LocationService : Service() {
 

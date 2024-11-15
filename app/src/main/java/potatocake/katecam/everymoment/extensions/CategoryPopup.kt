@@ -11,8 +11,8 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import potatocake.katecam.everymoment.databinding.CategoryPopupBinding
 import potatocake.katecam.everymoment.R
+import potatocake.katecam.everymoment.databinding.CategoryPopupBinding
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
 
 class CategoryPopup(

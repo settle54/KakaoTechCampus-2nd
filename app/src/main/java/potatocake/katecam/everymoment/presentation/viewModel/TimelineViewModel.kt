@@ -6,11 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import potatocake.katecam.everymoment.data.model.network.api.GooglePlaceApiUtil
-import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.api.GooglePlaceApiUtil
 import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
+import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import potatocake.katecam.everymoment.data.repository.DiaryRepository
 import potatocake.katecam.everymoment.di.DiaryRepositoryQualifier
 import javax.inject.Inject

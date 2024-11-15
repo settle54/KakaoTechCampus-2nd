@@ -1,9 +1,9 @@
 package potatocake.katecam.everymoment
 
 import android.app.Application
-import potatocake.katecam.everymoment.data.repository.PreferenceUtil
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
+import potatocake.katecam.everymoment.data.repository.PreferenceUtil
 
 @HiltAndroidApp
 class GlobalApplication : Application() {

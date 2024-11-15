@@ -2,35 +2,35 @@ package potatocake.katecam.everymoment.data.repository.impl
 
 import android.app.Activity
 import android.util.Log
-import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
-import potatocake.katecam.everymoment.GlobalApplication
-import potatocake.katecam.everymoment.data.model.network.api.NetworkUtil
-import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
-import potatocake.katecam.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AccessTokenInfo
 import com.kakao.sdk.user.model.User
+import potatocake.katecam.everymoment.GlobalApplication
+import potatocake.katecam.everymoment.data.model.network.api.NetworkUtil
+import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.request.TokenRequest
+import potatocake.katecam.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
+import potatocake.katecam.everymoment.data.repository.UserRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Named
 
-class UserRepository {
-    private val apiService: PotatoCakeApiService =
-        NetworkModule.provideApiService(NetworkModule.provideRetrofit())
-    private val jwtToken = GlobalApplication.prefs.getString("token", "null")
-    private val token =
-        "Bearer $jwtToken"
+class UserRepositoryImpl @Inject constructor(
+    private val apiService: PotatoCakeApiService,
+    @Named("jwtToken") private val token: String
+) : UserRepository {
 
-    fun getKakaoTokenInfo(callback: (AccessTokenInfo?, Throwable?) -> Unit) {
+    override fun getKakaoTokenInfo(callback: (AccessTokenInfo?, Throwable?) -> Unit) {
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
             callback(tokenInfo, error)
         }
     }
 
-    fun loginWithKakaoTalk(
+    override fun loginWithKakaoTalk(
         activity: Activity,
         callback: (OAuthToken?, Throwable?) -> Unit
     ) {
@@ -39,20 +39,20 @@ class UserRepository {
         }
     }
 
-    fun loginWithKakaoAccount(
+    override fun loginWithKakaoAccount(
         activity: Activity,
         callback: (OAuthToken?, Throwable?) -> Unit
     ) {
         UserApiClient.instance.loginWithKakaoAccount(activity, callback = callback)
     }
 
-    fun requestUserInfo(callback: (User?, Throwable?) -> Unit) {
+    override fun requestUserInfo(callback: (User?, Throwable?) -> Unit) {
         UserApiClient.instance.me { user, error ->
             callback(user, error)
         }
     }
 
-    fun requestToken(userId: Long?, nickname: String?) {
+    override fun requestToken(userId: Long?, nickname: String?) {
         NetworkUtil.sendData(
             "http://13.125.156.74:8080/api/members/login",
             null,
@@ -83,7 +83,7 @@ class UserRepository {
         return GlobalApplication.prefs.getInt(KEY_ANONYMOUS_NUMBER)
     }
 
-    fun getAnonymousLogin(
+    override fun getAnonymousLogin(
         callback: (Boolean, NonLoginUserNumberResponse?) -> Unit
     ) {
         val storedNumber = getStoredAnonymousNumber()
@@ -121,7 +121,7 @@ class UserRepository {
             })
     }
 
-    fun postToken(
+    override fun postToken(
         fcmToken: String,
         deviceId: String,
         callback: (Boolean, ServerResponse?) -> Unit

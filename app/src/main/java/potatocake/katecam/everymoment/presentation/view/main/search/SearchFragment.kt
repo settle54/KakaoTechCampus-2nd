@@ -12,13 +12,10 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
-import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentSearchBinding
 import potatocake.katecam.everymoment.presentation.adapter.SearchAdapter
 import potatocake.katecam.everymoment.presentation.viewModel.SearchViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.SearchViewModelFactory
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {

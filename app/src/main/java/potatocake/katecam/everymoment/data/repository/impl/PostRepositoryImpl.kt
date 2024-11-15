@@ -1,31 +1,31 @@
 package potatocake.katecam.everymoment.data.repository.impl
 
 import android.util.Log
-import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.GetFilesResponse
-import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getComments.GetCommentsResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
-import potatocake.katecam.everymoment.GlobalApplication
+import potatocake.katecam.everymoment.data.repository.PostRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Named
 
-class PostRepository {
-    private val apiService: PotatoCakeApiService =
-        NetworkModule.provideApiService(NetworkModule.provideRetrofit())
-    private val jwtToken = GlobalApplication.prefs.getString("token", "null")
-    private val token = "Bearer $jwtToken"
+class PostRepositoryImpl @Inject constructor(
+    private val apiService: PotatoCakeApiService,
+    @Named("jwtToken") private val token: String
+): PostRepository {
 
     /**
      * 포스트
      */
-    fun getDiaryinDetail(
+    override fun getDiaryinDetail(
         diaryId: Int,
         callback: (Boolean, GetFriendDiaryResponse?) -> Unit
     ) {
@@ -50,7 +50,7 @@ class PostRepository {
             })
     }
 
-    fun getFiles(diaryId: Int, callback: (Boolean, GetFilesResponse?) -> Unit) {
+    override fun getFiles(diaryId: Int, callback: (Boolean, GetFilesResponse?) -> Unit) {
         apiService.getFiles(token, diaryId).enqueue(object : Callback<GetFilesResponse> {
             override fun onResponse(
                 p0: Call<GetFilesResponse>,
@@ -71,7 +71,7 @@ class PostRepository {
         })
     }
 
-    fun postLike(diaryId: Int, callback: (Boolean, String?) -> Unit) {
+    override fun postLike(diaryId: Int, callback: (Boolean, String?) -> Unit) {
         Log.d("postRepo", "$diaryId")
         apiService.postLike(token, diaryId).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
@@ -90,7 +90,7 @@ class PostRepository {
         })
     }
 
-    fun getLikeCnt(diaryId: Int, callback: (Boolean, GetLikeCountResponse?) -> Unit) {
+    override fun getLikeCnt(diaryId: Int, callback: (Boolean, GetLikeCountResponse?) -> Unit) {
         apiService.getLikeCnt(token, diaryId).enqueue(object : Callback<GetLikeCountResponse> {
             override fun onResponse(
                 p0: Call<GetLikeCountResponse>,
@@ -111,7 +111,7 @@ class PostRepository {
         })
     }
 
-    fun getCommentCnt(diaryId: Int, callback: (Boolean, GetCommentCntResponse?) -> Unit) {
+    override fun getCommentCnt(diaryId: Int, callback: (Boolean, GetCommentCntResponse?) -> Unit) {
         apiService.getCommentCnt(token, diaryId).enqueue(object : Callback<GetCommentCntResponse> {
             override fun onResponse(
                 p0: Call<GetCommentCntResponse>,
@@ -137,7 +137,7 @@ class PostRepository {
     /**
      * 댓글
      */
-    fun postComment(diaryId: Int, request: PostCommentRequest, callback: (Boolean, String?) -> Unit) {
+    override fun postComment(diaryId: Int, request: PostCommentRequest, callback: (Boolean, String?) -> Unit) {
         apiService.postComment(token, diaryId, request).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
                 if (p1.isSuccessful) {
@@ -156,7 +156,7 @@ class PostRepository {
         })
     }
 
-    fun patchComment(commentId: Int, request: PatchCommentRequest, callback: (Boolean, String?) -> Unit) {
+    override fun patchComment(commentId: Int, request: PatchCommentRequest, callback: (Boolean, String?) -> Unit) {
         apiService.patchComment(token, commentId, request).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
                 if (p1.isSuccessful) {
@@ -175,7 +175,7 @@ class PostRepository {
         })
     }
 
-    fun delComment(commentId: Int, callback: (Boolean, String?) -> Unit) {
+    override fun delComment(commentId: Int, callback: (Boolean, String?) -> Unit) {
         apiService.delComment(token, commentId).enqueue(object : Callback<ServerResponse> {
             override fun onResponse(p0: Call<ServerResponse>, p1: Response<ServerResponse>) {
                 if (p1.isSuccessful) {
@@ -193,7 +193,7 @@ class PostRepository {
         })
     }
 
-    fun getComments(diaryId:Int, key: Int, callback: (Boolean, GetCommentsResponse?) -> Unit) {
+    override fun getComments(diaryId:Int, key: Int, callback: (Boolean, GetCommentsResponse?) -> Unit) {
         apiService.getComments(token, diaryId, key).enqueue(object : Callback<GetCommentsResponse> {
             override fun onResponse(
                 p0: Call<GetCommentsResponse>,

@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.response.FriendRequests
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentFriendRequestListBinding
 import potatocake.katecam.everymoment.presentation.adapter.FriendRequestListAdapter
 import potatocake.katecam.everymoment.presentation.viewModel.FriendRequestListViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.FriendRequestListViewModelFactory
 
 @AndroidEntryPoint
 class FriendRequestListFragment : Fragment() {

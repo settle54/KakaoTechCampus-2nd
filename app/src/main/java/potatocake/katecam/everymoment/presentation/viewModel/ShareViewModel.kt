@@ -6,11 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
-import potatocake.katecam.everymoment.data.repository.impl.FriendDiaryRepositoryImpl
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
-import potatocake.katecam.everymoment.data.model.network.dto.response.Friends
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
+import potatocake.katecam.everymoment.data.model.network.dto.response.Friends
 import potatocake.katecam.everymoment.data.repository.FriendDiaryRepository
 import potatocake.katecam.everymoment.data.repository.FriendRepository
 import potatocake.katecam.everymoment.di.FriendDiaryRepositoryQualifier

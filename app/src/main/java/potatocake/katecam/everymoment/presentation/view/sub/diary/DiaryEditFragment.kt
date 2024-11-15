@@ -16,7 +16,6 @@ import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.Category
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DetailDiary
-import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentDiaryEditBinding
 import potatocake.katecam.everymoment.extensions.Bookmark
 import potatocake.katecam.everymoment.extensions.CategoryPopup
@@ -28,7 +27,6 @@ import potatocake.katecam.everymoment.extensions.ToPxConverter
 import potatocake.katecam.everymoment.presentation.listener.OnSingleClickListener
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
 
 @AndroidEntryPoint
 class DiaryEditFragment : Fragment() {

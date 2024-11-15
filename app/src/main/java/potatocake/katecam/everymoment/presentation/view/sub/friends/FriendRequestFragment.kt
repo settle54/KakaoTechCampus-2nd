@@ -12,13 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.model.network.dto.response.Member
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
-import potatocake.katecam.everymoment.databinding.FragmentFriendRequestBinding
-import potatocake.katecam.everymoment.presentation.adapter.FriendRequestAdapter
-import potatocake.katecam.everymoment.presentation.viewModel.FriendRequestViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.FriendRequestViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -31,6 +24,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.R
+import potatocake.katecam.everymoment.data.model.network.dto.response.Member
+import potatocake.katecam.everymoment.databinding.FragmentFriendRequestBinding
+import potatocake.katecam.everymoment.presentation.adapter.FriendRequestAdapter
+import potatocake.katecam.everymoment.presentation.viewModel.FriendRequestViewModel
 import kotlin.coroutines.CoroutineContext
 
 @AndroidEntryPoint

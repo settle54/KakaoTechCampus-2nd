@@ -2,9 +2,7 @@ package potatocake.katecam.everymoment.data.repository.impl
 
 import android.util.Log
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
-import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
 import potatocake.katecam.everymoment.data.model.network.dto.response.DiaryResponse
-import potatocake.katecam.everymoment.GlobalApplication
 import potatocake.katecam.everymoment.data.repository.FriendDiaryRepository
 import retrofit2.Call
 import retrofit2.Callback

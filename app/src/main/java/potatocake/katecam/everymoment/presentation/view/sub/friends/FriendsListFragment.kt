@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.response.Friends
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentFriendsListBinding
 import potatocake.katecam.everymoment.presentation.adapter.FriendsListAdapter
 import potatocake.katecam.everymoment.presentation.view.main.ShareViewFragment
 import potatocake.katecam.everymoment.presentation.viewModel.FriendsListViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.FriendsListViewModelFactory
 
 @AndroidEntryPoint
 class FriendsListFragment : Fragment() {

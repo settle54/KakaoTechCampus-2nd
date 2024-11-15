@@ -5,11 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import potatocake.katecam.everymoment.data.model.network.vo.NotificationTypeConstants
-import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
-import potatocake.katecam.everymoment.data.model.network.dto.response.MyNotification
-import potatocake.katecam.everymoment.data.repository.impl.NotificationRepositoryImpl
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.response.MyNotification
+import potatocake.katecam.everymoment.data.model.network.vo.NotificationTypeConstants
 import potatocake.katecam.everymoment.data.repository.FriendRepository
 import potatocake.katecam.everymoment.data.repository.NotificationRepository
 import potatocake.katecam.everymoment.di.FriendRepositoryQualifier

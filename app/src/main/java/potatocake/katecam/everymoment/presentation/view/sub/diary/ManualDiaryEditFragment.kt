@@ -16,7 +16,6 @@ import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiary
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.Category
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DetailDiary
 import potatocake.katecam.everymoment.data.model.network.dto.vo.LocationPoint
-import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentDiaryEditBinding
 import potatocake.katecam.everymoment.extensions.Bookmark
 import potatocake.katecam.everymoment.extensions.CategoryPopup
@@ -26,7 +25,6 @@ import potatocake.katecam.everymoment.extensions.GalleryUtil
 import potatocake.katecam.everymoment.extensions.ToPxConverter
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
