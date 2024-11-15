@@ -49,6 +49,43 @@ Every Moment는 위치 데이터를 기반으로 사용자의 하루를 **자동
 
 <br/>
 
+## 🔍 개발 주안점
+### 아키텍처 부분
+- **MVVM 패턴** 적용
+  ```
+  project-root
+   ├── ...
+   ├── REPOSITORY # 데이터 처리 및 비즈니스 로직 계층, API 상호작용
+   └── presentation
+     ├── ...
+     ├── VIEW # Activity와 Fragment 클래스
+     └── VIEWMODEL # UI 관련 데이터를 관리하는 ViewModel 클래스
+  ```
+- **Hilt** 부분 적용
+  
+### 기능 부분
+- **자동 일기 기록** 
+  - **Google Places API**를 통해 GPS 좌표를 전달해 장소명을 도출
+  - 백그라운 상태에서 GPS 위치추적을 위해 `android.permission.ACCESS_BACKGROUND_LOCATION` 권한추가
+  - 백그라운드 위치 토글 동작에서의 지연 · 오류를 최소화하는 데 기여하기 위한 설정추가
+    ```
+    Priority.PRIORITY_BALANCED_POWER_ACCURACY
+    # 정확도를 어느 정도 확보하면서도, 배터리 소모를 최적화해 토글 동작에서의 지연을 방지
+    
+    setMinUpdateIntervalMillis(LOCATION_UPDATE_INTERVAL)
+    # 앱이 위치 업데이트 요청을 너무 자주 하지 않도록 제어
+  
+    setMaxUpdateDelayMillis(LOCATION_UPDATE_INTERVAL):
+    # 위치 업데이트가 일정 시간 이상 지연되지 않도록 보장
+    
+    setWaitForAccurateLocation(false):
+    # 정확한 위치를 기다리지 않고, 가능한 범위 내에서 가장 빠르게 받을 수 있는 위치 업데이트를 허용
+    ```
+  - 불필요한 서버 전송 예방을 위해 `isFirstLocationUpdateAfterChange` 플래그 추가
+  - GPS 오차범위로 인한 장소명 매칭 에러를 해결하기 위해 팝업메뉴에 장소명 후보지 나열하여 사용자가 편집할 수 있도록 함
+  - FCM을 통해 새로운 장소 기록 시, 사용자에게 알림을 보내어 현재 감정상태를 이모지로 손쉽게 표현할 수 있음
+
+
 ## 🔍 프로젝트 정보
 ### 개발 기간
 - 2024.09 ~ 2024.11 (3개월)
@@ -137,15 +174,4 @@ Every Moment는 위치 데이터를 기반으로 사용자의 하루를 **자동
 
 ## 🗄️ ERD
 ![erd](https://github.com/user-attachments/assets/72e66248-f217-434a-9f20-d8150abafee4)
-
-<br/>
-
-## 🔍 개발 주안점
-- **자동 일기 기록** 
-
-  - **Google Places API**를 통해 GPS 좌표를 전달해 장소명을 도출
-  - 백그라운 상태에서 GPS 좌표추적을 위해 `android.permission.ACCESS_BACKGROUND_LOCATION` 권한추가
-  - 불필요한 서버 전송 예방을 위해 `isFirstLocationUpdateAfterChange` 플래그 추가
-  - GPS 오차범위로 인한 장소명 매칭 에러를 해결하기 위해 팝업메뉴에 장소명 후보지 나열하여 사용자가 선택할 수 있도록 함
-  - FCM을 통해 새로운 장소 기록 시, 사용자에게 알림을 보내어 현재 감정상태를 이모지로 손쉽게 표현할 수 있음
 
