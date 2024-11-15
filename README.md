@@ -61,7 +61,8 @@ Every Moment는 위치 데이터를 기반으로 사용자의 하루를 **자동
      ├── VIEW # Activity와 Fragment 클래스
      └── VIEWMODEL # UI 관련 데이터를 관리하는 ViewModel 클래스
   ```
-- **Hilt** 부분 적용
+- **Hilt** 적용
+- **기능 테스트** 부분 적용
   
 ### 기능 부분
 - **자동 일기 기록** 
