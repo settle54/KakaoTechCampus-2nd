@@ -68,7 +68,7 @@ class DiaryEditFragment : Fragment() {
 
         (activity as? MainActivity)?.hideNavigationBar()
 
-        categoryManager = CategoryPopup(requireActivity(), requireContext(), viewModel)
+        categoryManager = CategoryPopup(requireActivity(), requireActivity(), viewModel)
 
         bookmark = Bookmark(requireContext(), binding.bookmark)
         setButtonClickListeners()
