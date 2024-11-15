@@ -108,7 +108,6 @@ class DiaryReadFragment : Fragment() {
             binding.category1.visibility = View.VISIBLE
             binding.category1.text =
                 resources.getString(R.string.category_text, diary.categories[0].categoryName)
-            binding.category2.visibility = View.INVISIBLE
             binding.categories.visibility = View.VISIBLE
         } else {
             binding.categories.visibility = View.GONE
