@@ -90,12 +90,12 @@ class MainActivity : AppCompatActivity() {
                         userRepository.postToken(
                             fcmToken = pendingToken,
                             deviceId = installationId
-                        ) { success, _ ->
+                        ) { success, response ->
                             if (success) {
                                 Log.d("FCM Token", "Token successfully posted to server")
                                 prefs.edit().putBoolean("token_needs_sync", false).apply()
                             } else {
-                                Log.e("FCM Token", "Failed to post token to server")
+                                Log.e("FCM Token", "Failed to post token to server: ${response?.message}")
                             }
                         }
                     }
