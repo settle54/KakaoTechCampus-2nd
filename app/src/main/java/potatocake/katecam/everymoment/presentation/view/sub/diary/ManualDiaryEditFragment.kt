@@ -77,7 +77,7 @@ class ManualDiaryEditFragment : Fragment() {
         binding.images.visibility = View.GONE
         binding.time.visibility = View.GONE
 
-        categoryManager = CategoryPopup(requireActivity(), requireContext(), viewModel)
+        categoryManager = CategoryPopup(requireActivity(), requireActivity(), viewModel)
 
         bookmark = Bookmark(requireContext(), binding.bookmark)
         setButtonClickListeners()
@@ -91,7 +91,7 @@ class ManualDiaryEditFragment : Fragment() {
     }
 
     private fun setEmotionPopup() {
-        emotionPopupManager = EmotionPopup(requireContext()) { emotion ->
+        emotionPopupManager = EmotionPopup(requireActivity()) { emotion ->
             binding.emotion.text = emotion.getEmotionUnicode()
             binding.addEmotion.visibility = View.GONE
             binding.emotion.visibility = View.VISIBLE
