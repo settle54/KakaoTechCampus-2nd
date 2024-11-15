@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import potatocake.katecam.everymoment.data.repository.UserRepository
+import potatocake.katecam.everymoment.data.repository.impl.UserRepository
 import potatocake.katecam.everymoment.databinding.ActivityKakaoLoginBinding
 import potatocake.katecam.everymoment.presentation.view.sub.OnBoardingActivity
 import potatocake.katecam.everymoment.presentation.viewModel.KakaoLoginViewModel

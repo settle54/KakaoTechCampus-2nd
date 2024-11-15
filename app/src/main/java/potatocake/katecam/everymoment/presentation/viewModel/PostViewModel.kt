@@ -8,12 +8,12 @@ import androidx.lifecycle.viewModelScope
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.getComments.Comment
 import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.Post
-import potatocake.katecam.everymoment.data.repository.PostRepository
+import potatocake.katecam.everymoment.data.repository.impl.PostRepository
 import kotlinx.coroutines.launch
 import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
-import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.data.repository.impl.MyInfoRepositoryImpl
 
-class PostViewModel(private val postRepository: PostRepository, private val myInfoRepository: MyInfoRepository) : ViewModel() {
+class PostViewModel(private val postRepository: PostRepository, private val myInfoRepository: MyInfoRepositoryImpl) : ViewModel() {
     private var diaryId: Int? = null
     private var userId: Int? = null
 

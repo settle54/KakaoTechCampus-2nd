@@ -5,13 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import potatocake.katecam.everymoment.data.model.network.dto.response.MyInformation
-import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.data.repository.impl.MyInfoRepositoryImpl
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 
-class SettingViewModel(private val myInfoRepository: MyInfoRepository): ViewModel() {
+class SettingViewModel(private val myInfoRepository: MyInfoRepositoryImpl): ViewModel() {
     private val _myInfo = MutableLiveData<MyInformation>()
     val myInfo: MutableLiveData<MyInformation> get() = _myInfo
     fun fetchMyInfo(){

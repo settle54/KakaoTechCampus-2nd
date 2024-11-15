@@ -103,5 +103,9 @@ dependencies {
     implementation ("com.tbuonomo:dotsindicator:5.0")
     implementation ("com.airbnb.android:lottie:6.0.0")
     implementation("kr.co.prnd:readmore-textview:1.0.0")
+    testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
 
 }

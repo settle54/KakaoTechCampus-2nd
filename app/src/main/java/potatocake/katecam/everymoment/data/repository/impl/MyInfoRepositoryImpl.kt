@@ -1,18 +1,17 @@
-package potatocake.katecam.everymoment.data.repository
+package potatocake.katecam.everymoment.data.repository.impl
 
 import android.util.Log
 import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.response.MyInformationResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
-import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.GlobalApplication
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MyInfoRepository {
+class MyInfoRepositoryImpl {
     private val apiService: PotatoCakeApiService =
         NetworkModule.provideApiService(NetworkModule.provideRetrofit())
     private val jwtToken = GlobalApplication.prefs.getString("token", "null")

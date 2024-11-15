@@ -10,23 +10,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DetailDiary
-import potatocake.katecam.everymoment.data.repository.DiaryRepository
+import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentDiaryReadBinding
 import potatocake.katecam.everymoment.extensions.Bookmark
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DiaryReadFragment : Fragment() {
 
     private lateinit var binding: FragmentDiaryReadBinding
-    private val viewModel: DiaryViewModel by activityViewModels {
-        DiaryViewModelFactory(
-            DiaryRepository()
-        )
-    }
+    private val viewModel: DiaryViewModel by activityViewModels()
     private var diaryId: Int? = null
     private lateinit var bookmark: Bookmark
 

@@ -1,4 +1,4 @@
-package potatocake.katecam.everymoment.services.location
+package potatocake.katecam.everymoment
 
 import android.app.Application
 import potatocake.katecam.everymoment.data.repository.PreferenceUtil
@@ -13,7 +13,7 @@ class GlobalApplication : Application() {
     }
     override fun onCreate() {
         super.onCreate()
-        KakaoSdk.init(this, "${potatocake.katecam.everymoment.BuildConfig.KAKAO_NATIVE_KEY}")
+        KakaoSdk.init(this, "${BuildConfig.KAKAO_NATIVE_KEY}")
         prefs = PreferenceUtil(applicationContext)
 
         if (!prefs.getBoolean(PREF_FIRST_INSTALL, false)) {

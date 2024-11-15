@@ -11,9 +11,10 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.response.Member
-import potatocake.katecam.everymoment.data.repository.FriendRepository
+import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentFriendRequestBinding
 import potatocake.katecam.everymoment.presentation.adapter.FriendRequestAdapter
 import potatocake.katecam.everymoment.presentation.viewModel.FriendRequestViewModel
@@ -32,13 +33,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
+@AndroidEntryPoint
 class FriendRequestFragment : Fragment() {
 
     private lateinit var binding: FragmentFriendRequestBinding
     private lateinit var adapter: FriendRequestAdapter
-    private val viewModel: FriendRequestViewModel by viewModels {
-        FriendRequestViewModelFactory(FriendRepository())
-    }
+    private val viewModel: FriendRequestViewModel by viewModels()
 
     private var allMembers = mutableListOf<Member>()
 

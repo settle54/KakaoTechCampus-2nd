@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.data.repository.impl.MyInfoRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentSettingBinding
 import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.extensions.CustomEditDialog
@@ -21,14 +21,14 @@ import potatocake.katecam.everymoment.extensions.GalleryUtil
 import potatocake.katecam.everymoment.extensions.SendFilesUtil
 import potatocake.katecam.everymoment.presentation.viewModel.SettingViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.SettingViewModelFactory
-import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.GlobalApplication
 import potatocake.katecam.everymoment.services.location.LocationService
 
 class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
     private lateinit var viewModel: SettingViewModel
-    private val myInfoRepository = MyInfoRepository()
+    private val myInfoRepository = MyInfoRepositoryImpl()
 
     private val galleryUtil = GalleryUtil(this)
 

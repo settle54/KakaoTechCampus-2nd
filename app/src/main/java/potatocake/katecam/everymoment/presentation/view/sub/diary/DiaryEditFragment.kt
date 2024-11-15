@@ -11,11 +11,12 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.Category
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DetailDiary
-import potatocake.katecam.everymoment.data.repository.DiaryRepository
+import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentDiaryEditBinding
 import potatocake.katecam.everymoment.extensions.Bookmark
 import potatocake.katecam.everymoment.extensions.CategoryPopup
@@ -29,6 +30,7 @@ import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.DiaryViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.DiaryViewModelFactory
 
+@AndroidEntryPoint
 class DiaryEditFragment : Fragment() {
 
     private lateinit var binding: FragmentDiaryEditBinding
@@ -53,11 +55,7 @@ class DiaryEditFragment : Fragment() {
     private lateinit var delImageDialog: CustomDialog
     private lateinit var backButtonDialog: CustomDialog
 
-    private val viewModel: DiaryViewModel by activityViewModels {
-        DiaryViewModelFactory(
-            DiaryRepository()
-        )
-    }
+    private val viewModel: DiaryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -152,7 +150,7 @@ class DiaryEditFragment : Fragment() {
     }
 
     private fun setEmotionPopup() {
-        emotionPopupManager = EmotionPopup(requireContext()) { emotion ->
+        emotionPopupManager = EmotionPopup(requireActivity()) { emotion ->
             binding.emotion.text = emotion.getEmotionUnicode()
             binding.addEmotion.visibility = View.GONE
             binding.emotion.visibility = View.VISIBLE

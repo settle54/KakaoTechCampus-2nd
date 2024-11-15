@@ -9,13 +9,14 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.entity.Emotions
 import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiaryRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.Category
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DetailDiary
 import potatocake.katecam.everymoment.data.model.network.dto.vo.LocationPoint
-import potatocake.katecam.everymoment.data.repository.DiaryRepository
+import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentDiaryEditBinding
 import potatocake.katecam.everymoment.extensions.Bookmark
 import potatocake.katecam.everymoment.extensions.CategoryPopup
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@AndroidEntryPoint
 class ManualDiaryEditFragment : Fragment() {
 
     private lateinit var binding: FragmentDiaryEditBinding
@@ -54,11 +56,7 @@ class ManualDiaryEditFragment : Fragment() {
     private lateinit var delImageDialog: CustomDialog
     private lateinit var backButtonDialog: CustomDialog
 
-    private val viewModel: DiaryViewModel by activityViewModels {
-        DiaryViewModelFactory(
-            DiaryRepository()
-        )
-    }
+    private val viewModel: DiaryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

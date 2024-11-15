@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import potatocake.katecam.everymoment.services.location.LocationService
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.DiaryRepository
+import potatocake.katecam.everymoment.data.repository.impl.DiaryRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentTodayLogBinding
 import potatocake.katecam.everymoment.presentation.adapter.TimelineAdapter
 import potatocake.katecam.everymoment.presentation.view.sub.NotificationFragment
@@ -25,10 +25,13 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import android.provider.Settings
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.presentation.view.sub.diary.ManualDiaryEditFragment
-import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.GlobalApplication
 
+@AndroidEntryPoint
 class TodayLogFragment : Fragment() {
 
     private val fineLocationPermissionRequest =
@@ -68,8 +71,7 @@ class TodayLogFragment : Fragment() {
         }
 
     private lateinit var binding: FragmentTodayLogBinding
-    private lateinit var viewModel: TimelineViewModel
-    private val diaryRepository = DiaryRepository()
+    private val viewModel: TimelineViewModel by viewModels()
     private val calendar = Calendar.getInstance()
 
     override fun onCreateView(
@@ -82,10 +84,6 @@ class TodayLogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = ViewModelProvider(this, TimelineViewModelFactory(diaryRepository)).get(
-            TimelineViewModel::class.java
-        )
 
         checkFineLocationPermission()
 

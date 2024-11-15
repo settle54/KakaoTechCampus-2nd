@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
 import android.util.Log
-import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import potatocake.katecam.everymoment.R
@@ -24,8 +23,8 @@ import potatocake.katecam.everymoment.data.model.network.api.NetworkUtil
 import potatocake.katecam.everymoment.data.model.network.dto.vo.DiaryEntry
 import potatocake.katecam.everymoment.data.model.network.dto.vo.LocationPoint
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
-import potatocake.katecam.everymoment.services.notification.NotificationActionReceiver
 import com.google.android.gms.location.*
+import potatocake.katecam.everymoment.GlobalApplication
 
 class LocationService : Service() {
 

@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import potatocake.katecam.everymoment.data.repository.UserRepository
+import potatocake.katecam.everymoment.data.repository.impl.UserRepository
 import potatocake.katecam.everymoment.data.model.network.dto.vo.KakaoLoginUiState
 import kotlinx.coroutines.launch
 

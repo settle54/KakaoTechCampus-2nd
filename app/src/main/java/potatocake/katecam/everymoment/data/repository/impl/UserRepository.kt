@@ -1,9 +1,9 @@
-package potatocake.katecam.everymoment.data.repository
+package potatocake.katecam.everymoment.data.repository.impl
 
 import android.app.Activity
 import android.util.Log
 import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
-import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.GlobalApplication
 import potatocake.katecam.everymoment.data.model.network.api.NetworkUtil
 import potatocake.katecam.everymoment.data.model.network.api.PotatoCakeApiService
 import potatocake.katecam.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse

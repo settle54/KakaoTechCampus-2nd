@@ -5,12 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.FriendDiaryRepository
-import potatocake.katecam.everymoment.data.repository.FriendRepository
+import potatocake.katecam.everymoment.data.repository.impl.FriendDiaryRepositoryImpl
+import potatocake.katecam.everymoment.data.repository.impl.FriendRepositoryImpl
 import potatocake.katecam.everymoment.databinding.FragmentShareViewBinding
 import potatocake.katecam.everymoment.presentation.adapter.SharedFriendDiaryListAdapter
 import potatocake.katecam.everymoment.presentation.adapter.SharedFriendListAdapter
@@ -21,11 +23,10 @@ import java.util.Calendar
 import java.util.Locale
 import potatocake.katecam.everymoment.presentation.viewModel.factory.ShareViewModelFactory
 
+@AndroidEntryPoint
 class ShareViewFragment : Fragment() {
     private lateinit var binding: FragmentShareViewBinding
-    private lateinit var viewModel: ShareViewModel
-    private val friendDiaryRepository = FriendDiaryRepository()
-    private val friendRepository = FriendRepository()
+    private val viewModel: ShareViewModel by viewModels()
     private val calendar = Calendar.getInstance()
 
 
@@ -39,13 +40,9 @@ class ShareViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(
-            this,
-            ShareViewModelFactory(friendDiaryRepository, friendRepository)
-        ).get(ShareViewModel::class.java)
 
         val friendListAdapter = SharedFriendListAdapter(viewModel)
-        val friendDiaryAdapter = SharedFriendDiaryListAdapter()
+        val friendDiaryAdapter = SharedFriendDiaryListAdapter(requireActivity())
         setupRecyclerView(friendListAdapter, friendDiaryAdapter)
         observeFriendList(friendListAdapter)
         observeFriendDiaryList(friendDiaryAdapter)

@@ -14,14 +14,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.PostRepository
+import potatocake.katecam.everymoment.data.repository.impl.PostRepository
 import potatocake.katecam.everymoment.databinding.FragmentPostBinding
 import potatocake.katecam.everymoment.presentation.adapter.PostAdapter
 import potatocake.katecam.everymoment.presentation.view.main.MainActivity
 import potatocake.katecam.everymoment.presentation.viewModel.PostViewModel
 import potatocake.katecam.everymoment.presentation.viewModel.factory.PostViewModelFactory
 import kotlinx.coroutines.launch
-import potatocake.katecam.everymoment.data.repository.MyInfoRepository
+import potatocake.katecam.everymoment.data.repository.impl.MyInfoRepositoryImpl
 import potatocake.katecam.everymoment.extensions.CustomDialog
 import potatocake.katecam.everymoment.presentation.listener.OnDeleteCommentListener
 
@@ -31,7 +31,7 @@ class PostFragment : Fragment(), OnDeleteCommentListener {
     private lateinit var postAdapter: PostAdapter
     private val imm: InputMethodManager by lazy { requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager }
     private val postRepository: PostRepository = PostRepository()
-    private val myInfoRepository: MyInfoRepository = MyInfoRepository()
+    private val myInfoRepository: MyInfoRepositoryImpl = MyInfoRepositoryImpl()
     private lateinit var delCommentDialog: CustomDialog
     private var selectedFriendPosition: Int = -1
 

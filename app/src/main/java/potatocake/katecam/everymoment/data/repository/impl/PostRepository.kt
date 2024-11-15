@@ -1,4 +1,4 @@
-package potatocake.katecam.everymoment.data.repository
+package potatocake.katecam.everymoment.data.repository.impl
 
 import android.util.Log
 import potatocake.katecam.everymoment.data.model.network.api.NetworkModule
@@ -11,7 +11,7 @@ import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendD
 import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getComments.GetCommentsResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
-import potatocake.katecam.everymoment.services.location.GlobalApplication
+import potatocake.katecam.everymoment.GlobalApplication
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

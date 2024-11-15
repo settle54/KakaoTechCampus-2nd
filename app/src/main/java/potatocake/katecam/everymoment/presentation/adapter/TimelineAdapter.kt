@@ -52,7 +52,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 }
                 diaryReadFragment.arguments = bundle
 
-                val fragmentManager = (binding.root.context as AppCompatActivity).supportFragmentManager
+                val fragmentManager = activity.supportFragmentManager
                 fragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, diaryReadFragment)
                     .addToBackStack(null)
@@ -73,7 +73,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 binding.emotion.text = potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(item.emoji)?.getEmotionUnicode()
             }
 
-            val emotionPopupManager = EmotionPopup(binding.root.context) { selectedEmotion ->
+            val emotionPopupManager = EmotionPopup(activity) { selectedEmotion ->
                 val emotionName = selectedEmotion.toString().lowercase()
                 viewModel.viewModelScope.launch {
                     try {
