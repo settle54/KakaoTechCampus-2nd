@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -18,7 +19,13 @@ import java.io.IOException
 class SendFilesUtil {
 
     companion object {
-        private val client = OkHttpClient()
+        private val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
 
         private fun downloadImageAsync(
             url: String,
@@ -56,6 +63,7 @@ class SendFilesUtil {
 
         fun uriToFile(
             context: Context,
+            paramName: String,
             imagesList: List<String>,
             callback: (List<MultipartBody.Part>) -> Unit
         ) {
@@ -66,12 +74,13 @@ class SendFilesUtil {
             val parts = mutableListOf<MultipartBody.Part>()
             val remainingImages = imagesList.toMutableList()
 
-            processNext(context, remainingImages, parts, callback)
+            processNext(context, paramName, remainingImages, parts, callback)
         }
 
 
         private fun processNext(
             context: Context,
+            paramName: String,
             remainingImages: MutableList<String>,
             parts: MutableList<MultipartBody.Part>,
             callback: (List<MultipartBody.Part>) -> Unit
@@ -93,9 +102,10 @@ class SendFilesUtil {
                             input.copyTo(output)
                         }
                     }
-                    createMultipartBodyPart(tempFile, parts) {
+                    createMultipartBodyPart(tempFile, paramName, parts) {
                         processNext(
                             context,
+                            paramName,
                             remainingImages,
                             parts,
                             callback
@@ -105,9 +115,10 @@ class SendFilesUtil {
 
                 "file" -> {
                     val file = File(uri.path ?: "")
-                    createMultipartBodyPart(file, parts) {
+                    createMultipartBodyPart(file, paramName, parts) {
                         processNext(
                             context,
+                            paramName,
                             remainingImages,
                             parts,
                             callback
@@ -118,9 +129,10 @@ class SendFilesUtil {
                 "https" -> {
                     downloadImageAsync(uri.toString(), context) { downloadedFile ->
                         if (downloadedFile != null) {
-                            createMultipartBodyPart(downloadedFile, parts) {
+                            createMultipartBodyPart(downloadedFile, paramName, parts) {
                                 processNext(
                                     context,
+                                    paramName,
                                     remainingImages,
                                     parts,
                                     callback
@@ -129,6 +141,7 @@ class SendFilesUtil {
                         } else {
                             processNext(
                                 context,
+                                paramName,
                                 remainingImages,
                                 parts,
                                 callback
@@ -146,6 +159,7 @@ class SendFilesUtil {
 
         private fun createMultipartBodyPart(
             file: File,
+            paramName: String,
             parts: MutableList<MultipartBody.Part>,
             onComplete: () -> Unit
         ) {
@@ -161,7 +175,7 @@ class SendFilesUtil {
             }
 
             val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
-            parts.add(MultipartBody.Part.createFormData("files", file.name, requestFile))
+            parts.add(MultipartBody.Part.createFormData(paramName, file.name, requestFile))
             onComplete()
         }
     }

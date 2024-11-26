@@ -1,32 +1,34 @@
 package potatocake.katecam.everymoment.presentation.view.main
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.core.content.ContextCompat
-import android.Manifest
-import android.content.pm.PackageManager
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import potatocake.katecam.everymoment.services.location.LocationService
+import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
+import potatocake.katecam.everymoment.GlobalApplication
 import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.repository.DiaryRepository
 import potatocake.katecam.everymoment.databinding.FragmentTodayLogBinding
 import potatocake.katecam.everymoment.presentation.adapter.TimelineAdapter
 import potatocake.katecam.everymoment.presentation.view.sub.NotificationFragment
+import potatocake.katecam.everymoment.presentation.view.sub.diary.ManualDiaryEditFragment
 import potatocake.katecam.everymoment.presentation.viewModel.TimelineViewModel
-import potatocake.katecam.everymoment.presentation.viewModel.factory.TimelineViewModelFactory
+import potatocake.katecam.everymoment.services.location.LocationService
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import android.provider.Settings
-import androidx.recyclerview.widget.RecyclerView
 
+@AndroidEntryPoint
 class TodayLogFragment : Fragment() {
 
     private val fineLocationPermissionRequest =
@@ -50,7 +52,7 @@ class TodayLogFragment : Fragment() {
     private val notificationPermissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                startLocationService()
+                startLocationServiceIfEnabled()
             } else {
                 showPermissionDeniedDialog("알림 권한")
             }
@@ -66,8 +68,7 @@ class TodayLogFragment : Fragment() {
         }
 
     private lateinit var binding: FragmentTodayLogBinding
-    private lateinit var viewModel: TimelineViewModel
-    private val diaryRepository = DiaryRepository()
+    private val viewModel: TimelineViewModel by viewModels()
     private val calendar = Calendar.getInstance()
 
     override fun onCreateView(
@@ -81,11 +82,9 @@ class TodayLogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, TimelineViewModelFactory(diaryRepository)).get(
-            TimelineViewModel::class.java
-        )
-
         checkFineLocationPermission()
+
+        startLocationServiceIfEnabled()
 
         val adapter = TimelineAdapter(requireActivity(), viewModel)
         setupRecyclerView(adapter)
@@ -115,6 +114,15 @@ class TodayLogFragment : Fragment() {
         binding.prevDate.setOnClickListener {
             changeDate(-1)
         }
+
+        binding.addDiaryButton.setOnClickListener {
+            moveToManualDiary()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshData()
     }
 
     private fun observeViewModel(adapter: TimelineAdapter) {
@@ -135,6 +143,9 @@ class TodayLogFragment : Fragment() {
     }
 
     private fun updateDate(date: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        calendar.time = dateFormat.parse(date) ?: calendar.time
+
         viewModel.fetchDiaries(date)
         binding.currentDate.text = SimpleDateFormat("M월 d일 (E)", Locale("ko", "KR")).format(calendar.time)
     }
@@ -199,10 +210,10 @@ class TodayLogFragment : Fragment() {
             ) {
                 notificationPermissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                startLocationService()
+                startLocationServiceIfEnabled()
             }
         } else {
-            startLocationService()
+            startLocationServiceIfEnabled()
         }
     }
 
@@ -240,5 +251,36 @@ class TodayLogFragment : Fragment() {
     private fun startLocationService() {
         val intent = Intent(requireContext(), LocationService::class.java)
         ContextCompat.startForegroundService(requireContext(), intent)
+    }
+
+    private fun startLocationServiceIfEnabled() {
+        val isInitialLaunch = GlobalApplication.prefs.getBoolean("isInitialLaunch", false)
+        val isAutoNotificationEnabled = GlobalApplication.prefs.getBoolean("isAutoNotificationEnabled", false)
+
+        if (isInitialLaunch || isAutoNotificationEnabled) {
+            val intent = Intent(requireContext(), LocationService::class.java)
+            ContextCompat.startForegroundService(requireContext(), intent)
+        }
+
+        if (isInitialLaunch) {
+            GlobalApplication.prefs.setBoolean("isInitialLaunch", false)
+        }
+    }
+
+    private fun moveToManualDiary(){
+        val fragment = ManualDiaryEditFragment()
+        val bundle = Bundle()
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formattedDate = dateFormat.format(calendar.time)
+        bundle.putString("selected_date", binding.currentDate.text.toString())
+        bundle.putString("formatted_date", formattedDate)
+        fragment.arguments = bundle
+
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, fragment)
+            addToBackStack(null)
+            commit()
+        }
     }
 }

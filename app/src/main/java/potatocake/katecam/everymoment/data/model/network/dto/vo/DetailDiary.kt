@@ -11,7 +11,7 @@ data class DetailDiary(
     @SerializedName("categories")
     val categories: List<Category>,
     @SerializedName("content")
-    val content: String,
+    val content: String?,
     @SerializedName("createAt")
     val createAt: String,
     @SerializedName("emoji")

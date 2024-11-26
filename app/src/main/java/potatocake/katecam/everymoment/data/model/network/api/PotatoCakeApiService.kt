@@ -1,26 +1,30 @@
 package potatocake.katecam.everymoment.data.model.network.api
 
+import okhttp3.MultipartBody
 import potatocake.katecam.everymoment.data.model.network.dto.request.EmojiRequest
-import potatocake.katecam.everymoment.data.model.network.dto.response.GetDetailDiaryResponse
-import potatocake.katecam.everymoment.data.model.network.dto.response.GetCategoriesResponse
-import potatocake.katecam.everymoment.data.model.network.dto.response.GetFilesResponse
+import potatocake.katecam.everymoment.data.model.network.dto.request.LocationNameRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.ManualDiaryRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.PatchCommentRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCategoryRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.PostCommentRequest
+import potatocake.katecam.everymoment.data.model.network.dto.request.TokenRequest
 import potatocake.katecam.everymoment.data.model.network.dto.request.postEditDiary.PatchEditedDiaryRequest
 import potatocake.katecam.everymoment.data.model.network.dto.response.CoordinatesResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.DiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.FriendRequestListResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.FriendsListResponse
-import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetCategoriesResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetCommentCntResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetDetailDiaryResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.GetFilesResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.MemberResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.MyInformationResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.NonLoginUserNumberResponse
-import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.NotificationResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.ServerResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getComments.GetCommentsResponse
+import potatocake.katecam.everymoment.data.model.network.dto.response.getFriendDiaryInDetail.GetFriendDiaryResponse
 import potatocake.katecam.everymoment.data.model.network.dto.response.getLikeCnt.GetLikeCountResponse
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -111,6 +115,7 @@ interface PotatoCakeApiService {
     @GET("api/friends/friends")
     fun getFriendsList(
         @Header("Authorization") token: String,
+        @Query("key") key: Int = 0
     ): Call<FriendsListResponse>
 
     @DELETE("api/friends/{friendId}")
@@ -131,7 +136,7 @@ interface PotatoCakeApiService {
         @Path("requestId") requestId: Int
     ): Call<ServerResponse>
 
-    @GET("api/members?size=30")
+    @GET("api/members?size=100")
     fun getMembers(
         @Header("Authorization") token: String,
     ): Call<MemberResponse>
@@ -200,12 +205,13 @@ interface PotatoCakeApiService {
     @POST("/api/members")
     fun updateProfile(
         @Header("Authorization") token: String,
-        @Part("nickname") nickname: RequestBody?,
-        @Part profileImage: MultipartBody.Part?
+        @Query ("nickname") nickname: String?,
+        @Part profileImage: MultipartBody.Part
     ): Call<ServerResponse>
 
     @GET("/api/members/anonymous-login")
     fun getAnonymousLogin(
+        @Query("number") number: Int?,
     ): Call<NonLoginUserNumberResponse>
 
     @GET("/api/diaries/friend/{diaryId}")
@@ -245,4 +251,43 @@ interface PotatoCakeApiService {
         @Header("Authorization") token: String,
         @Path("diaryId") diaryId: Int
     ): Call<GetLikeCountResponse>
+
+    @GET("/api/comments/{diaryId}/count")
+    fun getCommentCnt(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int
+    ): Call<GetCommentCntResponse>
+
+    @PATCH("/api/comments/{commentId}")
+    fun patchComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: PatchCommentRequest
+    ): Call<ServerResponse>
+
+    @PATCH("/api/diaries/{diaryId}")
+    fun patchEditedEmoji(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: EmojiRequest
+    ): Call<ServerResponse>
+
+    @PATCH("/api/diaries/{diaryId}")
+    fun patchEditedLocationName(
+        @Header("Authorization") token: String,
+        @Path("diaryId") diaryId: Int,
+        @Body request: LocationNameRequest
+    ): Call<ServerResponse>
+
+    @POST("/api/diaries/manual")
+    fun postManualDiary(
+        @Header("Authorization") token: String,
+        @Body request: ManualDiaryRequest
+    ): Call<ServerResponse>
+
+    @POST("/api/fcm/token")
+    fun postToken(
+        @Header("Authorization") token: String,
+        @Body tokenRequest: TokenRequest
+    ): Call<ServerResponse>
 }

@@ -6,11 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import potatocake.katecam.everymoment.data.repository.UserRepository
-import potatocake.katecam.everymoment.data.model.network.dto.vo.KakaoLoginUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import potatocake.katecam.everymoment.data.model.network.dto.vo.KakaoLoginUiState
+import potatocake.katecam.everymoment.data.repository.UserRepository
+import potatocake.katecam.everymoment.di.UserRepositoryQualifier
+import javax.inject.Inject
 
-class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewModel() {
+@HiltViewModel
+class KakaoLoginViewModel @Inject constructor(
+    @UserRepositoryQualifier
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _uiState = MutableLiveData<KakaoLoginUiState>()
     val uiState: LiveData<KakaoLoginUiState> = _uiState
@@ -68,9 +75,15 @@ class KakaoLoginViewModel(private val userRepository: UserRepository) : ViewMode
         }
     }
 
-    fun getAnonymousLogin() {
+    fun getAnonymousLogin(onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            userRepository.getAnonymousLogin() { success, response -> }
+            userRepository.getAnonymousLogin() { success, response ->
+                if (success) {
+                    response?.info?.number?.let { number ->
+                    }
+                }
+                onComplete(success)
+            }
         }
     }
 }

@@ -23,13 +23,14 @@ android {
         applicationId = "potatocake.katecam.everymoment"
         minSdk = 28
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 4
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"${getApiKey("API_KEY")}\"")
         buildConfigField("String", "KAKAO_NATIVE_KEY", "\"${getApiKey("KAKAO_NATIVE_KEY")}\"")
+        buildConfigField("String", "BASE_URL", "\"http://13.125.156.74:8080/\"")
     }
     buildTypes {
         debug {
@@ -87,6 +88,10 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
     implementation("androidx.fragment:fragment-ktx:1.5.5")
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
@@ -96,5 +101,18 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("com.tbuonomo:dotsindicator:5.0")
+    implementation ("com.airbnb.android:lottie:6.0.0")
+    implementation("kr.co.prnd:readmore-textview:1.0.0")
+    testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
+
+    testImplementation("org.mockito:mockito-core:4.0.0")
+    androidTestImplementation("org.mockito:mockito-android:4.0.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+    debugImplementation("androidx.fragment:fragment-testing-manifest:1.6.2")
 
 }

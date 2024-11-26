@@ -1,6 +1,7 @@
 package potatocake.katecam.everymoment.presentation.adapter
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -9,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import potatocake.katecam.everymoment.R
 import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
 import potatocake.katecam.everymoment.databinding.TimelineItemBinding
@@ -26,9 +29,7 @@ import potatocake.katecam.everymoment.extensions.EmotionPopup
 import potatocake.katecam.everymoment.extensions.ToPxConverter
 import potatocake.katecam.everymoment.presentation.view.sub.diary.DiaryReadFragment
 import potatocake.katecam.everymoment.presentation.viewModel.TimelineViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class TimelineAdapter(private val activity: FragmentActivity, private val viewModel: TimelineViewModel) : ListAdapter<Diary, TimelineAdapter.TimelineViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
@@ -50,14 +51,15 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 }
                 diaryReadFragment.arguments = bundle
 
-                val fragmentManager = (binding.root.context as AppCompatActivity).supportFragmentManager
+                val fragmentManager = activity.supportFragmentManager
                 fragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, diaryReadFragment)
                     .addToBackStack(null)
                     .commit()
             }
 
-            binding.timeText.text = item.createAt.substring(11, 16)
+            val originalTime = item.createAt.substring(11, 16)
+            binding.timeText.text = reformatTime(originalTime)
             binding.locationNameText.text = item.locationName
             binding.addressText.text = item.address
 
@@ -70,7 +72,7 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 binding.emotion.text = potatocake.katecam.everymoment.data.model.entity.Emotions.fromString(item.emoji)?.getEmotionUnicode()
             }
 
-            val emotionPopupManager = EmotionPopup(binding.root.context) { selectedEmotion ->
+            val emotionPopupManager = EmotionPopup(activity) { selectedEmotion ->
                 val emotionName = selectedEmotion.toString().lowercase()
                 viewModel.viewModelScope.launch {
                     try {
@@ -142,12 +144,13 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
                 CustomDialog("이 일기를 삭제하시겠습니까?", "취소", "삭제", onPositiveClick = {
                     removeItem(adapterPosition)
                     viewModel.deleteDiary(item.id)
+                    // Log.d("arieum", item.id.toString())
                 }).show(activity.supportFragmentManager, "delAutoDiary")
             }
 
             binding.editIcon.setOnClickListener {
                 viewModel.getPlaceNamesForDiary(item.id) { placeNames ->
-                    (binding.root.context as? FragmentActivity)?.runOnUiThread {
+                    activity.runOnUiThread {
                         if (placeNames.isNotEmpty()) {
                             val popupMenu = PopupMenu(binding.root.context, binding.editIcon, Gravity.NO_GRAVITY, 0, R.style.CustomPopupMenu)
                             placeNames.forEach { placeName ->
@@ -192,6 +195,15 @@ class TimelineAdapter(private val activity: FragmentActivity, private val viewMo
             val newList = currentList.toMutableList()
             newList.removeAt(position)
             submitList(newList)
+        }
+
+        private fun reformatTime(originalTime: String): String {
+            val originalFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val date = originalFormat.parse(originalTime)
+
+            val targetFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
+            val formattedTime = targetFormat.format(date)
+            return formattedTime
         }
     }
 

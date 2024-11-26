@@ -4,25 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import potatocake.katecam.everymoment.R
-import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
-import potatocake.katecam.everymoment.databinding.ShareItemBinding
-import potatocake.katecam.everymoment.presentation.view.sub.PostFragment
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
+import potatocake.katecam.everymoment.R
+import potatocake.katecam.everymoment.data.model.network.dto.response.Diary
+import potatocake.katecam.everymoment.databinding.ShareItemBinding
+import potatocake.katecam.everymoment.presentation.view.sub.PostFragment
 
 
-class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAdapter.ViewHolder>(
+class SharedFriendDiaryListAdapter(private val activity: FragmentActivity) : ListAdapter<Diary, SharedFriendDiaryListAdapter.ViewHolder>(
     object : DiffUtil.ItemCallback<Diary>() {
         override fun areItemsTheSame(oldItem: Diary, newItem: Diary): Boolean {
             return oldItem.id == newItem.id
@@ -33,10 +33,15 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
         }
     }
 ) {
-    private lateinit var selectedFriendName: String
+    private var selectedFriendName: String = ""
+    private var selectedFriendPosition: Int? = null
 
-    fun setSelectedFriendName(nickName: String){
+    fun setSelectedFriendName(nickName: String) {
         selectedFriendName = nickName
+    }
+
+    fun setSelectedFriendPosition(position: Int) {
+        selectedFriendPosition = position
     }
 
     inner class ViewHolder(private val binding: ShareItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -53,10 +58,11 @@ class SharedFriendDiaryListAdapter : ListAdapter<Diary, SharedFriendDiaryListAda
                 val bundle = Bundle().apply {
                     putInt("diary_id", item.id)
                     putString("selected_friend_name", selectedFriendName)
+                    putInt("selected_friend_position", selectedFriendPosition ?: -1)
                 }
                 postFragment.arguments = bundle
 
-                val fragmentManager = (binding.root.context as AppCompatActivity).supportFragmentManager
+                val fragmentManager = activity.supportFragmentManager
                 fragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, postFragment)
                     .addToBackStack(null)
